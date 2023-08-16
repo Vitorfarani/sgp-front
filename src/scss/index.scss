@@ -1,0 +1,63 @@
+
+@import "../../node_modules/bootstrap/scss/bootstrap";
+@import './theme.scss';
+
+//sobrescreve thema do bootstrap
+$theme-colors: (
+  'primary': $primary-color,
+  'secondary': $secondary-color,
+  "danger": #ff4136
+);
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+
+}
+
+
+html, body, #root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 100vh; /* Define a altura mínima como 100% da viewport */
+}
+
+.top-right {
+  position: absolute;
+  top: 30px;
+  right: 30px;
+}
+
+.wrapper {
+  max-height: 100vh !important;
+  overflow-y: scroll;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: transparent; 
+}
+ 
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #888; 
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #555; 
+}
+
+// Import Bootstrap and its default variables
+@import "../../node_modules/bootstrap/scss/bootstrap";

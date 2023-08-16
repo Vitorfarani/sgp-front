@@ -1,0 +1,37 @@
+.login-container {
+  height: 100vh;
+}
+
+.login-form {
+  padding: 30px;
+}
+
+.login-image {
+  background-image: url('people-dealing-with-workplace-challenges.png');
+  background-size: cover;
+  background-position: center;
+}
+
+/* ResponsiveScreen.css */
+
+.main-container {
+  text-align: center;
+  padding: 20px;
+  height: 100vh;
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.centered-image {
+  display: block;
+  margin: 0 auto;
+  max-width: 100%;
+  object-fit: cover;
+  height: 50vh;
+}
+
+.bottom-button {
+  margin-top: 20px;
+}

@@ -1,0 +1,13 @@
+diff --git a/node_modules/bootstrap/scss/mixins/_grid.scss b/node_modules/bootstrap/scss/mixins/_grid.scss
+index 38e2239..f5bc2f1 100644
+--- a/node_modules/bootstrap/scss/mixins/_grid.scss
++++ b/node_modules/bootstrap/scss/mixins/_grid.scss
+@@ -56,7 +56,7 @@
+ @mixin row-cols($count) {
+   > * {
+     flex: 0 0 auto;
+-    width: divide(100%, $count);
++    width: divide(100, $count);
+   }
+ }
+ 
