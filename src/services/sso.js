@@ -3,22 +3,16 @@ import { REACT_APP_API_SSO, REACT_APP_CLIENT_ID, REACT_APP_CLIENT_SECRET } from 
 import { getRedirectUrl } from "@/utils/helpers";
 import axios from 'axios';
 import { MOCK_SSO } from "./AuthService";
+import { httpSSO } from ".";
 
-const httpSSO = axios.create({
-    baseURL: REACT_APP_API_SSO,
-    timeout: 7000,
-    headers: {
-        'content-type': 'application/x-www-form-urlencoded',
-        'accept' : '*/*',
-    }
-});
+
 
 export const sendCodeToGov = async (code) => {
     return MOCK_SSO; //mock para tests, TODO: normalizar auth
     let url = `/token`
     const deepLink = getRedirectUrl()
     const params = []
-        params.push('&grant_type='+ 'authorization_code');
+        params.push('grant_type='+ 'authorization_code');
         params.push('&client_id='+ REACT_APP_CLIENT_ID);
         params.push('&client_secret='+ REACT_APP_CLIENT_SECRET);
         params.push('&redirect_uri='+ deepLink);

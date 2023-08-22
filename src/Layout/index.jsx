@@ -6,34 +6,32 @@ import { Navigate, Outlet, useLocation } from 'react-router-dom';
 import { HeaderBar, SidebarLeft, SidebarRight } from './components';
 import { Background } from '@/components/index';
 import './style.scss';
-export default function Layout({ children }) {
-  const { isLogged } = useAuth();
-  const location = useLocation();
-  const [isOpenSideBarLeft, setIsOpenSideBarLeft] = useState(true);
+import { isMobile } from '@/constants';
 
-  const RequireAuth = ({ children }) => {
-    console.log({isLogged})
-    if (!isLogged) {
-      return <Navigate to="/login" state={{ from: location }} replace />;
-    }
-    return children;
-  }
+
+const Layout = React.memo(() => {
+  const { isLogged } = useAuth();
+  const [isOpenSideBarLeft, setIsOpenSideBarLeft] = useState(!isMobile);
 
   return (
-    <RequireAuth>
-      <Background >
-        <Row>
-          <div className={`sidebarLeft ${isOpenSideBarLeft ? 'open' : 'closed'}`}>
-            <SidebarLeft isOpenSideBarLeft={isOpenSideBarLeft} />
-          </div>
-          <Col className='wrapper'>
-            <HeaderBar
-              isOpenSideBarLeft={isOpenSideBarLeft}
-              setIsOpenSideBarLeft={setIsOpenSideBarLeft}/>
+    <Container fluid >
+      <Row>
+        <div className={`sidebarLeft ${isOpenSideBarLeft ? 'open' : 'closed'}`} >
+          <SidebarLeft isOpenSideBarLeft={isOpenSideBarLeft} setIsOpenSideBarLeft={setIsOpenSideBarLeft} />
+        </div>
+        <Col className={`wrapper ${!isOpenSideBarLeft ? 'open' : 'closed'}`} >
+          <HeaderBar
+            isOpenSideBarLeft={isOpenSideBarLeft}
+            setIsOpenSideBarLeft={setIsOpenSideBarLeft} />
+          <div onClick={() => setIsOpenSideBarLeft(false)}>
+
             <Outlet />
-          </Col>
-        </Row>
-      </Background>
-    </RequireAuth>
+          </div>
+        </Col>
+      </Row>
+    </Container>
   );
-}
+});
+
+
+export default Layout

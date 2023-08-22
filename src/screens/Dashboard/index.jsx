@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 
 export default function Dashboard() {
   const navigate = useNavigate();
-  const {isLoaded, isLogged} = useAuth();
+  const {isLoaded, isLogged, user} = useAuth();
 
     
 const data1 = [
@@ -23,7 +23,7 @@ const data2 = [
 
   return (
    <Container style={{}}>
-       <h1>Pie Chart Cards</h1>
+       <h1>Hello</h1>
       <Row>
         <Col>
           <PieChartCard title="Chart 1" data={data1} />

@@ -4,10 +4,13 @@ import Modal from 'react-bootstrap/Modal';
 
 const GlobalAlert = (props) => {
   const modal = useRef()
+
+  useEffect(() => {
+    if (!!modal.current?.dialog && props.modalProps.color) {
+      modal.current.dialog.children[0].children[0].style.borderColor = props.modalProps.color
+    }
+  }, [props.modalProps.color]);
   
-  if(!!modal.current?.dialog && props.modalProps.color) {
-    modal.current.dialog.children[0].children[0].style.borderColor = props.modalProps.color
-  }
   return (
     <Modal
       ref={modal}

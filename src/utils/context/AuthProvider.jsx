@@ -68,16 +68,16 @@ export const AuthProvider = ({ children }) => {
   async function loadLocal() {
     try {
       let userL = await loadUser();
-      let token = await loadDataSSO();
-      let bio = await loadBio();
-      loadTheme();
-      loadDetranLocal();
-      setIsLogged(true)
+      await loadDataSSO()
+      .then((token) => {
+        if(token) {
+          setIsLogged(true)
+        }
+        setLoaded(true)
+      });
 
     } catch (error) {
-    } finally {
-      console.log('load')
-      setLoaded(true)
+
     }
   }
 

@@ -1,6 +1,7 @@
 
 import { API_URL_AUTH } from '@/constants/environment';
 import axios from 'axios';
+import { httpAuth } from '.';
 
 export const MOCK_SSO = {
     access_token: 'fake_hash_000000000000000000',
@@ -14,15 +15,7 @@ export const MOCK_USER = {
     roles: ['ADMIN', 'DEVELOPER'],
     
 }
-const httpAuth = axios.create({
-    baseURL: API_URL_AUTH,
-    timeout: 3000,
-    headers: {
-        'Content-Type': 'application/json',
-        'Accept': '*/*'
-        }
 
-});
 
 export const loginHml = async (idFuncional) => {
     let url = `/api/degase`
@@ -36,6 +29,7 @@ export const loginHml = async (idFuncional) => {
 
         })
 }
+
 export const loginApi = async (token) => {
     let url = `/api/degase/loginsso`
     Object.assign(httpAuth.defaults, {

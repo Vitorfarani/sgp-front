@@ -1,21 +1,12 @@
 
-@import "../../node_modules/bootstrap/scss/bootstrap";
+// @import "../../node_modules/bootstrap/scss/bootstrap";
 @import './theme.scss';
-
-//sobrescreve thema do bootstrap
-$theme-colors: (
-  'primary': $primary-color,
-  'secondary': $secondary-color,
-  "danger": #ff4136
-);
 
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-
 }
-
 
 html, body, #root {
   height: 100%;
@@ -37,7 +28,7 @@ body {
 
 .wrapper {
   max-height: 100vh !important;
-  overflow-y: scroll;
+  overflow-y: auto;
 }
 
 ::-webkit-scrollbar {
@@ -58,6 +49,9 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: #555; 
 }
-
+.form-control:focus{
+  border-color: $secondary-color !important;
+  box-shadow: 0 0 0 0.15rem transparentize($secondary-color, 0.5) !important;
+}
 // Import Bootstrap and its default variables
 @import "../../node_modules/bootstrap/scss/bootstrap";

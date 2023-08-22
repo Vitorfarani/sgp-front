@@ -18,4 +18,9 @@ export const ThemeContext = createContext({
   colorModeSelected: 'dark',
   toggleTheme: () => {},
   callGlobalAlert: () => {},
+  callGlobalDialog: () => new Promise(),
+  handleGlobalLoading: {
+    show: () => {}, 
+    hide: () => {}, 
+  }
 });

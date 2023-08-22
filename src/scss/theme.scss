@@ -1,3 +1,11 @@
 // theme.scss
 $primary-color: #192844;
 $secondary-color: #472774 ;
+//sobrescreve thema do bootstrap
+$theme-colors: (
+  'primary': $primary-color,
+  'secondary': $secondary-color,
+  "danger": #ff4136
+);
+
+@import "../../node_modules/bootstrap/scss/bootstrap.scss";

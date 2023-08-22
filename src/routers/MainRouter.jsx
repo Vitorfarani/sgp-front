@@ -4,38 +4,61 @@ import React, { useCallback } from 'react';
 import { Routes, Route, createBrowserRouter, RouterProvider, BrowserRouter, Navigate, useLocation, Outlet } from 'react-router-dom';
 import { useAuth } from '@/utils/context/AuthProvider';
 import Layout from '../Layout';
-import { 
+import {
   ErrorScreen,
   Home,
   Login,
   Dashboard,
-  Tarefa,
-  Demo
-  } from '@/screens/index';
+  Tarefas,
+  Demo,
+  NotFound,
+  Projeto,
+  Projetos,
+  Tarefa
+} from '@/screens/index';
 import { useTheme } from '@/utils/context/ThemeProvider';
-
+import CadastrarProjeto from '@/screens/Projetos/CadastrarProjeto';
 
 const MainRouter = () => {
   const { isLogged } = useAuth();
+  const location = useLocation();
+console.log(isLogged)
+    
+  const RequireAuth = ({ children }) => {
+    if (!isLogged) {
+      return <Navigate to="/login" state={{ from: location }} replace />;
+    } 
+    return children;
+  }
+
+  
   return (
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="login" element={isLogged ? <Navigate to="/dashboard" /> : <Login />} />
-        <Route
-          path="/"
-          element={<Layout />}>
-              <Route index path="dashboard" element={<Dashboard />} />
-              <Route path="tarefas" element={<Tarefa />} />
-              <Route path="clientes"
-                element={
-                  <Outlet>
-                    <Route path="demo" element={<Demo/>}/>
-                  </Outlet>
-                }/>
-              <Route path="*" element={<Dashboard />} />
-              {/* <Route path="tarefas" element={<Tarefas />} /> */}
-        </Route>
-      </Routes>
+    <Routes>
+      <Route errorElement={<ErrorScreen/>} />
+      <Route path="/" Component={Home} />
+      <Route path="login" element={isLogged ? <Navigate to="/dashboard" /> : <Login />} />
+      <Route
+        path="/"
+       
+        element={
+          <RequireAuth>
+            <Layout />
+          </RequireAuth>}>
+        <Route index path="dashboard" Component={Dashboard} />
+
+        <Route path="tarefas" Component={Tarefas} />
+        <Route path="tarefas/:id" Component={Tarefa}/>
+
+        <Route path="projetos" Component={Projetos}/>
+        <Route path="projetos/cadastrar" Component={CadastrarProjeto}/>
+        <Route path="projetos/editar/:id" Component={Projeto}/>
+
+        <Route path="clientes" />
+        <Route path="clientes/:id"/>
+        <Route path="*" Component={NotFound} />
+        {/* <Route path="tarefas" element={<Tarefas />} /> */}
+      </Route>
+    </Routes>
   );
 };
 

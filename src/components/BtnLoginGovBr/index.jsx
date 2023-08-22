@@ -12,7 +12,7 @@ const BtnLoginGovBr = ({isLoading, onClick}) => {
       </Row>
       <img
         style={{ width: '45%' }}
-        src="https://www3.bcb.gov.br/censo2/img/logo-gov.svg"
+        src="assets/logo-gov.svg"
 
       />
       {isLoading && <Spinner style={{marginLeft: 10, position: 'absolute'}} animation="grow" size="" />}

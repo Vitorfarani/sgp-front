@@ -1,6 +1,11 @@
 export { default as ErrorScreen } from './ErrorScreen/index';
+export { default as NotFound } from './NotFound/index';
 export { default as Login } from './Login/index';
 export { default as Home } from './Home/index';
 export { default as Dashboard } from './Dashboard/index';
-export { default as Tarefa } from './Tarefa/index';
+export { default as Tarefas } from './Tarefas/index.jsx';
+export { default as Tarefa } from './Tarefas/Tarefa.jsx';
+export { default as Projetos } from './Projetos/index.jsx';
+export { default as CadastrarProjeto } from './Projetos/CadastrarProjeto.jsx';
+export { default as Projeto } from './Projetos/Projeto.jsx';
 export { default as Demo } from './Clientes/Demo';

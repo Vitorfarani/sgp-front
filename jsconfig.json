@@ -7,6 +7,7 @@
       "@/constants/*": ["./src/constants/*"],
       "@/routers/*": ["./src/routers/*"],
       "@/screens/*": ["./src/screens/*"],
+      "@/scss/*": ["./src/scss/*"],
       "@/utils/*": ["./src/utils/*"],
       "@/services/*": ["./src/services/*"]
 

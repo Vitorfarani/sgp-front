@@ -4,7 +4,7 @@ import './style.scss';
 
 const Background = ({children}) => {
   return (
-    <Container className="background" fluid >
+    <Container className="background p-3" fluid >
       {children}
       </Container>
 
