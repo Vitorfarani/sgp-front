@@ -15,7 +15,7 @@ export const AuthProvider = ({ children }) => {
   const [verifing, setVerifing] = useState(false);
 
   async function login(user, resultSSO) {
-    // setUser(user)
+    setUser(user)
     resultSSO.loginIn = moment();
     setDataSSO(resultSSO);
     setIsLogged(true)
@@ -71,6 +71,7 @@ export const AuthProvider = ({ children }) => {
       await loadDataSSO()
       .then((token) => {
         if(token) {
+          setUser(MOCK_USER)
           setIsLogged(true)
         }
         setLoaded(true)

@@ -4,7 +4,7 @@ import './style.scss'
 
 const BtnLoginGovBr = ({isLoading, onClick}) => {
   return (
-    <Button variant="primary" className="gov-br-button" onClick={onClick}>
+    <Button variant="secondary" className="gov-br-button" onClick={onClick}>
       <Row>
         <strong>
           Entrar com

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Stack, Col, Row, Breadcrumb } from "react-bootstrap";
 import { Link, useLocation } from "react-router-dom";
 import { CustomDropdown } from "..";
+import './style.scss'
   
 export default function HeaderTitle({title,  optionsButtons, breadcrumbBlockeds = [] }) {
   const location = useLocation();
@@ -24,7 +25,7 @@ export default function HeaderTitle({title,  optionsButtons, breadcrumbBlockeds 
                   {name}
                 </Breadcrumb.Item>
               ) : (
-                <Breadcrumb.Item key={name} active={breadcrumbBlockeds.includes(name)} linkAs={Link} linkProps={{ to: routeTo }}>
+                <Breadcrumb.Item key={name} active={breadcrumbBlockeds.includes(name)} linkAs={Link} linkProps={{ to: routeTo }} className={'breadcrumb-item-custom'}>
                   {name}
                 </Breadcrumb.Item>
               );

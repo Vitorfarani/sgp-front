@@ -1,0 +1,11 @@
+@import '@/scss/theme.scss';
+
+.overlay {
+  display: flex !important;
+  flex-direction: column;
+  justify-content: center !important;
+  z-index: 10 !important;
+  align-items: center !important;
+  background-color:  transparentize( $primary, 0.4) !important;
+}
+

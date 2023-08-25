@@ -37,7 +37,7 @@
   font-size: 14px;
 }
 .sidebarLeft .active {
-    color: lighten($primary-color, 40%) !important;
+    color: lighten($primary, 40%) !important;
 }
 
 .sidebarLeft:is(.closed) {

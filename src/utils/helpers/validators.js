@@ -88,7 +88,7 @@ export function validarCnpj(value) {
 export function isValidDate(str, lang = 'en') {
   if (lang === 'pt-br') {
     if (!/^\d{2}\/\d{2}\/\d{4}$/.test(str)) {
-      return rej('Cnpj inválido')
+      return rej('Data inválida')
     }
     var date = str.split('/')
     var newDate = date['2'] + '-' + date[1] + '-' + date[0]
@@ -96,3 +96,5 @@ export function isValidDate(str, lang = 'en') {
   }
   return !!new Date(str).getTime()
 }
+
+

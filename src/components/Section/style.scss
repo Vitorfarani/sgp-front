@@ -4,10 +4,17 @@
   padding: 30px;
   width: calc(100% - 60px);
 }
+.slim {
+  margin: 0 30px !important;
+  padding: 20px 30px !important;
+}
 @media (max-width: 768px) {
   .section{
-    margin: 0px;
-    padding: 20px;
+    margin: 0px 0 10px 0 !important; 
+    padding: 20px !important;
     width: 100%;
+  }
+  .section div {
+    margin-bottom: 16px !important;
   }
 }

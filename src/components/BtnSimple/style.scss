@@ -1,0 +1,15 @@
+@import '@/scss/theme.scss';
+
+.btn-simple{
+  color: $secondary !important;
+  text-decoration: solid;
+  background-color: transparent;
+  border: 0;
+  font-weight: bold
+}
+
+@include color-mode(dark) {
+  .btn-simple{
+    color: $secondary-light !important;
+  }
+}

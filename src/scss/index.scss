@@ -50,8 +50,28 @@ body {
   background: #555; 
 }
 .form-control:focus{
-  border-color: $secondary-color !important;
-  box-shadow: 0 0 0 0.15rem transparentize($secondary-color, 0.5) !important;
+  border-color: $secondary !important;
+  box-shadow: 0 0 0 0.15rem transparentize($secondary, 0.5) !important;
 }
+
+@include color-mode(dark) {
+  .btn-primary{
+    background-color: $primary-light !important;
+  }
+  .btn-secondary{
+    background-color: $secondary-light !important;
+  }
+  .bg-primary{
+    background-color: $primary-light !important;
+  }
+  .bg-secondary{
+    background-color: $secondary-light !important;
+  }
+}
+
+.form-label {
+  font-weight: 500;
+}
+
 // Import Bootstrap and its default variables
 @import "../../node_modules/bootstrap/scss/bootstrap";

@@ -2,13 +2,13 @@ import axios from "axios";
 import { _delete, _get, _post, _put, fakeFetch } from ".";
 
 const MOCK_clients = [
-  { value: 1, label: 'Cliente A' },
-  { value: 2, label: 'Cliente B' },
-  { value: 3, label: 'Cliente C' }
+  { id: 1, nome: 'Cliente A' },
+  { id: 2, nome: 'Cliente B' },
+  { id: 3, nome: 'Cliente C' }
 ];
 
 export const listClientes = async (params) => {
-  console.log('listClientes')
+  console.log(params)
   return fakeFetch(MOCK_clients);
   let url = `clientes${params}`;
   return _get(url);

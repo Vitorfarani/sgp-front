@@ -1,0 +1,27 @@
+@import '@/scss/theme';
+
+.ql-snow .ql-stroke {
+  stroke: var(--bs-body-color);
+}
+.ql-snow .ql-stroke:hover {
+  stroke: $primary !important;
+}
+.ql-snow .ql-picker.ql-header .ql-picker-label::before, .ql-snow .ql-picker.ql-header .ql-picker-item::before {
+  color:  var(--bs-body-color);
+}
+
+.ql-snow .ql-picker.ql-header .ql-picker-label:hover, .ql-snow .ql-picker.ql-header .ql-picker-item:hover {
+  color:  var(--bs-primary) !important;
+}
+
+.ql-snow .ql-picker-options {
+  background-color:  var(--bs-body-bg);
+}
+.ql-container {
+  height: 200px;
+}
+@include color-mode(dark) {
+  .ql-snow .ql-stroke:hover {
+    stroke: $primary-light !important;
+  }
+}

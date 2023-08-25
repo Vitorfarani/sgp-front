@@ -1,0 +1,14 @@
+@import '@/scss/theme.scss';
+
+.breadcrumb-item-custom a{
+  color: $secondary !important;
+  font-weight: 500;
+  text-decoration: solid;
+}
+
+@include color-mode(dark) {
+  .breadcrumb-item-custom a{
+    color: $secondary-light !important;
+    text-decoration: solid;
+  }
+}

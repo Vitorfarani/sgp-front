@@ -2,16 +2,16 @@ import axios from "axios";
 import { _delete, _get, _post, _put, fakeFetch } from ".";
 
 const MOCK_languages = [
-  { value: 1, label: 'JavaScript', color: '#f0db4f' },   // Amarelo (cor associada ao JS)
-  { value: 2, label: 'Python', color: '#3572A5' },       // Azul (cor associada ao Python)
-  { value: 3, label: 'Java', color: '#5382A1' },         // Azul (cor associada ao Java)
-  { value: 4, label: 'C#', color: '#68217A' },           // Roxo (cor associada ao C#)
-  { value: 5, label: 'PHP', color: '#4F5D95' },          // Azul (cor associada ao PHP)
-  { value: 6, label: 'Ruby', color: '#CC342D' },         // Vermelho (cor associada ao Ruby)
-  { value: 7, label: 'Swift', color: '#FFAC45' },        // Laranja (cor associada ao Swift)
-  { value: 8, label: 'C++', color: '#00599C' },          // Azul (cor associada ao C++)
-  { value: 9, label: 'TypeScript', color: '#3178C6' },   // Azul (cor associada ao TypeScript)
-  { value: 10, label: 'Go', color: '#00ADD8' }           // Azul (cor associada ao Go)
+  { id: 1, nome: 'JavaScript', color: '#f0db4f' },   // Amarelo (cor associada ao JS)
+  { id: 2, nome: 'Python', color: '#3572A5' },       // Azul (cor associada ao Python)
+  { id: 3, nome: 'Java', color: '#5382A1' },         // Azul (cor associada ao Java)
+  { id: 4, nome: 'C#', color: '#68217A' },           // Roxo (cor associada ao C#)
+  { id: 5, nome: 'PHP', color: '#4F5D95' },          // Azul (cor associada ao PHP)
+  { id: 6, nome: 'Ruby', color: '#CC342D' },         // Vermelho (cor associada ao Ruby)
+  { id: 7, nome: 'Swift', color: '#FFAC45' },        // Laranja (cor associada ao Swift)
+  { id: 8, nome: 'C++', color: '#00599C' },          // Azul (cor associada ao C++)
+  { id: 9, nome: 'TypeScript', color: '#3178C6' },   // Azul (cor associada ao TypeScript)
+  { id: 10, nome: 'Go', color: '#00ADD8' }           // Azul (cor associada ao Go)
 ];
 
 

@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
 import { Image, Form } from 'react-bootstrap';
+import { CircleAvatar } from '..';
+import PropTypes from 'prop-types';
+import './style.scss'
 
-const ThumbnailUploader = ({ url, size = 40, readonly, onImageChange, roundedCircle = true }) => {
+const ThumbnailUploader = ({ url, size = 40, readonly, onImageChange, roundedCircle = true, placeholder }) => {
   const [selectedImage, setSelectedImage] = useState(url);
 
   const handleImageChange = (event) => {
@@ -15,19 +18,17 @@ const ThumbnailUploader = ({ url, size = 40, readonly, onImageChange, roundedCir
   };
 
   return (
-    <div style={{ padding: '2px', border: '2px solid grey', width: size + 3, height: size + 3, borderRadius: roundedCircle ? '50%' : null }}>
-      <Image
-        src={selectedImage}
-        alt="Thumbnail"
-        style={{
-          objectFit: 'cover',
-          objectposition: 'center',
-          borderRadius: '50%',
-          width: '100%',
-          height: '100%',
-        }}
-        onClick={() => !readonly && document.getElementById('imageInput').click()}
-      />
+    <div className="rounded-circle" style={{ width: size + 3, height: size + 3, borderRadius: roundedCircle ? '50%' : null }}>
+      {selectedImage ? (
+        <Image
+          src={selectedImage}
+          alt="Thumbnail"
+          className="thumbnail-rounded"
+          onClick={() => !readonly && document.getElementById('imageInput').click()}
+        />
+      ) : (
+        <CircleAvatar name={placeholder} size={'100%'}/>
+      )}
       {!readonly && (
         <>
           <Form.Control
@@ -42,6 +43,15 @@ const ThumbnailUploader = ({ url, size = 40, readonly, onImageChange, roundedCir
       )}
     </div>
   );
+};
+
+ThumbnailUploader.propTypes = {
+  url: PropTypes.string,
+  placeholder: PropTypes.string,
+  size: PropTypes.number,
+  readonly: PropTypes.bool,
+  onImageChange: PropTypes.func,
+  roundedCircle: PropTypes.bool,
 };
 
 export default ThumbnailUploader;

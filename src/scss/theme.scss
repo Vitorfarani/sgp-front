@@ -1,11 +1,18 @@
+// @import "../../node_modules/bootstrap/scss/variables";
 // theme.scss
-$primary-color: #192844;
-$secondary-color: #472774 ;
-//sobrescreve thema do bootstrap
-$theme-colors: (
-  'primary': $primary-color,
-  'secondary': $secondary-color,
-  "danger": #ff4136
-);
+$primary: #192844;
+$secondary: #472774;
 
-@import "../../node_modules/bootstrap/scss/bootstrap.scss";
+
+$primary-light: lighten(#192844, 20%);
+$secondary-light: lighten(#472774, 20%);
+
+
+$theme-colors: (
+  'primary': $primary,
+  'secondary': $secondary,
+  );
+  
+  // $theme-colors: map-merge($theme-colors, $custom-colors);
+  
+  @import "../../node_modules/bootstrap/scss/bootstrap.scss";

@@ -1,4 +1,4 @@
-export function getSelectStyles(multi, size) {
+export function getSelectStyles(multi, size, isInvalid = false) {
   const suffix = size ? `-${size}` : '';
   const multiplicator = multi ? 2 : 1;
   return {
@@ -6,11 +6,12 @@ export function getSelectStyles(multi, size) {
       ...provided,
       backgroundColor: `var(--bs-body-bg)`,
      
-      borderColor: `var(--bs-border-color)`,
+      borderColor: !isInvalid ? `var(--bs-border-color)` : `var(--bs-form-invalid-border-color)` ,
       // borderWidth: "var(--bs-select-border-width)",
       lineHeight: "var(--bs-select-line-height)",
       fontSize: `var(--bs-select-font-size${suffix})`,
       fontWeight: "var(--bs-select-font-weight)",
+      borderRadius: 'var(--bs-border-radius)',
       minHeight: `calc((var(--bs-select-line-height)*var(--bs-select-font-size${suffix})) + (var(--bs-select-padding-y${suffix})*2) + (var(--bs-select-border-width)*2))`,
       ':hover': {
         // borderColor: "var(--bs-select-focus-border-color)",

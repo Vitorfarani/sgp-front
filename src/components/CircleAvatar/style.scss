@@ -1,0 +1,14 @@
+.circle-avatar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: gray;
+  border-radius: 50%;
+  font-size: 18px;
+  color: white;
+}
+
+.initials {
+  text-transform: uppercase;
+  font-size: 50%;
+}

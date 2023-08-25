@@ -11,7 +11,7 @@ import { isMobile } from '@/constants';
 
 const Layout = React.memo(() => {
   const { isLogged } = useAuth();
-  const [isOpenSideBarLeft, setIsOpenSideBarLeft] = useState(!isMobile);
+  const [isOpenSideBarLeft, setIsOpenSideBarLeft] = useState(false);
 
   return (
     <Container fluid >
