@@ -11,7 +11,7 @@ export const createTarefa = async (data) => {
   return _post(url, data);
 }
 
-export const editTarefa = async (id, data) => {
+export const updateTarefa = async (id, data) => {
   let url = `tarefas/${id}`;
   return _put(url, data);
 }

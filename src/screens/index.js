@@ -8,4 +8,5 @@ export { default as Tarefa } from './Tarefas/Tarefa.jsx';
 export { default as Projetos } from './Projetos/index.jsx';
 export { default as CadastrarProjeto } from './Projetos/CadastrarProjeto.jsx';
 export { default as Projeto } from './Projetos/Projeto.jsx';
+export { default as Conhecimentos } from './Conhecimentos/index.jsx';
 export { default as Demo } from './Clientes/Demo';

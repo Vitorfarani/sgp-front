@@ -1,5 +1,5 @@
 
-import { REACT_APP_API_SSO, REACT_APP_CLIENT_ID, REACT_APP_CLIENT_SECRET } from "@/constants/environment";
+import { ENV } from "@/constants/ENV";
 import { getRedirectUrl } from "@/utils/helpers";
 import axios from 'axios';
 import { MOCK_SSO } from "./AuthService";
@@ -13,8 +13,8 @@ export const sendCodeToGov = async (code) => {
     const deepLink = getRedirectUrl()
     const params = []
         params.push('grant_type='+ 'authorization_code');
-        params.push('&client_id='+ REACT_APP_CLIENT_ID);
-        params.push('&client_secret='+ REACT_APP_CLIENT_SECRET);
+        params.push('&client_id='+ ENV.REACT_APP_CLIENT_ID);
+        params.push('&client_secret='+ ENV.REACT_APP_CLIENT_SECRET);
         params.push('&redirect_uri='+ deepLink);
         params.push('&code='+ code);
 
@@ -31,7 +31,7 @@ export const logoutGov = async (data) => {
     const deepLink = getRedirectUrl()
     const params = []
     params.push('?redirect_uri='+ deepLink);
-    let url = `${REACT_APP_API_SSO}/logout${encodeURI(params.join(''))}`
+    let url = `${ENV.REACT_APP_API_SSO}/logout${encodeURI(params.join(''))}`
 }
 
 export function ApiAlertError(error) {

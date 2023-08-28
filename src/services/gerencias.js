@@ -15,8 +15,9 @@ const MOCK_companySectors = [
 ];
 
 
-export const listGerencias = async (params) => {
+export const listGerencias = async (search) => {
   console.log('listGerencias')
+  let params = '?search='+search
   return fakeFetch(MOCK_companySectors);
   let url = `gerencias${params}`;
   return _get(url);
@@ -27,7 +28,7 @@ export const createGerencia = async (data) => {
   return _post(url, data);
 }
 
-export const editGerencia = async (id, data) => {
+export const updateGerencia = async (id, data) => {
   let url = `gerencias/${id}`;
   return _put(url, data);
 }

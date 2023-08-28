@@ -22,7 +22,7 @@ export const createStatus = async (data) => {
   return _post(url, data);
 }
 
-export const editStatus = async (id, data) => {
+export const updateStatus = async (id, data) => {
   let url = `statuses/${id}`;
   return _put(url, data);
 }

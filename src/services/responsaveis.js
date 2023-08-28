@@ -27,7 +27,7 @@ export const createResponsavel = async (data) => {
   return _post(url, data);
 }
 
-export const editResponsavel = async (id, data) => {
+export const updateResponsavel = async (id, data) => {
   let url = `responsaveis/${id}`;
   return _put(url, data);
 }

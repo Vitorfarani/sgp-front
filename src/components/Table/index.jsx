@@ -11,52 +11,46 @@ const Table = ({
   rows,
   filtersState: filters,
   searchPlaceholder,
-  setFiltersState,
+  handleFilters,
   actions,
   children,
   notFoundMessage,
   filtersComponentes,
   isLoading,
 }) => {
-  const updateFilterProperty = (propertyName, newValue) => {
-    setFiltersState((prevUserInfo) => ({
-      ...prevUserInfo,
-      [propertyName]: newValue
-    }));
-  };
 
   const handlePageChange = (newPage) => {
-    updateFilterProperty('page', newPage);
+    handleFilters('page', newPage);
   };
 
   const handleSearchChange = (e) => {
-    updateFilterProperty('search', e.target.value);
+    handleFilters('search', e.target.value);
   };
 
   const handleSort = (column) => {
     if (column.order) {
-      updateFilterProperty('sortedColumn', column.field);
+      handleFilters('sortedColumn', column.field);
       if(column.field == filters.sortedColumn) {
-        updateFilterProperty('sortOrder', filters.sortOrder === 'asc' ? 'desc' : 'asc');
+        handleFilters('sortOrder', filters.sortOrder === 'asc' ? 'desc' : 'asc');
       } else {
-        updateFilterProperty('sortOrder', 'desc');
+        handleFilters('sortOrder', 'desc');
 
       }
     }
   };
   const handleRowSelect = (index) => {
     if (filters.selectedRows.includes(index)) {
-      updateFilterProperty('selectedRows', filters.selectedRows.filter((item) => item !== index));
+      handleFilters('selectedRows', filters.selectedRows.filter((item) => item !== index));
     } else {
-      updateFilterProperty('selectedRows', [...filters.selectedRows, index]);
+      handleFilters('selectedRows', [...filters.selectedRows, index]);
     }
   };
 
   const handleSelectAllRows = () => {
     if (filters.selectedRows.length === rows.length) {
-      updateFilterProperty('selectedRows', []);
+      handleFilters('selectedRows', []);
     } else {
-      updateFilterProperty('selectedRows', rows.map((_, index) => index));
+      handleFilters('selectedRows', rows.map((_, index) => index));
     }
   };
 
@@ -80,7 +74,6 @@ const Table = ({
     <div>
       <Form className="mb-3">
         <Row className='flex-row-reverse'>
-          {filtersComponentes}
           {typeof filters.search !== "undefined" && (
             <Col md={3}>
               <Form.Control
@@ -91,6 +84,7 @@ const Table = ({
               />
             </Col>
           )}
+          {filtersComponentes}
         </Row>
       </Form>
         <TableBootstrap striped hover responsive>
@@ -163,7 +157,7 @@ const Table = ({
                 </td>
               )}
                 {columns.map((column) => (
-                  <td key={column.field}>{renderCellValue(row[column.field])}</td>
+                  <td key={column.field}>{column.piper ? column.piper(row[column.field]) : renderCellValue(row[column.field])}</td>
                 ))}
                 {actions && (
                   <td>
@@ -175,6 +169,7 @@ const Table = ({
           </tbody>
         </TableBootstrap>
       <Stack direction='horizontal' gap={3} >
+        {filters.page && (
         <Pagination style={{ marginBottom: 0 }}>
           <Pagination.Prev
             onClick={() => handlePageChange(filters.page - 1)}
@@ -186,18 +181,21 @@ const Table = ({
             disabled={rows.length < filters.perPage}
           />
         </Pagination>
-        <div className="vr"></div>
-        <Form.Control
-          style={{ width: 60 }}
-          as="select"
-          value={filters.perPage}
-          onChange={(e) => {
-            updateFilterProperty('perPage', Number(e.target.value))
-          }}>
-          <option value={20}>20</option>
-          <option value={50}>50</option>
-          <option value={200}>200</option>
-        </Form.Control>
+        )}
+        {filters.perPage && filters.page &&  <div className="vr"></div>}
+        {filters.perPage && (
+          <Form.Control
+            style={{ width: 60 }}
+            as="select"
+            value={filters.perPage}
+            onChange={(e) => {
+              handleFilters('perPage', Number(e.target.value))
+            }}>
+            <option value={20}>20</option>
+            <option value={50}>50</option>
+            <option value={200}>200</option>
+          </Form.Control>
+        )}
 
       </Stack>
     </div>
@@ -236,7 +234,7 @@ Table.propTypes = {
     sortOrder: PropTypes.string,
     sortedColumn: PropTypes.string
   }).isRequired,
-  setFiltersState: PropTypes.func.isRequired,
+  handleFilters: PropTypes.func.isRequired,
   children: PropTypes.node, // Componentes filhos
   notFoundMessage: PropTypes.string,
   filtersComponentes: PropTypes.node, // Componente para filtros

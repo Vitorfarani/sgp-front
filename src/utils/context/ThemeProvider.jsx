@@ -1,11 +1,11 @@
 
 
 
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, { createContext, useContext, useEffect, useRef, useState } from "react";
 import { useLocalStorage } from "@/utils/hooks/useLocalStorage";
 import { GlobalAlert, LoadingOverLay, ModalDialog } from "@/components/index";
 import { ThemeContext } from "./index";
-import { Modal, Spinner } from "react-bootstrap";
+import { Alert, Modal, Spinner } from "react-bootstrap";
 
 
 export const ThemeProvider = ({ children }) => {
@@ -15,7 +15,7 @@ export const ThemeProvider = ({ children }) => {
   const [promiseDialog, setPromiseDialog] = useState();
   const [isLoading, setIsLoading] = useState(false);
   const [loadingMsg, setLoadingMsg] = useState();
-
+  const dialog = useRef();
   function toggleTheme() {
     let newColorMode = colorModeSelected === "dark" ? "light" : "dark";
     console.log(newColorMode)
@@ -31,13 +31,13 @@ export const ThemeProvider = ({ children }) => {
       throw 'message is required';
     }
   }
-  
+
   async function callGlobalDialog(body) {
     if (Object.keys(body).includes('title')) {
-      console.log(body)
       setDialogProps(body)
+      dialog.current.setData(body.data)
       return new Promise((resolve, reject) => {
-        setPromiseDialog({resolve, reject})
+        setPromiseDialog({ resolve, reject })
       })
     } else {
       return Promise.reject('title is required');
@@ -46,7 +46,7 @@ export const ThemeProvider = ({ children }) => {
   const handleGlobalLoading = {
     show: (msg) => {
       setIsLoading(true)
-      if(msg) {
+      if (msg) {
         setLoadingMsg(msg)
       }
     },
@@ -54,6 +54,13 @@ export const ThemeProvider = ({ children }) => {
       setIsLoading(false)
       setLoadingMsg(undefined)
     }
+  }
+  function closeModalDialog() {
+    setPromiseDialog(null)
+    setDialogProps({ ...modalProps, title: null })
+    setTimeout(() => {
+      setDialogProps({})
+    }, 500);
   }
   useEffect(() => {
     (async () => {
@@ -73,32 +80,32 @@ export const ThemeProvider = ({ children }) => {
       <GlobalAlert
         show={!!modalProps.message}
         onHide={() => {
-          console.log('hide')
-          setModalProps({})
+          setModalProps({ ...modalProps, message: null })
+          setTimeout(() => {
+            setModalProps({})
+          }, 500);
         }}
         modalProps={modalProps} />
-        {/* {!!dialogProps.title && ( */}
-          <ModalDialog
-            show={!!dialogProps.title}
-            onSuccess={(result) => {
-              promiseDialog.resolve(result)
-              setPromiseDialog(null)
-              setDialogProps({})
-            }}
-            onCancel={() => {
-              promiseDialog.reject()
-              setPromiseDialog(null)
-              setDialogProps({})
-            }}
-            onHide={() => {
-              promiseDialog.reject()
-              setPromiseDialog(null)
-              setDialogProps({})
-            }}
-            {...dialogProps}
-          />
-           {isLoading && <LoadingOverLay label={loadingMsg}/>}
-        {/* )} */} 
+      {/* {!!dialogProps.title && ( */}
+      <ModalDialog
+        ref={dialog}
+        show={!!dialogProps.title}
+        onSuccess={(result) => {
+          promiseDialog.resolve(result)
+          closeModalDialog()
+        }}
+        onCancel={() => {
+          promiseDialog.reject()
+          closeModalDialog()
+        }}
+        onHide={() => {
+          promiseDialog.reject()
+          closeModalDialog()
+        }}
+        {...dialogProps}
+      />
+      {isLoading && <LoadingOverLay label={loadingMsg} />}
+      {/* )} */}
     </ThemeContext.Provider>
   );
 }

@@ -1,4 +1,4 @@
-import { HOST } from '@/constants/environment';
+import { ENV } from '@/constants/ENV';
 import moment from 'moment/moment';
 
 export function debounce(func, wait) {
@@ -57,7 +57,7 @@ export function debounce(func, wait) {
 // }
 
 export function getRedirectUrl() {
-  return HOST+'/login'
+  return ENV.HOST+'/login'
 }
 
 export function isExpired(init, expireIn, unit = 'seconds') {

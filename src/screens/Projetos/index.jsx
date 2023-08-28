@@ -10,7 +10,7 @@ import { useDebounce } from "use-debounce";
 
 export default function Projetos() {
   const navigate = useNavigate();
-  const { isLoaded, isLogged } = useAuth();
+  const { user } = useAuth();
   const { callGlobalDialog, handleGlobalLoading } = useTheme();
   const [isLoading, setisLoading] = useState(false);
 
@@ -63,10 +63,10 @@ export default function Projetos() {
       subTitle: 'Tem certeza que deseja excluir o projeto <strong>' + row.nome + '</strong>?',
       forms: [
         {
-          name: 'compra',
-          label: 'compra',
-          placeholder: 'compra',
-        }
+          name: 'trash',
+          label: 'Para excluir digite "excluir projeto"',
+          placeholder: '',
+        },
       ],
       labelSuccess: 'Excluir',
       labelCancel: 'Cancelar',

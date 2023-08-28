@@ -23,7 +23,7 @@ export const createFase = async (data) => {
   return _post(url, data);
 }
 
-export const editFase = async (id, data) => {
+export const updateFase = async (id, data) => {
   let url = `fases/${id}`;
   return _put(url, data);
 }

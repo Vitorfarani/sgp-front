@@ -1,6 +1,4 @@
 
-import { API_URL_AUTH } from '@/constants/environment';
-import axios from 'axios';
 import { httpAuth } from '.';
 
 export const MOCK_SSO = {
@@ -69,15 +67,15 @@ export const firstLoginPersist = async (data) => {
 
 export function ApiAlertError(error) {
     if(![404, 400, 401, 422, 500].includes(error.response.status)){
-        return {title: 'Error', message: 'Servidor em manutenção, tente novamente mais tarde!', color: 'red'}
+        return standartResponseApiError('Servidor em manutenção, tente novamente mais tarde!')
     } else {
         if(error.response.status === 401) {
-            return {title: 'Error', message: 'Usuário inválido.', color: 'red'}
+            return standartResponseApiError('Usuário inválido.')
         }
         if(error.response.data?.exceptionType === 'java.lang.NullPointerException'){
-            return {title: 'Error', message: 'idFuncional não encontrado na base, tente novamente.', color: 'red'}
+            return standartResponseApiError('idFuncional não encontrado na base, tente novamente.')
         }
-        return {title: 'Error', message: error.response.data.error, color: 'red'}
+        return standartResponseApiError(error.response.data.error)
       }
     
 }

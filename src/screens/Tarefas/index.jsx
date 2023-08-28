@@ -1,4 +1,5 @@
-import { Background, HeaderTitle, Section, Table } from "@/components/index";
+import { Background, HeaderTitle, Section, SelectAsync, Table } from "@/components/index";
+import { listGerencias } from "@/services/gerencias";
 import { useAuth } from "@/utils/context/AuthProvider";
 import { useEffect, useState } from "react";
 import { Breadcrumb, Button, Col, Container, Row, Spinner, Stack } from "react-bootstrap";
@@ -8,11 +9,12 @@ import { useDebounce } from "use-debounce";
 
 export default function Tarefas() {
   const navigate = useNavigate();
-  const { isLoaded, isLogged } = useAuth();
+  const { user } = useAuth();
   const [filtersState, setFiltersState] = useState({
     search: '',
     perPage: 20,
     selectedRows: [],
+    gerencia: null,
     page: 1,
     sortedColumn: 'id',
     sortOrder: 'asc',
@@ -50,42 +52,61 @@ export default function Tarefas() {
     { id: 20, name: 'Charlie', age: 28, subn: true },
   ]);
 
-  return (
-    <Background>
-      <HeaderTitle title="Tarefas" optionsButtons={[
-        {
-          label: 'cadastrar',
-          onClick: () => console.log('cadastrar'),
-          icon: FiPlus,
-        },
-        {
-          label: 'Relatório',
-          onClick: () => { },
-          icon: FiPlus,
-        }
-      ]} />
-      <Section>
-        <Table
-          columns={collumns}
-          rows={rows}
-          isLoading={isLoading}
-          filtersState={filtersState}
-          searchPlaceholder="Pesquisar Tarefa"
-          setFiltersState={setFiltersState}
-          actions={[
-            {
-              label: 'Editar',
-              onClick: (row) => console.log(row),
-              icon: FiEdit,
-            },
-            {
-              label: 'Excluir',
-              onClick: (row) => console.log(row),
-              icon: FiTrash,
-            },
-          ]}>
-        </Table>
-      </Section>
-    </Background>
-  );
+  function handleForm(propertyName, newValue) {
+    setFiltersState((prevState) => ({
+      ...prevState,
+      [propertyName]: newValue
+    }));
+  }
+return (
+  <Background>
+    <HeaderTitle title="Tarefas" optionsButtons={[
+      {
+        label: 'cadastrar',
+        onClick: () => console.log('cadastrar'),
+        icon: FiPlus,
+      },
+      // {
+      //   label: 'Relatório',
+      //   onClick: () => { },
+      //   icon: FiPlus,
+      // }
+    ]} />
+    <Section>
+      <Table
+        columns={collumns}
+        rows={rows}
+        isLoading={isLoading}
+        filtersState={filtersState}
+        searchPlaceholder="Pesquisar Tarefa"
+        setFiltersState={setFiltersState}
+        filtersComponentes={[
+          <Col md={3}>
+            {user.roles.includes('ROLE_ADMIN') && (
+              <SelectAsync
+                placeholder="Gerencias"
+                loadOptions={listGerencias}
+                value={filtersState.gerencia}
+                onChange={(gerencia) => handleForm('gerencia', gerencia)}
+              />
+              
+            )}
+          </Col>
+        ]}
+        actions={[
+          {
+            label: 'Editar',
+            onClick: (row) => console.log(row),
+            icon: FiEdit,
+          },
+          {
+            label: 'Excluir',
+            onClick: (row) => console.log(row),
+            icon: FiTrash,
+          },
+        ]}>
+      </Table>
+    </Section>
+  </Background>
+);
 }

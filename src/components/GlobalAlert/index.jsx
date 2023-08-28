@@ -10,6 +10,13 @@ const GlobalAlert = (props) => {
       modal.current.dialog.children[0].children[0].style.borderColor = props.modalProps.color
     }
   }, [props.modalProps.color]);
+  useEffect(() => {
+    if(props.show && props.modalProps.timer) {
+      setTimeout(() => {
+        props.onHide()
+      }, props.modalProps.timer);
+    }
+  }, [props.show])
   
   return (
     <Modal
@@ -26,7 +33,16 @@ const GlobalAlert = (props) => {
       </Modal.Header>
       <Modal.Body>
         <h4 style={props.modalProps.color && {color: props.modalProps.color}} >{props.modalProps.subTitle ?? ''}</h4>
-        <p style={props.modalProps.color && {color: props.modalProps.color}}>
+        {!!props.modalProps?.icon && (
+          <div style={{
+            marginBottom: '20px',
+            display: 'flex',
+            justifyContent: 'center'
+          }}>
+            <props.modalProps.icon size={60} color={props.modalProps.color}/>
+          </div>
+        )}
+        <p style={props.modalProps.color && {color: props.modalProps.color, textAlign: !props.modalProps?.title && 'center'}}>
          {props.modalProps.message}
         </p>
       </Modal.Body>

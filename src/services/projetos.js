@@ -10,7 +10,7 @@ export const createProjeto = async (data) => {
   return _post(url, data);
 }
 
-export const editProjeto = async (id, data) => {
+export const updateProjeto = async (id, data) => {
   let url = `projetos/${id}`;
   return _put(url, data);
 }

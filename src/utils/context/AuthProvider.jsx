@@ -24,7 +24,7 @@ export const AuthProvider = ({ children }) => {
 
   async function logout(clean = false, cleanDetran = false) {
     if (clean) {
-      await logoutGov(dataSSO)
+      // await logoutGov(dataSSO)
       setUser(null)
       setTheme(null)
       setDataSSO(null);

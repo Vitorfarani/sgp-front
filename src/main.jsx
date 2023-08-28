@@ -3,11 +3,15 @@ import ReactDOM from 'react-dom/client'
 import App from './App.jsx'
 import './scss/index.scss';
 import { BrowserRouter as Router } from 'react-router-dom';
-import '@/constants/environment.js'
+import '@/constants/ENV.js'
+import { MODE } from '@/constants/ENV.js';
 
-
-ReactDOM.createRoot(document.getElementById('root')).render(
+const render =  MODE === 'DEV' ? (
   <React.StrictMode>
-      <App />
+    <App />
   </React.StrictMode>
+) : (
+  <App />
 )
+
+ReactDOM.createRoot(document.getElementById('root')).render(render)

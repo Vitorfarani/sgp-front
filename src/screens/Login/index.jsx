@@ -11,7 +11,7 @@ import { useTheme } from '@/utils/context/ThemeProvider';
 
 const Login = () => {
   const {isLogged, cbSubmit} = useAuth();
-  const { callGlobalAlert } = useTheme();
+  const { callGlobalAlert, callGlobalDialog } = useTheme();
   const navigate = useNavigate();
 
   const [isLoading, setIsLoading] = useState(false);
@@ -30,8 +30,8 @@ const Login = () => {
       navigate('/dashboard', {replace: true});
       setIsLoading(false)
     } catch (error) {
-      console.log(error)
       callGlobalAlert(error)
+      callGlobalDialog(error)
       setIsLoading(false)
     }
   }

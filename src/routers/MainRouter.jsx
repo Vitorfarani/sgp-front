@@ -14,7 +14,8 @@ import {
   NotFound,
   Projeto,
   Projetos,
-  Tarefa
+  Tarefa,
+  Conhecimentos
 } from '@/screens/index';
 import { useTheme } from '@/utils/context/ThemeProvider';
 import CadastrarProjeto from '@/screens/Projetos/CadastrarProjeto';
@@ -22,7 +23,6 @@ import CadastrarProjeto from '@/screens/Projetos/CadastrarProjeto';
 const MainRouter = () => {
   const { isLogged } = useAuth();
   const location = useLocation();
-console.log(isLogged)
     
   const RequireAuth = ({ children }) => {
     if (!isLogged) {
@@ -52,6 +52,8 @@ console.log(isLogged)
         <Route path="projetos" Component={Projetos}/>
         <Route path="projetos/cadastrar" Component={CadastrarProjeto}/>
         <Route path="projetos/editar/:id" Component={Projeto}/>
+          
+        <Route path="conhecimentos" Component={Conhecimentos}/>
 
         <Route path="clientes" />
         <Route path="clientes/:id"/>

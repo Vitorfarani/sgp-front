@@ -1,10 +1,12 @@
 import { ToggleDarkMode } from '@/components/index';
+import { useAuth } from '@/utils/context/AuthProvider';
 import React, { useState } from 'react';
 import { Button, Col, Form, Nav, NavDropdown, Navbar, Offcanvas, Row, Stack } from 'react-bootstrap';
 import { useLocation } from 'react-router-dom';
 
 const SidebarRight = ({isOpen, setIsOpenSideBarLeft}) => {
   const location = useLocation()
+  const { logout } = useAuth()
   let pathSplited = location.pathname.split('/');
 
 
@@ -46,6 +48,7 @@ const SidebarRight = ({isOpen, setIsOpenSideBarLeft}) => {
         />
         <Button variant="outline-success">Search</Button>
       </Form>
+      <Button variant="outline-success" onClick={() => logout(true)}>Logout</Button>
     </Offcanvas.Body>
   </Navbar.Offcanvas>
   );

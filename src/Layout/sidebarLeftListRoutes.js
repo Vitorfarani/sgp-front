@@ -1,5 +1,5 @@
 import { FiBarChart, FiBookmark, FiGrid, FiPieChart, FiUsers } from "react-icons/fi";
-import { FaTasks } from "react-icons/fa";
+import { FaArchive, FaBrain, FaTasks } from "react-icons/fa";
 
 export default [
   {
@@ -20,6 +20,13 @@ export default [
     nome: 'Tarefas',
     icon: FaTasks,
     path: 'tarefas',
+    rolesPermited: [],
+    childrens: []
+  },
+  {
+    nome: 'Conhecimentos',
+    icon: FaBrain,
+    path: 'conhecimentos',
     rolesPermited: [],
     childrens: []
   },
