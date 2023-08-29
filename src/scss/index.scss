@@ -73,5 +73,26 @@ body {
   font-weight: 500;
 }
 
+.modal-notify {
+  margin-top: 80dvh !important;
+}
+
+.fade.modal-notify.modal.show {
+  background-color: transparent !important;
+}
+
+.fade.modal-backdrop.show {
+  background-color: transparent !important;
+}
+
+.fade.modal-notify.modal {
+  background-color: transparent !important;
+}
+
+.fade.modal-backdrop {
+  background-color: transparent !important;
+}
+
+
 // Import Bootstrap and its default variables
 @import "../../node_modules/bootstrap/scss/bootstrap";

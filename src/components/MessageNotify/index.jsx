@@ -24,7 +24,6 @@ const MessageNotify = (props) => {
     <Modal
       className='modal-notify'
       ref={modal}
-      transparent={true}
       {...props}
     >
       <Modal.Body
