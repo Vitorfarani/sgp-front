@@ -22,18 +22,15 @@ const MessageNotify = (props) => {
   
   return (
     <Modal
+      className='modal-notify'
       ref={modal}
+      transparent={true}
       {...props}
-      centered
-      style={{
-        backgroundColor: 'rgba(255, 0, 255, 0)',
-        // top: 'calc(100% - 300px)',
-      }}
     >
       <Modal.Body
         style={{
           display: 'flex',
-          flexDirection: 'row'
+          flexDirection: 'row',
         }}
       >
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginRight: 20}}>

@@ -11,6 +11,7 @@ import { Alert, Modal, Spinner } from "react-bootstrap";
 export const ThemeProvider = ({ children }) => {
   const [colorModeSelected, setColorModeSelected, loadColorModeSelected] = useLocalStorage('colorModeSelected', document.querySelector("html").getAttribute("data-bs-theme"));
   const [modalProps, setModalProps] = useState({});
+  const [notifyProps, setNotifyProps] = useState({});
   const [dialogProps, setDialogProps] = useState({});
   const [promiseDialog, setPromiseDialog] = useState();
   const [isLoading, setIsLoading] = useState(false);
@@ -34,8 +35,7 @@ export const ThemeProvider = ({ children }) => {
 
   function callGlobalNotify(body) {
     if (Object.keys(body).includes('message')) {
-      console.log(body)
-      setModalProps(body)
+      setNotifyProps(body)
     } else {
       throw 'message is required';
     }
@@ -115,15 +115,14 @@ export const ThemeProvider = ({ children }) => {
         {...dialogProps}
       />
       <MessageNotify
-        show={!!modalProps.message}
+        show={!!notifyProps.message}
         onHide={() => {
-          setModalProps({ ...modalProps, message: null })
+          setNotifyProps({ ...notifyProps, message: null })
           setTimeout(() => {
-            setModalProps({})
+            setNotifyProps({})
           }, 500);
         }}
-        modalProps={modalProps} 
-      />
+        modalProps={notifyProps} />
       {isLoading && <LoadingOverLay label={loadingMsg} />}
       {/* )} */}
     </ThemeContext.Provider>
