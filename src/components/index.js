@@ -15,6 +15,7 @@ export { default as DatePicker } from './DatePicker';
 export { default as DateInput } from './DateInput';
 export { default as FeedbackError } from './FeedbackError';
 export { default as ModalDialog } from './ModalDialog';
+export { default as MessageNotify } from './MessageNotify';
 export { default as Overlay } from './Overlay';
 export { default as GlobalAlert } from './GlobalAlert';
 export { default as HeaderTitle } from './HeaderTitle';

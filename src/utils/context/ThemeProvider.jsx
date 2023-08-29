@@ -3,7 +3,7 @@
 
 import React, { createContext, useContext, useEffect, useRef, useState } from "react";
 import { useLocalStorage } from "@/utils/hooks/useLocalStorage";
-import { GlobalAlert, LoadingOverLay, ModalDialog } from "@/components/index";
+import { GlobalAlert, LoadingOverLay, ModalDialog, MessageNotify } from "@/components/index";
 import { ThemeContext } from "./index";
 import { Alert, Modal, Spinner } from "react-bootstrap";
 
@@ -24,6 +24,15 @@ export const ThemeProvider = ({ children }) => {
   }
 
   function callGlobalAlert(body) {
+    if (Object.keys(body).includes('message')) {
+      console.log(body)
+      setModalProps(body)
+    } else {
+      throw 'message is required';
+    }
+  }
+
+  function callGlobalNotify(body) {
     if (Object.keys(body).includes('message')) {
       console.log(body)
       setModalProps(body)
@@ -73,6 +82,7 @@ export const ThemeProvider = ({ children }) => {
       colorModeSelected,
       toggleTheme,
       callGlobalAlert,
+      callGlobalNotify,
       callGlobalDialog,
       handleGlobalLoading
     }}>
@@ -103,6 +113,16 @@ export const ThemeProvider = ({ children }) => {
           closeModalDialog()
         }}
         {...dialogProps}
+      />
+      <MessageNotify
+        show={!!modalProps.message}
+        onHide={() => {
+          setModalProps({ ...modalProps, message: null })
+          setTimeout(() => {
+            setModalProps({})
+          }, 500);
+        }}
+        modalProps={modalProps} 
       />
       {isLoading && <LoadingOverLay label={loadingMsg} />}
       {/* )} */}
