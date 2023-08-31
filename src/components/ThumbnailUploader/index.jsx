@@ -27,7 +27,7 @@ const ThumbnailUploader = ({ url, size = 40, readonly, onImageChange, roundedCir
           onClick={() => !readonly && document.getElementById('imageInput').click()}
         />
       ) : (
-        <CircleAvatar name={placeholder} size={'100%'}/>
+        <CircleAvatar name={placeholder} size={'100%'} sm={size < 40}/>
       )}
       {!readonly && (
         <>

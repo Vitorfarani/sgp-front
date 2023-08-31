@@ -43,6 +43,7 @@ const ModalDialog = forwardRef(({
         .then(() => {
           setErrors(true)
           setValidated(true);
+          onSuccess(formData)
 
         })
         .catch((errors) => {

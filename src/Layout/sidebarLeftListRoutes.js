@@ -1,5 +1,5 @@
 import { FiBarChart, FiBookmark, FiGrid, FiPieChart, FiUsers } from "react-icons/fi";
-import { FaArchive, FaBrain, FaTasks } from "react-icons/fa";
+import { FaArchive, FaBrain, FaBuilding, FaTasks } from "react-icons/fa";
 
 export default [
   {
@@ -31,15 +31,16 @@ export default [
     childrens: []
   },
   {
+    nome: 'Empresas',
+    icon: FaBuilding,
+    path: 'empresas',
+    rolesPermited: [],
+    childrens: []
+  },
+  {
     nome: 'Clientes',
     icon: FiUsers,
     path: 'clientes',
-    childrens: [
-      {
-        nome: 'demo',
-        icon: FiBarChart,
-        path: 'demo',
-      }
-    ]
+    childrens: []
   },
 ]

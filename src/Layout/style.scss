@@ -95,3 +95,20 @@
     font-size: 24px !important;
   }
 }
+
+.search-sidebar { 
+  background-color: var(--bs-gray-900) !important;
+  color: var(--bs-gray) !important;
+}
+.search-sidebar::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
+  color: var(--bs-gray) !important;
+  opacity: 1; /* Firefox */
+}
+
+.search-sidebar::-ms-input-placeholder { /* Internet Explorer 10-11 */
+  color: var(--bs-gray) !important;
+}
+
+.search-sidebar::-webkit-input-placeholder { /* Microsoft Edge */
+  color: var(--bs-gray) !important;
+}

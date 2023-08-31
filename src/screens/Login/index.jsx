@@ -4,8 +4,6 @@ import { logInGovBR } from '@/utils/browserSso';
 import { Form, Button, Container, Row, Col, Card } from 'react-bootstrap';
 import './style.scss'
 import { useLocation, useNavigate } from 'react-router-dom';
-import { MOCK_SSO, loginApi } from '@/services/AuthService';
-import { sendCodeToGov } from '@/services/sso';
 import { useAuth } from '@/utils/context/AuthProvider';
 import { useTheme } from '@/utils/context/ThemeProvider';
 
@@ -25,13 +23,13 @@ const Login = () => {
 
   async function sendCodeAndLogin(code) {
     try {
-      let dataSSo = await sendCodeToGov(code);
-      cbSubmit(MOCK_SSO);
+      cbSubmit(code);
       navigate('/dashboard', {replace: true});
       setIsLoading(false)
     } catch (error) {
+      console.log(error)
       callGlobalAlert(error)
-      callGlobalDialog(error)
+      // callGlobalDialog(error)
       setIsLoading(false)
     }
   }

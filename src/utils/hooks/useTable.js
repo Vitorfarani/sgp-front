@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import { buildQueryString } from '../helpers/format';
 import { useTheme } from '../context/ThemeProvider';
 import { useDebounce } from 'use-debounce';
+import { isJson, isObject, isString } from '../helpers/is';
+import { standartResponseApiError } from '@/services/index';
 
 const useTable = (columnsFields, methodlister = (new Promise), initialFiltersValues = {}, callBackTrater) => {
   const [filtersState, setFiltersState] = useState(initialFiltersValues);
@@ -17,7 +19,7 @@ const useTable = (columnsFields, methodlister = (new Promise), initialFiltersVal
       [name]: value
     });
   };
-  const isEmpty = !isTableLoading && rows.length === 0;
+  const isEmpty = !isTableLoading && (rows.length === 0);
 
 
   useEffect(() => {
@@ -34,7 +36,7 @@ const useTable = (columnsFields, methodlister = (new Promise), initialFiltersVal
     methodlister(buildQueryString(debouncedFilters))
       .then((results) => {
         let tratedResuts = [];
-        console.log({ results })
+        if(!isObject(results)) throw standartResponseApiError('Erro de carregamento de dados da API')
         if (!!callBackTrater) {
           tratedResuts = callBackTrater(results)
         } else {

@@ -1,24 +1,25 @@
 
-import { httpAuth } from '.';
+import { httpSgp, standartResponseApiError } from '.';
 
-export const MOCK_SSO = {
-    access_token: 'fake_hash_000000000000000000',
 
+export const loginApi = async (code) => {
+    let url = `login`
+    return httpSgp.post(url, {code: code})
+        .then(response => {
+            localStorage.setItem('toook', response.data.token.access_token)
+            Object.assign(httpSgp.defaults, {
+                headers: { authorization: 'Bearer ' + response.data.token.access_token },
+            });
+            return Promise.resolve(response)
+        })
+        .catch((error) => {
+            return Promise.reject(ApiAlertError(error))
+
+        })
 }
-
-export const MOCK_USER = {
-    id: 1,
-    name: 'Lucas Mota',
-    email: 'lucas.marques@extreme.digital',
-    roles: ['ADMIN', 'DEVELOPER'],
-    
-}
-
-
-export const loginHml = async (idFuncional) => {
-    let url = `/api/degase`
- 
-    return httpAuth.post(url, {"idFuncional": idFuncional, "pass": ""})
+export const me = async () => {
+    let url = `me`
+    return httpSgp.get(url)
         .then(response => {
             return Promise.resolve(response)
         })
@@ -28,34 +29,9 @@ export const loginHml = async (idFuncional) => {
         })
 }
 
-export const loginApi = async (token) => {
-    let url = `/api/degase/loginsso`
-    Object.assign(httpAuth.defaults, {
-        headers: { authorization: 'Bearer ' + token },
-    });
-    return httpAuth.get(url)
-        .then(response => {
-            return Promise.resolve(response)
-        })
-        .catch((error) => {
-            return Promise.reject(ApiAlertError(error))
-
-        })
-}
-export const firstLoginCall = async (data) => {
-    let url = `/api/degase/firstlogin`
-    return httpAuth.post(url, data)
-        .then(response => {
-            return Promise.resolve(response)
-        })
-        .catch((error) => {
-            return Promise.reject(ApiAlertError(error))
-
-        })
-}
-export const firstLoginPersist = async (data) => {
-    let url = `/api/degase/firstlogin`
-    return httpAuth.put(url, data)
+export const logout = async () => {
+    let url = `logout`
+    return httpSgp.post(url)
         .then(response => {
             return Promise.resolve(response)
         })
@@ -70,10 +46,7 @@ export function ApiAlertError(error) {
         return standartResponseApiError('Servidor em manutenção, tente novamente mais tarde!')
     } else {
         if(error.response.status === 401) {
-            return standartResponseApiError('Usuário inválido.')
-        }
-        if(error.response.data?.exceptionType === 'java.lang.NullPointerException'){
-            return standartResponseApiError('idFuncional não encontrado na base, tente novamente.')
+            return standartResponseApiError('Sessão expirada')
         }
         return standartResponseApiError(error.response.data.error)
       }

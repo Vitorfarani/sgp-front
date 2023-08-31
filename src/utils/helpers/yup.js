@@ -23,6 +23,7 @@ export function dateValidation (originalValue) {
 export const yupDateStandart =  Yup.string().test('date', 'Data inválida', dateValidation)
 
 export const yupRequired = (name) => name+' é obrigatório(a)'
+export const yupPhoneRegex = /^((\+[1-9]{1,4}[ -]?)|(\([0-9]{2,3}\)[ -]?)|([0-9]{2,4})[ -]?)*?[0-9]{3,4}[ -]?[0-9]{3,4}$/
 export const yupOptionStandart = (name) => ({
   value: Yup.number().required('ID da '+name+' é obrigatório(a)'),
   label: Yup.string().required('Nome da '+name+' é obrigatório(a)'),

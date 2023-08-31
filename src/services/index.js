@@ -1,8 +1,18 @@
 import { ENV } from "@/constants/ENV";
 import axios from "axios";
 
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function() {
+      navigator.serviceWorker.register('serviceWorker.js', {scope: '/'}).then(function(registration) {
+          console.log('ServiceWorker registration succesful!')
+      }, function(err) {
+          console.log('ServiceWorker registration failed: ', err);
+      });
+  });
+}
+
 export const httpSSO = axios.create({
-  baseURL: ENV.REACT_APP_API_SSO,
+  baseURL: 'oauth',
   timeout: 7000,
   headers: {
       'content-type': 'application/x-www-form-urlencoded',
@@ -10,21 +20,22 @@ export const httpSSO = axios.create({
   }
 });
 
-
-export const httpAuth = axios.create({
-  baseURL: ENV.API_URL_AUTH,
-  timeout: 3000,
-  headers: {
-      'Content-Type': 'application/json',
-      'Accept': '*/*'
-      }
-});
+// export const httpAuth = axios.create({
+//   baseURL: ENV.API_URL_AUTH,
+//   timeout: 3000,
+//   headers: {
+//       'Content-Type': 'application/json',
+//       'Accept': '*/*'
+//       }
+// });
 
 export const httpSgp = axios.create({
-  baseURL: ENV.API_URL,
+  baseURL: ENV.API_URL + ENV.API_VERSION,
   timeout: 7000,
   headers: {
       'accept' : '*/*',
+      'Content-Type': 'application/json',
+      'Authorization': localStorage.getItem('toook') ? 'Bearer ' + localStorage.getItem('toook') : null
   }
 });
 
@@ -58,7 +69,7 @@ export async function _delete(url, data) {
   .catch((response) => Promise.reject(standartResponseApiError(response)))
 }
 
-const standartResponseApiError = (message) => ({title: 'Error', message, color: 'red'});
+export const standartResponseApiError = (message) => ({title: 'Error', message, color: 'red'});
 
 export const fakeFetch = (mock) => {
   return new Promise((resolve) => {

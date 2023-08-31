@@ -1,20 +1,17 @@
 import { Background, HeaderTitle, Section, SelectAsync, Table } from "@/components/index";
 import { getDificuldade } from "@/constants/index";
-import { createConhecimento, deleteConhecimento, listConhecimentos, listConhecimentosClasse, listConhecimentosNivel, showConhecimento, updateConhecimento } from "@/services/conhecimentos";
-import { listGerencias } from "@/services/gerencias";
+import { createCliente, deleteCliente, listClientes, updateCliente } from "@/services/clientes";
 import { useAuth } from "@/utils/context/AuthProvider";
 import { useTheme } from "@/utils/context/ThemeProvider";
-import { formatForm } from "@/utils/helpers/forms";
 import useTable from "@/utils/hooks/useTable";
 import { useEffect, useState } from "react";
-import { Breadcrumb, Button, Col, Container, Row, Spinner, Stack } from "react-bootstrap";
 import { FiCheckCircle, FiEdit, FiPlus, FiTrash } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
-import { useDebounce } from "use-debounce";
-import { conhecimentoSchema } from "./validations";
+import { clienteSchema } from "./validations";
+import InputMask from 'react-input-mask';
 
 const basefilters = {
-  search: '',
+  // search: '',
   // perPage: 20,
   // selectedRows: [],
   // gerencia: null,
@@ -24,21 +21,20 @@ const basefilters = {
 };
 
 const columnsFields = [
-  { field: 'nome', label: 'Nome', order: true, style: { width: 100 } },
-  { field: 'descricao', label: 'Descricão', order: true },
-  { field: 'dificuldade', label: 'Dificuldade', order: true, piper: (field) => getDificuldade(field)},
-  { field: 'conhecimento_classe', label: 'Classe', order: false, piper: (field) =>  !!field && field.nome },
-  { field: 'conhecimento_nivel', label: 'Nível', order: false, piper: (field) => !!field && field.nome },
+  { field: 'nome', label: 'Nome', order: true, style: { width: 300 } },
+  { field: 'email', label: 'Email', order: true },
+  { field: 'telefone', label: 'Telefone', order: true },
+  { field: 'responsavel', label: 'Responsável', order: true },
 ];
+
 const cadastroInitialValue = {
   nome: '',
-  descricao: '',
-  dificuldade: 5,
-  conhecimento_classe: null,
-  conhecimento_nivel: null
+  email: '',
+  telefone: '',
+  responsavel: '',
 };
 
-export default function Conhecimentos() {
+export default function Clientes() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { callGlobalDialog, handleGlobalLoading, callGlobalAlert } = useTheme();
@@ -52,66 +48,50 @@ export default function Conhecimentos() {
     handleChangeFilters,
     resetFilters,
     isEmpty,
-  } = useTable(columnsFields, listConhecimentos, basefilters, (results) => {
-    return results.conhecimentos
+  } = useTable(columnsFields, listClientes, basefilters, (results) => {
+    return results
   });
 
   function callModalCadastro(data = {}) {
     callGlobalDialog({
-      title: 'Novo Conhecimento',
-      yupSchema: conhecimentoSchema,
+      title: 'Novo Cliente',
+      yupSchema: clienteSchema,
       data,
       forms: [
         {
           name: 'nome',
           label: 'Nome',
-          placeholder: 'Javascript , PHP , GIT ...etc',
-        },
-        {
-          name: 'descricao',
-          label: 'Descrição',
           placeholder: '',
         },
         {
-          name: 'dificuldade',
-          label: 'Dificuldade',
-          type: 'select',
-          options: [
-            { value: 0, label: 'Muito Fácil' },
-            { value: 2.5, label: 'Fácil' },
-            { value: 5, label: 'Normal' },
-            { value: 7.5, label: 'Difícil' },
-            { value: 10, label: 'Muito Difícil' },
-          ]
+          name: 'email',
+          label: 'Email',
+          placeholder: '',
         },
         {
-          name: 'conhecimento_classe',
-          label: 'Classe',
-          type: 'selectAsync',
-          loadOptions: listConhecimentosClasse,
-          required: true,
+          name: 'telefone',
+          label: 'Telefone',
+          placeholder: '',
+          as: InputMask,
+          maskChar: null,
+          mask: '(99)99999-9999'
         },
         {
-          name: 'conhecimento_nivel',
-          label: 'Nível',
-          type: 'selectAsync',
-          loadOptions: listConhecimentosNivel
+          name: 'responsavel',
+          label: 'Responsável',
+          placeholder: '',
         },
-
       ],
       labelSucessColor: 'green',
       labelSuccess: 'Salvar',
       labelCancel: 'Cancelar',
     })
-      .then((result) => {
-        return formatForm(result).rebaseIds(['conhecimento_classe', 'conhecimento_nivel'])
-      })
       .then(async (result) => {
         handleGlobalLoading.show()
-        let method = !result.id ? createConhecimento : updateConhecimento;
+        let method = !result.id ? createCliente : updateCliente;
         method(result)
           .then((res) => {
-            callGlobalAlert({ message: res.mensagem, color: 'green', icon: FiCheckCircle, timer: 2000 })
+            callGlobalAlert({ title: '', message: res.mensagem, color: 'green', icon: FiCheckCircle, timer: 2000 })
             load()
             resetFilters()
           })
@@ -121,6 +101,7 @@ export default function Conhecimentos() {
           })
           .finally(handleGlobalLoading.hide)
       })
+      .catch(console.log)
 
   }
   useEffect(() => {
@@ -129,7 +110,7 @@ export default function Conhecimentos() {
 
   return (
     <Background>
-      <HeaderTitle title="Conhecimentos" optionsButtons={[
+      <HeaderTitle title="Clientes" optionsButtons={[
         {
           label: 'Cadastrar',
           onClick: () => callModalCadastro(cadastroInitialValue),
@@ -142,7 +123,7 @@ export default function Conhecimentos() {
           rows={rows}
           isLoading={isTableLoading}
           filtersState={filtersState}
-          searchPlaceholder="Pesquisar Conhecimento"
+          searchPlaceholder="Pesquisar Cliente"
           searchOffiline
           handleFilters={handleChangeFilters}
           actions={[
@@ -151,9 +132,9 @@ export default function Conhecimentos() {
               onClick: (row) => {
                 callModalCadastro(row)
                 // handleGlobalLoading.show()
-                // showConhecimento(row.conhecimento_id)
+                // showCliente(row.cliente_id)
                 //   .then((result) => {
-                //     return formatForm(result).rebaseIdsToObj(['classe_id', 'conhecimento_nivel'])
+                //     return formatForm(result).rebaseIdsToObj(['classe_id', 'cliente_nivel'])
                 //   })
                 //   .then((result) => {
                 //   })
@@ -166,9 +147,9 @@ export default function Conhecimentos() {
               label: 'Excluir',
               onClick: (row) =>{
                  handleGlobalLoading.show()
-                  deleteConhecimento(row.id)
+                  deleteCliente(row.id)
                     .then((result) => {
-                      callGlobalAlert({title: 'Sucesso', message: 'Conhecimento excluido com sucesso', color: 'green'})
+                      callGlobalAlert({title: 'Sucesso', message: 'Cliente excluida com sucesso', color: 'green'})
                     })
                     .catch(callGlobalAlert)
                     .finally(handleGlobalLoading.hide)
