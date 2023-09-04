@@ -1,4 +1,5 @@
-// @import "../../node_modules/bootstrap/scss/variables";
+@import "../../node_modules/bootstrap/scss/functions";
+@import "../../node_modules/bootstrap/scss/variables";
 // theme.scss
 $primary: #192844;
 $secondary: #472774;
@@ -8,11 +9,11 @@ $primary-light: lighten(#192844, 20%);
 $secondary-light: lighten(#472774, 20%);
 
 
-$theme-colors: (
+$custom-colors: (
   'primary': $primary,
   'secondary': $secondary,
-  );
+);
   
-  // $theme-colors: map-merge($theme-colors, $custom-colors);
+$theme-colors: map-merge($theme-colors, $custom-colors);
   
   @import "../../node_modules/bootstrap/scss/bootstrap.scss";

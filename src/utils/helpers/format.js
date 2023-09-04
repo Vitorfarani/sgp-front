@@ -47,9 +47,10 @@ export function pad (v, length = 2, char = '0') {
 export const buildQueryString = (paramsObj) => {
   const queryParams = Object.keys(paramsObj)
     .map((key) => {
+      if(key === "selectedRows") return`${encodeURIComponent(key)}=${encodeURIComponent(paramsObj[key].join(','))}` 
       if(!!paramsObj[key]) return`${encodeURIComponent(key)}=${encodeURIComponent(paramsObj[key])}`
     })
-    .join('&').slice(1);
+    .join('&');
 
   return queryParams ? `?${queryParams}` : '';
 };

@@ -42,8 +42,10 @@ export const logout = async () => {
 }
 
 export function ApiAlertError(error) {
-    if(![404, 400, 401, 422, 500].includes(error.response.status)){
-        return standartResponseApiError('Servidor em manutenção, tente novamente mais tarde!')
+    if(error.code === "ERR_NETWORK") {
+        return standartResponseApiError("Serviço fora do ar, tente novamente mais tarde!")
+    } else if(![500].includes(error.response.status)){
+        return standartResponseApiError('Serviço fora do ar, tente novamente mais tarde!')
     } else {
         if(error.response.status === 401) {
             return standartResponseApiError('Sessão expirada')

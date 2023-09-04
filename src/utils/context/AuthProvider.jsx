@@ -5,6 +5,8 @@ import { logoutGov } from "@/services/sso.js";
 import { useLocalStorage } from "@/utils/hooks/useLocalStorage";
 import { isExpired } from "@/utils/helpers";
 import { AuthContext } from ".";
+import { useTheme } from "./ThemeProvider";
+import { FiInfo } from "react-icons/fi";
 
 
 export const AuthProvider = ({ children }) => {
@@ -14,6 +16,7 @@ export const AuthProvider = ({ children }) => {
   const [hmlMode, sethmlMode] = useState(false);
   const [isLoaded, setLoaded] = useState(false);
   const [verifing, setVerifing] = useState(false);
+  const {callGlobalAlert} = useTheme();
 
   async function login(user) {
     setUser(user)
@@ -40,36 +43,31 @@ export const AuthProvider = ({ children }) => {
     await loginApi(code)
     .then(async (response) => {
         let responseUser = response.data.user
-       
         login(responseUser);
       })
       .catch((error) => {
-        if(error === 'Usuário inválido.') {
+        callGlobalAlert({message: error.message, icon: FiInfo, color: 'red'})
           setDataSSO(null)
           setIsLogged(false)
-          return;
-        }
-        if (!!error) {
-          Alert.alert('Validação', error)
-        }
-        setIsLogged(false)
       })
   }
 
   async function loadLocal() {
     try {
-      me()
-      .then(({data}) => {
-        setUser(data.user)
-        setIsLogged(true)
-      })
-      .catch((error) => {
-        console.log(error)
-      })
-      .finally(()=> {
-        setLoaded(true)
-
-      })
+      if(localStorage.getItem('toook')) {
+        me()
+        .then(({data}) => {
+          setUser(data)
+          setIsLogged(true)
+        })
+        .catch(() => {
+          setIsLogged(false)
+        })
+        .finally(()=> {
+          setLoaded(true)
+  
+        })
+      }
 
     } catch (error) {
 

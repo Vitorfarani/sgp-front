@@ -33,20 +33,20 @@ export const listConhecimentos = async (params) => {
 }
 
 export const createConhecimento = async (data) => {
-  let url = 'conhecimento';
+  let url = 'conhecimento/store';
   return _post(url, data);
 }
 
 export const showConhecimento = async (id) => {
-  let url = `conhecimento/${id}`;
+  let url = `conhecimento/show/${id}`;
   return _get(url);
 }
 export const updateConhecimento = async (data) => {
-  let url = `conhecimento/${data.id}`;
+  let url = `conhecimento/update/${data.id}`;
   return _put(url, data);
 }
 
 export const deleteConhecimento = async (id) => {
-  let url = `conhecimentos/${id}`;
+  let url = `conhecimentos/delete/${id}`;
   return _delete(url);
 }

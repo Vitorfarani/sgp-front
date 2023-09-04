@@ -44,7 +44,9 @@ const useTable = (columnsFields, methodlister = (new Promise), initialFiltersVal
         }
         setRows(tratedResuts);
       })
-      .catch(error => callGlobalAlert(error))
+      .catch(error => {
+        callGlobalAlert(standartResponseApiError('Erro de carregamento de dados da API'))
+      })
       .finally(() => setTableIsLoading(false))
   }
 

@@ -12,15 +12,15 @@ moment.locale('pt-br');
 
 const App = () => {
   return (
-    <AuthProvider>
-      <ThemeProvider>
+    <ThemeProvider>
+      <AuthProvider>
         <BootstrapThemeProvider prefixes={{}}>
           <BrowserRouter>
             <MainRouter />
           </BrowserRouter>
         </BootstrapThemeProvider>
-      </ThemeProvider>
-    </AuthProvider>
+      </AuthProvider>
+    </ThemeProvider>
 
   );
 };
