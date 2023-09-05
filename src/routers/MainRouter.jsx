@@ -40,14 +40,14 @@ const MainRouter = () => {
     <Routes>
       <Route errorElement={<ErrorScreen/>} />
       <Route path="/" Component={Home} />
-      {/* <Route path="login" element={isLogged ? <Navigate to="/dashboard" /> : <Login />} /> */}
+      <Route path="login" element={isLogged ? <Navigate to="/dashboard" /> : <Login />} />
       <Route
         path="/"
         errorElement={<ErrorScreen/>}
         element={
-          // <RequireAuth>
+          <RequireAuth>
             <Layout />
-          // </RequireAuth>
+          </RequireAuth>
         }>
         <Route index path="dashboard" Component={Dashboard} />
 
