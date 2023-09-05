@@ -2,7 +2,6 @@ import { Background, BtnSimple, CustomOffCanvas, DateInput, DatePicker, Feedback
 import { listClientes } from "@/services/clientes";
 import { listConhecimentos } from "@/services/conhecimentos";
 import { listFases } from "@/services/fases";
-import { listResponsaveis } from "@/services/responsaveis";
 import { listStatuses } from "@/services/status";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Badge, Button, Col, Form, Row } from "react-bootstrap";
@@ -17,7 +16,7 @@ import { isNumber } from "@/utils/helpers/is";
 import ListObservacoes from "./components/Observacoes";
 import Tabs from "./components/Tabs";
 import './style.scss'
-import { listGerencias } from "@/services/gerencias";
+import { listSetores } from "@/services/setores";
 
 const MOCK = {
   id: 1,
@@ -31,7 +30,7 @@ const MOCK = {
   fase: null,
   situacao: null,
   linkRepositorio: null,
-  gerencia: null,
+  setor: null,
 }
 
 
@@ -196,11 +195,11 @@ export default function CadastrarProjeto() {
                 <Form.Label column sm="4" >Gerência</Form.Label>
                 <Col sm="8">
                   <SelectAsync
-                    loadOptions={listGerencias}
-                    value={formData.gerencia}
-                    onChange={(gerencia) => handleForm('gerencia', gerencia)}
-                    isInvalid={!!errors.gerencia} />
-                  <FeedbackError error={errors.gerencia} />
+                    loadOptions={listSetores}
+                    value={formData.setor}
+                    onChange={(setor) => handleForm('setor', setor)}
+                    isInvalid={!!errors.setor} />
+                  <FeedbackError error={errors.setor} />
                 </Col>
               </Form.Group>
               <Form.Group as={Row} className="mb-4">

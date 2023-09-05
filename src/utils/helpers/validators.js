@@ -97,4 +97,14 @@ export function isValidDate(str, lang = 'en') {
   return !!new Date(str).getTime()
 }
 
+export  function validateImageFileType(fileName){
+  var idxDot = fileName.lastIndexOf(".") + 1;
+  var extFile = fileName.substr(idxDot, fileName.length).toLowerCase();
+  if (extFile=="jpg" || extFile=="jpeg" || extFile=="png"){
+      return true
+  }else{
+      return false
+  }   
+}
+
 

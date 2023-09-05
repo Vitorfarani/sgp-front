@@ -4,7 +4,8 @@ export function formatForm(formData) {
   const rebaseIds = fieldsToRebase => {
     fieldsToRebase.forEach(field => {
       if (!!state[field]) {
-        state[field] = state[field].id;
+        state[field+'_id'] = state[field].id;
+        delete state[field];
       }
     });
 

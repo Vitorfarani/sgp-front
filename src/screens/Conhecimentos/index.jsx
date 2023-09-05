@@ -1,34 +1,33 @@
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { FiCheckCircle, FiEdit, FiPlus, FiTrash } from "react-icons/fi";
 import { Background, HeaderTitle, Section, SelectAsync, Table } from "@/components/index";
 import { getDificuldade } from "@/constants/index";
-import { createConhecimento, deleteConhecimento, listConhecimentos, listConhecimentosClasse, listConhecimentosNivel, showConhecimento, updateConhecimento } from "@/services/conhecimentos";
-import { listGerencias } from "@/services/gerencias";
+import { createConhecimento, deleteConhecimento, listConhecimentos, updateConhecimento } from "@/services/conhecimentos";
 import { useAuth } from "@/utils/context/AuthProvider";
 import { useTheme } from "@/utils/context/ThemeProvider";
 import { formatForm } from "@/utils/helpers/forms";
 import useTable from "@/utils/hooks/useTable";
-import { useEffect, useState } from "react";
-import { Breadcrumb, Button, Col, Container, Row, Spinner, Stack } from "react-bootstrap";
-import { FiCheckCircle, FiEdit, FiPlus, FiTrash } from "react-icons/fi";
-import { useNavigate } from "react-router-dom";
-import { useDebounce } from "use-debounce";
 import { conhecimentoSchema } from "./validations";
 import { standartResponseApiError } from "@/services/index";
+import { listSimpleConhecimentoClasses } from "@/services/conhecimentoClasse";
+import { listSimpleConhecimentoNivels } from "@/services/conhecimentoNivel";
 
 const basefilters = {
   search: '',
   perPage: 20,
   selectedRows: [],
   page: 1,
-  sortedColumn: 'id',
+  sortedColumn: '',
   sortOrder: 'asc',
 };
 
 const columnsFields = [
-  { field: 'nome', label: 'Nome', order: true, style: { width: 100 } },
-  { field: 'descricao', label: 'Descricão', order: true },
-  { field: 'dificuldade', label: 'Dificuldade', order: true, piper: (field) => getDificuldade(field)},
-  { field: 'conhecimento_classe', label: 'Classe', order: false, piper: (field) =>  !!field && field.nome },
-  { field: 'conhecimento_nivel', label: 'Nível', order: false, piper: (field) => !!field && field.nome },
+  { field: 'nome', label: 'Nome', enabledOrder: true, style: { width: 100 } },
+  { field: 'descricao', label: 'Descricão', enabledOrder: true },
+  { field: 'dificuldade', label: 'Dificuldade', enabledOrder: true, piper: (field) => getDificuldade(field)},
+  { field: 'conhecimento_classe', label: 'Classe', enabledOrder: true, piper: (field) =>  !!field && field.nome },
+  { field: 'conhecimento_nivel', label: 'Nível', enabledOrder: true, piper: (field) => !!field && field.nome },
 ];
 const cadastroInitialValue = {
   nome: '',
@@ -88,14 +87,15 @@ export default function Conhecimentos() {
           name: 'conhecimento_classe',
           label: 'Classe',
           type: 'selectAsync',
-          loadOptions: listConhecimentosClasse,
+          loadOptions: listSimpleConhecimentoClasses,
           required: true,
         },
         {
           name: 'conhecimento_nivel',
           label: 'Nível',
           type: 'selectAsync',
-          loadOptions: listConhecimentosNivel
+          getOptionLabel: (option) => option.grau,
+          loadOptions: listSimpleConhecimentoNivels
         },
 
       ],

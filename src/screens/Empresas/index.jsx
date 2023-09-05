@@ -10,18 +10,18 @@ import { useNavigate } from "react-router-dom";
 import { empresaSchema } from "./validations";
 
 const basefilters = {
-  // search: '',
-  // perPage: 20,
-  // selectedRows: [],
-  // gerencia: null,
-  // page: 1,
-  // sortedColumn: 'id',
-  // sortOrder: 'asc',
+  search: '',
+  perPage: 20,
+  selectedRows: [],
+  setor: null,
+  page: 1,
+  sortedColumn: 'id',
+  sortOrder: 'asc',
 };
 
 const columnsFields = [
-  { field: 'nome', label: 'Nome', order: true, style: { width: 300 } },
-  { field: 'endereco', label: 'Endereço', order: true },
+  { field: 'nome', label: 'Nome', enabledOrder: true, style: { width: 300 } },
+  { field: 'endereco', label: 'Endereço', enabledOrder: true },
 ];
 const cadastroInitialValue = {
   nome: '',
@@ -43,7 +43,7 @@ export default function Empresas() {
     resetFilters,
     isEmpty,
   } = useTable(columnsFields, listEmpresas, basefilters, (results) => {
-    return results
+    return results.data
   });
 
   function callModalCadastro(data = {}) {

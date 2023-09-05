@@ -23,6 +23,7 @@ const Login = () => {
 
   async function sendCodeAndLogin(code) {
     try {
+      setIsLoading(true)
       cbSubmit(code);
       navigate('/dashboard', {replace: true});
       setIsLoading(false)

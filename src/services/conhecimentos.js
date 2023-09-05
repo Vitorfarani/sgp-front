@@ -15,14 +15,10 @@ const MOCK_languages = [
 ];
 
 
-export const listConhecimentosClasse = async (params) => {
-  // return fakeFetch(MOCK_languages);
-  let url = `conhecimento-classe${params}`;
-  return _get(url);
-}
-export const listConhecimentosNivel = async (params) => {
-  // return fakeFetch(MOCK_languages);
-  let url = `conhecimento-nivel${params}`;
+
+
+export const listSimpleConhecimentos = async () => {
+  let url = `conhecimento/simple`;
   return _get(url);
 }
 
@@ -47,6 +43,6 @@ export const updateConhecimento = async (data) => {
 }
 
 export const deleteConhecimento = async (id) => {
-  let url = `conhecimentos/delete/${id}`;
+  let url = `conhecimento/delete/${id}`;
   return _delete(url);
 }

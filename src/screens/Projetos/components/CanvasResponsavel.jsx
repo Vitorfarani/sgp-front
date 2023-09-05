@@ -2,7 +2,7 @@ import React, { forwardRef, useCallback, useImperativeHandle, useRef, useState }
 import { CustomOffCanvas, DateInput, FeedbackError, SelectAsync } from '@/components/index';
 import { Button, Col, Form, Row, Spinner } from 'react-bootstrap';
 import { isSet } from '@/utils/helpers/is';
-import { listResponsaveis } from '@/services/responsaveis';
+import { listColaboradores } from '@/services/colaboradores';
 import { dateValidation, validateSchema } from '@/utils/helpers/yup';
 import { responsavelSchema } from '../validations';
 
@@ -70,7 +70,7 @@ const CanvasResponsavel = forwardRef(({ listParams, onSave, ...props }, ref) => 
             <Form.Label>Responsável</Form.Label>
             <SelectAsync
               placeholder=""
-              loadOptions={() => listResponsaveis(listParams)}
+              loadOptions={() => listColaboradores(listParams)}
               value={formData.responsavel}
               isInvalid={!!errors.responsavel}
               onChange={(responsavel) => handleForm('responsavel', responsavel)} />

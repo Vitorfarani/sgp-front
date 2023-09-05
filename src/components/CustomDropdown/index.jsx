@@ -21,7 +21,7 @@ const CustomDropdown = ({ items, size, param }) => {
 
         <Dropdown.Menu>
           {items.map((item, index) => item.visibled !== false ? (
-            <Dropdown.Item key={index} onClick={() => item.onClick(param)} {...item}>
+            <Dropdown.Item key={index} {...item}  onClick={() => item.onClick(param)}>
               {item.icon && <item.icon className='me-2' />}
               {item.label}
             </Dropdown.Item>
