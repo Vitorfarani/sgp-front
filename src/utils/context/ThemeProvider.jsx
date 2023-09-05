@@ -3,7 +3,7 @@
 
 import React, { createContext, useContext, useEffect, useRef, useState } from "react";
 import { useLocalStorage } from "@/utils/hooks/useLocalStorage";
-import { GlobalAlert, LoadingOverLay, ModalDialog, MessageNotify } from "@/components/index";
+import { GlobalAlert, LoadingOverLay, ModalDialog, Notify } from "@/components/index";
 import { ThemeContext } from "./index";
 import { Alert, Modal, Spinner } from "react-bootstrap";
 
@@ -11,12 +11,13 @@ import { Alert, Modal, Spinner } from "react-bootstrap";
 export const ThemeProvider = ({ children }) => {
   const [colorModeSelected, setColorModeSelected, loadColorModeSelected] = useLocalStorage('colorModeSelected', document.querySelector("html").getAttribute("data-bs-theme"));
   const [modalProps, setModalProps] = useState({});
-  const [notifyProps, setNotifyProps] = useState({});
   const [dialogProps, setDialogProps] = useState({});
   const [promiseDialog, setPromiseDialog] = useState();
   const [isLoading, setIsLoading] = useState(false);
   const [loadingMsg, setLoadingMsg] = useState();
   const dialog = useRef();
+  const notify = useRef();
+
   function toggleTheme() {
     let newColorMode = colorModeSelected === "dark" ? "light" : "dark";
     console.log(newColorMode)
@@ -33,9 +34,10 @@ export const ThemeProvider = ({ children }) => {
     }
   }
 
+  //Example: callGlobalNotify({variant: 'success', message: 'Tarefa foi salva com sucesso', icon: FiCheck, position: 'bottom'})
   function callGlobalNotify(body) {
     if (Object.keys(body).includes('message')) {
-      setNotifyProps(body)
+      notify.current.add(body)
     } else {
       throw 'message is required';
     }
@@ -114,15 +116,7 @@ export const ThemeProvider = ({ children }) => {
         }}
         {...dialogProps}
       />
-      <MessageNotify
-        show={!!notifyProps.message}
-        onHide={() => {
-          setNotifyProps({ ...notifyProps, message: null })
-          setTimeout(() => {
-            setNotifyProps({})
-          }, 500);
-        }}
-        modalProps={notifyProps} />
+      <Notify ref={notify} />
       {isLoading && <LoadingOverLay label={loadingMsg} />}
       {/* )} */}
     </ThemeContext.Provider>

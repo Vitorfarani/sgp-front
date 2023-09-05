@@ -1,0 +1,86 @@
+.u-notifications {
+    position: absolute; /* Para manter o componente fixo na janela de visualização */
+    top: 0;
+    left: 0;
+    pointer-events: none;
+    width: 100%;
+    height: 100%;
+    z-index: 19999; /* Um valor alto de z-index para garantir que o componente fique acima de tudo */
+}
+
+.u-notification-list {
+  pointer-events: none;
+  left: 0;
+  right: 0;
+  margin-bottom: 10px;
+  position: absolute;
+
+  &-center {
+    top: 0;
+  }
+
+  &-top {
+    top: 0;
+  }
+
+  &-bottom {
+    bottom: 0;
+  }
+}
+
+.u-notification {
+  border-radius: 5px;
+  pointer-events: all;
+  display: inline-block;
+  margin: 10px 10px 0;
+  transition: all 1s;
+  z-index: 19500;
+  max-width: 100%;
+  width: fit-content;
+  min-width: 300px;
+
+  &-top-left-enter, &-top-left-leave-to,
+  &-top-enter, &-top-leave-to,
+  &-top-right-enter, &-top-right-leave-to {
+    opacity: 0;
+    transform: translateY(-50px);
+    z-index: (19500 - 1);
+  }
+
+  &-left-enter, &-left-leave-to,
+  &-center-enter, &-center-leave-to,
+  &-right-enter, &-right-leave-to,
+  &-bottom-left-enter, &-bottom-left-leave-to,
+  &-bottom-enter, &-bottom-leave-to,
+  &-bottom-right-enter, &-bottom-right-leave-to {
+    opacity: 0;
+    transform: translateY(50px);
+    z-index: (19500 - 1);
+  }
+
+  &-top-left-leave-active,
+  &-top-leave-active,
+  &-top-right-leave-active,
+  &-left-leave-active,
+  &-center-leave-active,
+  &-right-leave-active,
+  &-bottom-left-leave-active,
+  &-bottom-leave-active,
+  &-bottom-right-leave-active {
+    position: absolute;
+    z-index: (19500 - 1);
+    margin-left: 0;
+    margin-right: 0;
+  }
+
+  &-top-leave-active,
+  &-center-leave-active {
+    top: 0;
+  }
+
+  &-bottom-left-leave-active,
+  &-bottom-leave-active,
+  &-bottom-right-leave-active {
+    bottom: 0;
+  }
+}
