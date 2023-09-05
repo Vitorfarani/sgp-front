@@ -1,4 +1,4 @@
-import { FiBarChart, FiBookmark, FiGrid, FiPieChart, FiUsers } from "react-icons/fi";
+import { FiBarChart, FiBookmark, FiGrid, FiPieChart, FiUsers, FiBriefcase } from "react-icons/fi";
 import { FaArchive, FaBrain, FaBuilding, FaTasks } from "react-icons/fa";
 
 export default [
@@ -41,6 +41,12 @@ export default [
     nome: 'Clientes',
     icon: FiUsers,
     path: 'clientes',
+    childrens: []
+  },
+  {
+    nome: 'Setor',
+    icon: FiBriefcase,
+    path: 'setor',
     childrens: []
   },
 ]

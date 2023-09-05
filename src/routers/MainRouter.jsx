@@ -13,6 +13,7 @@ import {
   NotFound,
   Projeto,
   Projetos,
+  Setor,
   Tarefa,
   Conhecimentos,
   Empresas,
@@ -37,14 +38,15 @@ const MainRouter = () => {
     <Routes>
       <Route errorElement={<ErrorScreen/>} />
       <Route path="/" Component={Home} />
-      <Route path="login" element={isLogged ? <Navigate to="/dashboard" /> : <Login />} />
+      {/* <Route path="login" element={isLogged ? <Navigate to="/dashboard" /> : <Login />} /> */}
       <Route
         path="/"
        
         element={
-          <RequireAuth>
             <Layout />
-          </RequireAuth>}>
+          // <RequireAuth>
+          // </RequireAuth>
+        }>
         <Route index path="dashboard" Component={Dashboard} />
 
         <Route path="tarefas" Component={Tarefas} />
@@ -53,6 +55,8 @@ const MainRouter = () => {
         <Route path="projetos" Component={Projetos}/>
         <Route path="projetos/cadastrar" Component={CadastrarProjeto}/>
         <Route path="projetos/editar/:id" Component={Projeto}/>
+
+        <Route path="setor" Component={Setor}/>
           
         <Route path="conhecimentos" Component={Conhecimentos}/>
         <Route path="empresas" Component={Empresas}/>

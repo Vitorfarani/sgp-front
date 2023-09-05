@@ -10,4 +10,5 @@ export { default as CadastrarProjeto } from './Projetos/CadastrarProjeto.jsx';
 export { default as Projeto } from './Projetos/Projeto.jsx';
 export { default as Conhecimentos } from './Conhecimentos/index.jsx';
 export { default as Clientes } from './Clientes/index.jsx';
+export { default as Setor } from './Setor/index.jsx';
 export { default as Empresas } from './Empresas/index.jsx';
