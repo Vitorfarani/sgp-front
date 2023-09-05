@@ -53,7 +53,7 @@ const Notify = forwardRef((p, ref) => {
       }
 
       const close = () => {
-        // remove(notif);
+        remove(notif);
       };
 
       if (config.actions) {
