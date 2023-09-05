@@ -11,7 +11,6 @@ const MOCK_statuses = [
 
 
 export const listStatuses = async (params) => {
-  console.log('listStatus')
   return fakeFetch(MOCK_statuses);
   let url = `statuses${params}`;
   return _get(url);

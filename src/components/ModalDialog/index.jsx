@@ -7,30 +7,42 @@ import { FeedbackError, SelectAsync } from '..';
 import { validateSchema } from '@/utils/helpers/yup';
 
 const ModalDialog = forwardRef(({
-  title,
-  color,
-  subTitle,
-  forms,
-  labelSuccess,
   onSuccess,
-  labelCancel,
   onCancel,
-  labelSucessColor,
-  yupSchema,
-  data,
+  onHide,
   ...props
 }, ref) => {
   const modal = useRef()
+  const [isShow, setIsShow] = useState(false);
+  const [modalProps, setModalProps] = useState({});
   const [formData, setFormData] = useState({});
   const [validated, setValidated] = useState(false);
   const [errors, setErrors] = useState({});
 
+  function hide() {
+    setIsShow(false)
+    setErrors(false)
+    setValidated(false);
+    setTimeout(() => {
+      setModalProps({})
+    }, 400);
+    onHide()
+  }
+
+  function show({data, ...params}) {
+    if(params.forms) params.forms = params.forms.map(f => {f.id = self.crypto.randomUUID(); return f})
+      setModalProps(params)
+      setFormData(data)
+      setIsShow(true)
+  }
+
   useImperativeHandle(ref, () => ({
-    setData: (data) => setFormData(data)
+    show,
+    hide
   }));
 
   function submit() {
-    if (!!forms) {
+    if (!!modalProps.forms) {
       document.getElementById('btn-submit-hided').click();
     } else {
       onSuccess()
@@ -38,12 +50,24 @@ const ModalDialog = forwardRef(({
   }
 
   function onSubmited(event) {
-    if (!!yupSchema) {
-      validateSchema(yupSchema, formData)
+    if (!!modalProps.yupSchema) {
+      validateSchema(modalProps.yupSchema, formData)
         .then(() => {
           setErrors(true)
           setValidated(true);
-          onSuccess(formData)
+          if(modalProps.method) {
+              modalProps.afterSubmit(formData)
+              .then((res) => {
+
+                onSuccess(formData)
+              })
+              .catch((err) => {
+                console.log(err)
+              })
+          } else {
+            onSuccess(formData)
+          }
+          
 
         })
         .catch((errors) => {
@@ -63,41 +87,34 @@ const ModalDialog = forwardRef(({
 
 
   useEffect(() => {
-    if (!!modal.current?.dialog && color) {
-      modal.current.dialog.children[0].children[0].style.borderColor = color
+    if (!!modal.current?.dialog && modalProps.color) {
+      modal.current.dialog.children[0].children[0].style.borderColor = modalProps.color
     }
-  }, [color]);
+  }, [modalProps.color]);
 
-  useEffect(() => {
-    console.log(formData)
-    if (!props.show) {
-      setFormData({})
-      setErrors(false)
-      setValidated(false);
-    }
-  }, [props.show]);
 
   return (
     <Modal
       ref={modal}
-      {...props}
+      show={isShow}
+      onHide={() => hide()}
       size=""
       aria-labelledby="contained-modal-title-vcenter"
       centered
     >
       <Modal.Header closeButton style={{ border: 0 }}>
-        <Modal.Title id="contained-modal-title-vcenter" style={color && { color: color }}>
-          {title}
+        <Modal.Title id="contained-modal-title-vcenter" style={modalProps.color && { color: modalProps.color }}>
+          {modalProps.title}
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <span dangerouslySetInnerHTML={{ __html: subTitle ?? '' }} ></span>
-        {!!forms && (
-          <Form id="formModalDialog" autoComplete="off" noValidate={!!yupSchema} validated={validated} onSubmit={onSubmited} style={{ marginTop: 20 }}>
-            {forms.map((form, i) => (
+        <span dangerouslySetInnerHTML={{ __html: modalProps.subTitle ?? '' }} ></span>
+        {!!modalProps.forms && (
+          <Form id="formModalDialog" autoComplete="off" noValidate={!!modalProps.yupSchema} validated={validated} onSubmit={onSubmited} style={{ marginTop: 20 }}>
+            {modalProps.forms.map((form, i) => (
               <>
                 {!['select', 'selectAsync'].includes(form.type) && (
-                  <Form.Group key={i} className="mb-4" controlId={form.name}>
+                  <Form.Group key={form.id} className="mb-4" controlId={form.id}>
                     <Form.Label><strong> {form.label} </strong></Form.Label>
                     <Form.Control
                       value={formData[form.name]}
@@ -117,7 +134,7 @@ const ModalDialog = forwardRef(({
                   </Form.Group>
                 )}
                 {form.type === 'select' && (
-                  <Form.Group key={i} className="mb-4" controlId={form.name}>
+                  <Form.Group key={form.id} className="mb-4" controlId={form.id}>
                     <Form.Label><strong> {form.label} </strong></Form.Label>
                     <Form.Select
                       value={formData[form.name]}
@@ -141,7 +158,7 @@ const ModalDialog = forwardRef(({
                   </Form.Group>
                 )}
                 {form.type === 'selectAsync' && (
-                  <Form.Group key={i} className="mb-4" controlId={form.name}>
+                  <Form.Group key={form.id} className="mb-4" controlId={form.id}>
                     <Form.Label><strong> {form.label} </strong></Form.Label>
                     <SelectAsync
                       value={formData[form.name]}
@@ -164,11 +181,11 @@ const ModalDialog = forwardRef(({
       </Modal.Body>
       <Modal.Footer>
         <Button variant="default" type="button" onClick={onCancel}>
-          {labelCancel ?? 'Cancelar'}
+          {modalProps.labelCancel ?? 'Cancelar'}
 
         </Button>
-        <Button variant="primary" type="button" style={{ backgroundColor: labelSucessColor ?? color }} onClick={submit}>
-          {labelSuccess ?? 'Salvar'}
+        <Button variant="primary" type="button" style={{ backgroundColor: modalProps.labelSucessColor ?? modalProps.color }} onClick={submit}>
+          {modalProps.labelSuccess ?? 'Salvar'}
         </Button>
       </Modal.Footer>
     </Modal>

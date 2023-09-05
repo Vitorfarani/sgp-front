@@ -1,11 +1,13 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { buildQueryString } from '../helpers/format';
 import { useTheme } from '../context/ThemeProvider';
 import { useDebounce } from 'use-debounce';
 import { isJson, isObject, isString } from '../helpers/is';
 import { standartResponseApiError } from '@/services/index';
+import { error } from 'highcharts';
 
 const useTable = (columnsFields, methodlister = (new Promise), initialFiltersValues = {}, callBackTrater) => {
+  const [isLoaded, setIsLoaded] = useState(false);
   const [filtersState, setFiltersState] = useState(initialFiltersValues);
   const [isTableLoading, setTableIsLoading] = useState(false);
   const [columns, setColumns] = useState(columnsFields);
@@ -13,17 +15,22 @@ const useTable = (columnsFields, methodlister = (new Promise), initialFiltersVal
   const { callGlobalAlert } = useTheme();
   const [debouncedFilters] = useDebounce(filtersState, 500);
 
-  const handleChangeFilters = (name, value) => {
-    setFiltersState({
-      ...filtersState,
-      [name]: value
+  const handleChangeFilters = useCallback((name, value) => {
+    setFiltersState((prevFiltersState) => {
+      return {
+        ...prevFiltersState,
+        [name]: value,
+      };
     });
-  };
-  const isEmpty = !isTableLoading && (rows.length === 0);
+  },[]);
+  const isEmpty = useMemo(() => !isTableLoading && !rows.length, [isTableLoading, rows]);
+  // const isEmpty = () => !isTableLoading && !rows.length;
 
-
+console.log(filtersState)
   useEffect(() => {
-    load()
+    if(isLoaded) {
+      load()
+    }
   }, [debouncedFilters]);
 
   const resetFilters = () => {
@@ -42,12 +49,14 @@ const useTable = (columnsFields, methodlister = (new Promise), initialFiltersVal
         } else {
           tratedResuts = results
         }
+        console.log(tratedResuts)
         setRows(tratedResuts);
       })
-      .catch(error => {
-        callGlobalAlert(standartResponseApiError('Erro de carregamento de dados da API'))
+      .catch(callGlobalAlert)
+      .finally(() => {
+        setTableIsLoading(false)
+        setIsLoaded(true)
       })
-      .finally(() => setTableIsLoading(false))
   }
 
   return {

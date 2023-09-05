@@ -6,17 +6,16 @@ import { useLocalStorage } from "@/utils/hooks/useLocalStorage";
 import { GlobalAlert, LoadingOverLay, ModalDialog } from "@/components/index";
 import { ThemeContext } from "./index";
 import { Alert, Modal, Spinner } from "react-bootstrap";
-import { isString } from "../helpers/is";
 
 
 export const ThemeProvider = memo(({ children }) => {
   const [colorModeSelected, setColorModeSelected, loadColorModeSelected] = useLocalStorage('colorModeSelected', document.querySelector("html").getAttribute("data-bs-theme"));
+  const [modalProps, setModalProps] = useState({});
+  const [dialogProps, setDialogProps] = useState({});
   const [promiseDialog, setPromiseDialog] = useState();
   const [isLoading, setIsLoading] = useState(false);
   const [loadingMsg, setLoadingMsg] = useState();
   const dialog = useRef();
-  const globalAlertRef = useRef();
-
   function toggleTheme() {
     let newColorMode = colorModeSelected === "dark" ? "light" : "dark";
     console.log(newColorMode)
@@ -25,9 +24,9 @@ export const ThemeProvider = memo(({ children }) => {
   }
 
   function callGlobalAlert(body) {
-    console.log(body)
-    if (Object.keys(body).includes('message') && isString(body.message)) {
-      globalAlertRef.current.show(body)
+    if (Object.keys(body).includes('message')) {
+      console.log(body)
+      setModalProps(body)
     } else {
       throw 'message is required';
     }
@@ -35,7 +34,8 @@ export const ThemeProvider = memo(({ children }) => {
 
   async function callGlobalDialog(body) {
     if (Object.keys(body).includes('title')) {
-      dialog.current.show(body)
+      setDialogProps(body)
+      dialog.current.setData(body.data)
       return new Promise((resolve, reject) => {
         setPromiseDialog({ resolve, reject })
       })
@@ -43,12 +43,6 @@ export const ThemeProvider = memo(({ children }) => {
       return Promise.reject('title is required');
     }
   }
-  
-  // function closeModalDialog() {
-  //   setPromiseDialog(null)
-  //   dialog.current.hide()
-  // }
-
   const handleGlobalLoading = {
     show: (msg) => {
       setIsLoading(true)
@@ -61,7 +55,13 @@ export const ThemeProvider = memo(({ children }) => {
       setLoadingMsg(undefined)
     }
   }
-  
+  function closeModalDialog() {
+    setPromiseDialog(null)
+    setDialogProps({ ...modalProps, title: null })
+    setTimeout(() => {
+      setDialogProps({})
+    }, 500);
+  }
   useEffect(() => {
     (async () => {
       loadColorModeSelected()
@@ -77,12 +77,33 @@ export const ThemeProvider = memo(({ children }) => {
       handleGlobalLoading
     }}>
       {children}
-      <GlobalAlert ref={globalAlertRef} />
+      <GlobalAlert
+        show={!!modalProps.message}
+        onHide={() => {
+          setModalProps({ ...modalProps, message: null })
+          setTimeout(() => {
+            setModalProps({})
+          }, 500);
+        }}
+        modalProps={modalProps} />
+      {/* {!!dialogProps.title && ( */}
       <ModalDialog
         ref={dialog}
-        onSuccess={(results) => promiseDialog.resolve(results)}
-        onCancel={() => promiseDialog.reject()}
-        onHide={() => promiseDialog.reject()}/>
+        show={!!dialogProps.title}
+        onSuccess={(result) => {
+          promiseDialog.resolve(result)
+          closeModalDialog()
+        }}
+        onCancel={() => {
+          promiseDialog.reject()
+          closeModalDialog()
+        }}
+        onHide={() => {
+          promiseDialog.reject()
+          closeModalDialog()
+        }}
+        {...dialogProps}
+      />
       {isLoading && <LoadingOverLay label={loadingMsg} />}
       {/* )} */}
     </ThemeContext.Provider>
