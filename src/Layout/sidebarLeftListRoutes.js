@@ -10,19 +10,19 @@ export default [
     childrens: []
   },
   {
+    nome: 'Colaboradores',
+    icon: FiUsers,
+    path: 'colaborador',
+    childrens: []
+  },
+  {
     nome: 'Projetos',
     icon: FiGrid,
     path: 'projetos',
     rolesPermited: [],
     childrens: []
   },
-  {
-    nome: 'Tarefas',
-    icon: FaTasks,
-    path: 'tarefas',
-    rolesPermited: [],
-    childrens: []
-  },
+
   {
     nome: 'Conhecimentos',
     icon: FaBrain,
@@ -43,4 +43,5 @@ export default [
     path: 'clientes',
     childrens: []
   },
+ 
 ]

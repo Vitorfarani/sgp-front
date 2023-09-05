@@ -1,15 +1,6 @@
 import { ENV } from "@/constants/ENV";
+import { getStatusMessage } from "@/utils/helpers/httpHelpers";
 import axios from "axios";
-
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', function() {
-      navigator.serviceWorker.register('serviceWorker.js', {scope: '/'}).then(function(registration) {
-          console.log('ServiceWorker registration succesful!')
-      }, function(err) {
-          console.log('ServiceWorker registration failed: ', err);
-      });
-  });
-}
 
 export const httpSSO = axios.create({
   baseURL: 'oauth',
@@ -42,35 +33,64 @@ export const httpSgp = axios.create({
 export async function _get(url) {
   return httpSgp.get(url)
   .then(({data}) =>  Promise.resolve(data))
-  .catch((response) => Promise.reject(standartResponseApiError(response)))
+  .catch((response) => Promise.reject(axiosError(response)))
 }
 export async function _post(url, data) {
   return httpSgp.post(url, data)
   .then(({data}) =>  Promise.resolve(data))
   .catch((response) => {
-    console.log(response)
-    Promise.reject(standartResponseApiError(response))
+    Promise.reject(axiosError(response))
   })
 }
 
 export async function _put(url, data) {
   return httpSgp.put(url, data)
   .then(({data}) =>  Promise.resolve(data))
-  .catch((response) => Promise.reject(standartResponseApiError(response)))
+  .catch((response) => Promise.reject(axiosError(response)))
 }
 export async function _patch(url, data) {
   return httpSgp.patch(url, data)
   .then(({data}) =>  Promise.resolve(data))
-  .catch((response) => Promise.reject(standartResponseApiError(response)))
+  .catch((response) => Promise.reject(axiosError(response)))
 }
 export async function _delete(url, data) {
   return httpSgp.delete(url, data)
   .then(({data}) =>  Promise.resolve(data))
-  .catch((response) => Promise.reject(standartResponseApiError(response)))
+  .catch((response) => Promise.reject(axiosError(response)))
 }
 
-export const standartResponseApiError = (message) => ({title: 'Error', message, color: 'red'});
+export const standartResponseApiError = (message) => ({title: 'Error', message, color: 'var(--bs-danger)'});
 
+export const axiosError = (error) => {
+  if (axios.isAxiosError(error)) {
+    if (error.response) {
+      return {
+        title: getStatusMessage(error.response.status),
+        subtitle:  error.response.message,
+        message:  error.message,
+        color: 'var(--bs-danger)'
+      }
+    } else {
+      return standartResponseApiError('Erro durante a solicitação: '+ error.message);
+    }
+} else {
+    const confirmResult = confirm('Erro inexperado no front, Deseja enviar um e-mail com o erro para o suporte?');
+
+    if (confirmResult) {
+        // Criar um link "mailto" com a mensagem de retorno
+        const email = '';
+        const assunto = 'Erro no SGP-Front';
+        const corpoEmail = `Ocorreu um erro na aplicação:\n\n${error.message}`;
+
+        const mailtoLink = `mailto:${email}?subject=${encodeURIComponent(assunto)}&body=${encodeURIComponent(corpoEmail)}`;
+
+        // Abra o cliente de e-mail padrão com a mensagem de erro
+        window.location.href = mailtoLink;
+    }
+    return standartResponseApiError(error.message);
+
+   }
+}
 export const fakeFetch = (mock) => {
   return new Promise((resolve) => {
     setTimeout(() => {

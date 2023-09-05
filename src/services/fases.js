@@ -12,7 +12,6 @@ const MOCK_productPhases = [
 
 
 export const listFases = async (params) => {
-  console.log('listFases')
   return fakeFetch(MOCK_productPhases);
   let url = `fases${params}`;
   return _get(url);

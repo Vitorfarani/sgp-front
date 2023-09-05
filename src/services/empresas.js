@@ -1,28 +1,29 @@
 import axios from "axios";
 import { _delete, _get, _post, _put, fakeFetch } from ".";
 
+export const listSimpleEmpresas = async () => {
+  let url = `empresa/simple`;
+  return _get(url);
+}
 export const listEmpresas = async (params) => {
-  // return fakeFetch(MOCK_languages);
   let url = `empresa${params}`;
   return _get(url);
 }
-
 export const createEmpresa = async (data) => {
-  console.log('createEmpresa')
-  let url = 'empresa';
+  let url = 'empresa/store';
   return _post(url, data);
 }
 
 export const showEmpresa = async (id) => {
-  let url = `Empresa/${id}`;
+  let url = `empresa/show/${id}`;
   return _get(url);
 }
 export const updateEmpresa = async (data) => {
-  let url = `empresa/${data.id}`;
+  let url = `empresa/update/${data.id}`;
   return _put(url, data);
 }
 
 export const deleteEmpresa = async (id) => {
-  let url = `empresas/${id}`;
+  let url = `empresa/delete/${id}`;
   return _delete(url);
 }

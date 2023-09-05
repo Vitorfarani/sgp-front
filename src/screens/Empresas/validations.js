@@ -16,5 +16,5 @@ export const empresaSchema = Yup.object().shape({
 //   fase: yupOptionStandart(('Fase')),
 //   situacao: yupOptionStandart('Status'),
 //   linkRepositorio: Yup.string(),
-//   gerencia: yupOptionStandart('Gerencia'),
+//   setor: yupOptionStandart('Gerencia'),
 // });

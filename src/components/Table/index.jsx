@@ -28,7 +28,7 @@ const Table = ({
   };
 
   const handleSort = (column) => {
-    if (column.order) {
+    if (column.enabledOrder) {
       handleFilters('sortedColumn', column.field);
       if(column.field == filters.sortedColumn) {
         handleFilters('sortOrder', filters.sortOrder === 'asc' ? 'desc' : 'asc');
@@ -57,7 +57,7 @@ const Table = ({
 
   const SortComponent = ({column}) => {
     if(!filters.sortedColumn || !filters.sortOrder ) return null;
-    return (filters.sortedColumn === column.field) && !!column.order ? 
+    return (filters.sortedColumn === column.field) && !!column.enabledOrder ? 
       filters.sortOrder === 'asc' ? <FiChevronUp className={`ms-1`} /> : <FiChevronDown className={`ms-1`} />
      : null;
   }
@@ -103,7 +103,7 @@ const Table = ({
                 <th
                   key={column.field}
                   onClick={() => handleSort(column)}
-                  style={{ cursor: column.order ? 'pointer' : 'default' }}
+                  style={{ cursor: column.enabledOrder ? 'pointer' : 'default' }}
                 >
                   {column.label}
                   <SortComponent column={column}/>
@@ -130,7 +130,7 @@ const Table = ({
             {isLoading && !rows?.length &&
               [...Array(3)].map((_, index) => (
                 <tr key={index + 'plac'}>
-                  <td></td>
+                  {!!filters.selectedRows && <td></td>}
                   {columns.map((_, index2) => (
                     <td key={index + 'cl' + index2}>
                       <Placeholder as="p" animation="glow">
@@ -209,7 +209,7 @@ Table.propTypes = {
     PropTypes.shape({
       field: PropTypes.string.isRequired,
       label: PropTypes.string.isRequired,
-      order: PropTypes.bool.isRequired,
+      enabledOrder: PropTypes.bool,
       // Outras propriedades específicas das colunas
     })
   ).isRequired,

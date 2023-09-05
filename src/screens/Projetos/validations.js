@@ -16,7 +16,7 @@ export const projetoSchema = Yup.object().shape({
   fase: Yup.object().nonNullable(yupRequired('Fase')).shape(yupOptionStandart('Fase')),
   situacao: Yup.object().nonNullable(yupRequired('Status')).shape(yupOptionStandart('Status')),
   linkRepositorio: Yup.string(),
-  gerencia: Yup.object().nonNullable(yupRequired('Gerencia')).shape(yupOptionStandart('Gerencia')),
+  setor: Yup.object().nonNullable(yupRequired('Gerencia')).shape(yupOptionStandart('Gerencia')),
 });
 
 // export const projetoSchema = Yup.object().shape({
@@ -28,5 +28,5 @@ export const projetoSchema = Yup.object().shape({
 //   fase: yupOptionStandart(('Fase')),
 //   situacao: yupOptionStandart('Status'),
 //   linkRepositorio: Yup.string(),
-//   gerencia: yupOptionStandart('Gerencia'),
+//   setor: yupOptionStandart('Gerencia'),
 // });

@@ -38,11 +38,14 @@ export function getSelectStyles(multi, size, isInvalid = false) {
       ...provided,
       color: `var(--bs-body-color)`,
       backgroundColor: `var(--bs-body-bg)`,
+      borderColor: `var(--bs-body-bg)`,
       // margin: `calc(var(--bs-select-padding-y${suffix})/2) calc(var(--bs-select-padding-x${suffix})/2)`,
     }),
-    // menu: ({ marginTop, ...provided }, state) => ({
-    //   ...provided
-    // }),
+    menu: ({ marginTop, ...provided }, state) => ({
+      ...provided,
+      backgroundColor: `var(--bs-body-bg)`,
+
+    }),
     // multiValue: (provided, state) => ({
     //   ...provided,
     //   margin: `calc(var(--bs-select-padding-y${suffix})/2) calc(var(--bs-select-padding-x${suffix})/2)`,
