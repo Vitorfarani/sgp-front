@@ -1,6 +1,6 @@
 import { Background, HeaderTitle, Section, SelectAsync, Table } from "@/components/index";
 import { getDificuldade } from "@/constants/index";
-import { createSetor, deleteSetor, listSetores, updateSetor } from "@/services/clientes";
+import { createSetor, deleteSetor, listSetores, updateSetor } from "@/services/setores";
 import { useAuth } from "@/utils/context/AuthProvider";
 import { useTheme } from "@/utils/context/ThemeProvider";
 import useTable from "@/utils/hooks/useTable";
@@ -8,7 +8,8 @@ import { useEffect, useState } from "react";
 import { FiCheckCircle, FiEdit, FiPlus, FiTrash } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import { setorSchema } from "./validations";
-import InputMask from 'react-input-mask';
+import { listSimpleSetores } from "@/services/setores";
+import { listSimpleColaboradores } from "@/services/colaboradores";
 
 const basefilters = {
   // search: '',
@@ -22,16 +23,16 @@ const basefilters = {
 
 const columnsFields = [
   { field: 'nome', label: 'Nome', order: true, style: { width: 300 } },
-  { field: 'email', label: 'Email', order: true },
-  { field: 'telefone', label: 'Telefone', order: true },
-  { field: 'responsavel', label: 'Responsável', order: true },
+  { field: 'sigla', label: 'Sigla', order: true },
+  { field: 'responsavel_list', label: 'Responsável', enabledOrder: true, piper: (field) => !!field && field.nome },
+  { field: 'setor_list', label: 'Subordinação', enabledOrder: true, piper: (field) => !!field && field.nome },
 ];
 
 const cadastroInitialValue = {
   nome: '',
-  email: '',
-  telefone: '',
-  responsavel: '',
+  sigla: '',
+  responsavel_list: '',
+  setor_list: '',
 };
 
 export default function Setor() {
@@ -64,22 +65,21 @@ export default function Setor() {
           placeholder: '',
         },
         {
-          name: 'email',
-          label: 'Email',
+          name: 'sigla',
+          label: 'Sigla',
           placeholder: '',
         },
         {
-          name: 'telefone',
-          label: 'Telefone',
-          placeholder: '',
-          as: InputMask,
-          maskChar: null,
-          mask: '(99)99999-9999'
-        },
-        {
-          name: 'responsavel',
+          name: 'responsavel_list',
           label: 'Responsável',
-          placeholder: '',
+          type: 'selectAsync',
+          loadOptions: listSimpleColaboradores
+        },
+        {
+          name: 'setor_list',
+          label: 'Subordinação',
+          type: 'selectAsync',
+          loadOptions: listSimpleSetores
         },
       ],
       labelSucessColor: 'green',
@@ -131,28 +131,19 @@ export default function Setor() {
               label: 'Editar',
               onClick: (row) => {
                 callModalCadastro(row)
-                // handleGlobalLoading.show()
-                // showCliente(row.cliente_id)
-                //   .then((result) => {
-                //     return formatForm(result).rebaseIdsToObj(['classe_id', 'cliente_nivel'])
-                //   })
-                //   .then((result) => {
-                //   })
-                //   .catch(callGlobalAlert)
-                //   .finally(handleGlobalLoading.hide)
               },
               icon: FiEdit,
             },
             {
               label: 'Excluir',
               onClick: (row) =>{
-                 handleGlobalLoading.show()
-                  deleteCliente(row.id)
-                    .then((result) => {
-                      callGlobalAlert({title: 'Sucesso', message: 'Setor excluida com sucesso', color: 'green'})
-                    })
-                    .catch(callGlobalAlert)
-                    .finally(handleGlobalLoading.hide)
+                handleGlobalLoading.show()
+                deleteSetor(row.id)
+                  .then((result) => {
+                    callGlobalAlert({title: 'Sucesso', message: 'Setor excluido com sucesso', color: 'green'})
+                  })
+                  .catch(callGlobalAlert)
+                  .finally(handleGlobalLoading.hide)
               },
               icon: FiTrash,
             },

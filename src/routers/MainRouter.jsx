@@ -45,8 +45,8 @@ const MainRouter = () => {
         path="/"
         errorElement={<ErrorScreen/>}
         element={
-            <Layout />
           // <RequireAuth>
+            <Layout />
           // </RequireAuth>
         }>
         <Route index path="dashboard" Component={Dashboard} />
@@ -58,7 +58,6 @@ const MainRouter = () => {
         <Route path="projetos/cadastrar" Component={CadastrarProjeto}/>
         <Route path="projetos/editar/:id" Component={Projeto}/>
 
-        <Route path="setor" Component={Setor}/>
           
         <Route path="colaborador" Component={Colaboradores}/>
         <Route path="colaborador/cadastrar" Component={CadastrarColaborador}/>
@@ -67,6 +66,8 @@ const MainRouter = () => {
           
         <Route path="conhecimentos" Component={Conhecimentos}/>
         <Route path="empresas" Component={Empresas}/>
+
+        <Route path="setor" Component={Setor}/>
 
         <Route path="clientes" Component={Clientes}/>
         <Route path="*" Component={NotFound} />
