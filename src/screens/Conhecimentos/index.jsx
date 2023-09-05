@@ -94,6 +94,7 @@ export default function Conhecimentos() {
           name: 'conhecimento_nivel',
           label: 'Nível',
           type: 'selectAsync',
+          getOptionLabel: (option) => option.grau,
           loadOptions: listSimpleConhecimentoNivels
         },
 

@@ -49,7 +49,7 @@ export default function Clientes() {
     resetFilters,
     isEmpty,
   } = useTable(columnsFields, listClientes, basefilters, (results) => {
-    return results
+    return results.data
   });
 
   function callModalCadastro(data = {}) {

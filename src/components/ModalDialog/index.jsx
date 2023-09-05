@@ -169,7 +169,8 @@ const ModalDialog = forwardRef(({
                           ...prev,
                           [form.name]: value
                         }));
-                      }} />
+                      }} 
+                      {...form}/>
                     <FeedbackError error={errors[form.name]} />
                   </Form.Group>
                 )}
