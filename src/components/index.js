@@ -27,5 +27,6 @@ export { default as TextareaEditor } from './TextareaEditor';
 export { default as ThumbnailUploader } from './ThumbnailUploader';
 export { default as Section } from './Section';
 export { default as SelectAsync } from './Selectables/SelectAsync';
+export { default as SelectAsyncCreatable } from './Selectables/SelectAsyncCreatable';
 export { default as Table } from './Table';
 

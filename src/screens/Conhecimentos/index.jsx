@@ -12,15 +12,15 @@ import { FiCheckCircle, FiEdit, FiPlus, FiTrash } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import { useDebounce } from "use-debounce";
 import { conhecimentoSchema } from "./validations";
+import { standartResponseApiError } from "@/services/index";
 
 const basefilters = {
   search: '',
-  // perPage: 20,
-  // selectedRows: [],
-  // gerencia: null,
-  // page: 1,
-  // sortedColumn: 'id',
-  // sortOrder: 'asc',
+  perPage: 20,
+  selectedRows: [],
+  page: 1,
+  sortedColumn: 'id',
+  sortOrder: 'asc',
 };
 
 const columnsFields = [
@@ -28,7 +28,7 @@ const columnsFields = [
   { field: 'descricao', label: 'Descricão', order: true },
   { field: 'dificuldade', label: 'Dificuldade', order: true, piper: (field) => getDificuldade(field)},
   { field: 'conhecimento_classe', label: 'Classe', order: false, piper: (field) =>  !!field && field.nome },
-  { field: 'conhecimento_nivel', label: 'Classe', order: false, piper: (field) => !!field && field.nome },
+  { field: 'conhecimento_nivel', label: 'Nível', order: false, piper: (field) => !!field && field.nome },
 ];
 const cadastroInitialValue = {
   nome: '',
@@ -53,7 +53,7 @@ export default function Conhecimentos() {
     resetFilters,
     isEmpty,
   } = useTable(columnsFields, listConhecimentos, basefilters, (results) => {
-    return results.conhecimentos
+    return results.data
   });
 
   function callModalCadastro(data = {}) {
@@ -131,7 +131,7 @@ export default function Conhecimentos() {
     <Background>
       <HeaderTitle title="Conhecimentos" optionsButtons={[
         {
-          label: 'cadastrar',
+          label: 'Cadastrar',
           onClick: () => callModalCadastro(cadastroInitialValue),
           icon: FiPlus,
         },
@@ -150,27 +150,20 @@ export default function Conhecimentos() {
               label: 'Editar',
               onClick: (row) => {
                 callModalCadastro(row)
-                // handleGlobalLoading.show()
-                // showConhecimento(row.conhecimento_id)
-                //   .then((result) => {
-                //     return formatForm(result).rebaseIdsToObj(['classe_id', 'conhecimento_nivel'])
-                //   })
-                //   .then((result) => {
-                //   })
-                //   .catch(callGlobalAlert)
-                //   .finally(handleGlobalLoading.hide)
               },
               icon: FiEdit,
             },
             {
               label: 'Excluir',
               onClick: (row) =>{
+                console.log(row)
                  handleGlobalLoading.show()
                   deleteConhecimento(row.id)
                     .then((result) => {
                       callGlobalAlert({title: 'Sucesso', message: 'Conhecimento excluido com sucesso', color: 'green'})
                     })
-                    .catch(callGlobalAlert)
+                    .catch(() =>
+                    callGlobalAlert(standartResponseApiError('Erro de comunicação')))
                     .finally(handleGlobalLoading.hide)
               },
               icon: FiTrash,

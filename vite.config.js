@@ -8,6 +8,14 @@ export default defineConfig({
   plugins: [react(), mkcert()],
   server: { 
     https: true,
+    proxy: {
+      '/oauth': {
+        target: 'https://dev.login.rj.gov.br/auth/realms/rj/protocol/openid-connect', // URL da API que você deseja acessar
+        changeOrigin: true,
+        secure: false,
+        rewrite: (path) => path.replace(/^\/oauth/, ''),
+      },
+    },
    },
   resolve: {
     alias: {

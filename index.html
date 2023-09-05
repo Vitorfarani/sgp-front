@@ -9,6 +9,7 @@
   <script>
     let colormodePrefer = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
     document.querySelector("html").setAttribute("data-bs-theme", JSON.parse(window.localStorage.getItem('colorModeSelected')) ?? colormodePrefer);
+   
   </script>
   <body>
     <div id="root"></div>

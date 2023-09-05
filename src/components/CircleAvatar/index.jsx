@@ -1,7 +1,7 @@
 import React from 'react';
 import './style.scss'; // Estilização do componente
 
-const CircleAvatar = ({ name, size }) => {
+const CircleAvatar = ({ name, size, sm }) => {
   // Função para extrair as iniciais das palavras
   const getInitials = (name) => {
     if(!!name) {
@@ -23,7 +23,7 @@ const CircleAvatar = ({ name, size }) => {
 
   return (
     <div className="circle-avatar" style={circleStyle}>
-      <span className="initials">{initials}</span>
+      <span className={!sm ? "initials" : "initials-sm"}>{initials}</span>
     </div>
   );
 };

@@ -55,7 +55,12 @@ export function debounce(func, wait) {
 //       return false;
 //   }
 // }
-
+export function searchLike(text, query) {
+  const escapedQuery = query.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&');
+  const regex = new RegExp(`.*${escapedQuery}.*`, 'i');
+  
+  return regex.test(text);
+}
 export function getRedirectUrl() {
   return ENV.HOST+'/login'
 }

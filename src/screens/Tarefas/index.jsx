@@ -82,15 +82,12 @@ return (
         setFiltersState={setFiltersState}
         filtersComponentes={[
           <Col md={3}>
-            {user.roles.includes('ROLE_ADMIN') && (
               <SelectAsync
                 placeholder="Gerencias"
                 loadOptions={listGerencias}
                 value={filtersState.gerencia}
                 onChange={(gerencia) => handleForm('gerencia', gerencia)}
               />
-              
-            )}
           </Col>
         ]}
         actions={[

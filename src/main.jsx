@@ -7,9 +7,9 @@ import '@/constants/ENV.js'
 import { MODE } from '@/constants/ENV.js';
 
 const render =  MODE === 'DEV' ? (
-  <React.StrictMode>
+  // <React.StrictMode>
     <App />
-  </React.StrictMode>
+  // {/* </React.StrictMode> */}
 ) : (
   <App />
 )

@@ -1,10 +1,13 @@
 import React, { createContext, Fragment, useCallback, useContext, useEffect, useMemo, useReducer, useState } from "react";
 import moment from "moment";
-import { loginApi, MOCK_USER } from "@/services/AuthService.js";
-import { logoutGov, sendCodeToGov } from "@/services/sso.js";
+import { loginApi, me, logout as logoutApi } from "@/services/AuthService.js";
+import { logoutGov } from "@/services/sso.js";
 import { useLocalStorage } from "@/utils/hooks/useLocalStorage";
 import { isExpired } from "@/utils/helpers";
 import { AuthContext } from ".";
+import { useTheme } from "./ThemeProvider";
+import { FiInfo } from "react-icons/fi";
+
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser, loadUser] = useLocalStorage('user', null);
@@ -13,69 +16,58 @@ export const AuthProvider = ({ children }) => {
   const [hmlMode, sethmlMode] = useState(false);
   const [isLoaded, setLoaded] = useState(false);
   const [verifing, setVerifing] = useState(false);
+  const {callGlobalAlert} = useTheme();
 
-  async function login(user, resultSSO) {
+  async function login(user) {
     setUser(user)
-    resultSSO.loginIn = moment();
-    setDataSSO(resultSSO);
+    // resultSSO.loginIn = moment();
+    // setDataSSO(resultSSO);
     setIsLogged(true)
     setLoaded(true);
   }
 
   async function logout(clean = false, cleanDetran = false) {
     if (clean) {
-      // await logoutGov(dataSSO)
+      await logoutApi()
       setUser(null)
-      setTheme(null)
-      setDataSSO(null);
       window.localStorage.clear();
     }
     setIsLogged(false)
-    sethmlMode(false)
-    setVerifing(false)
   }
 
   function handleVerifing(p) {
     setVerifing(p)
   }
   
-  const cbSubmit = async (resultSSO, signature = null) => {
-    login(MOCK_USER, resultSSO);
-    return Promise.resolve()
-    await loginApi(resultSSO.access_token)
+  const cbSubmit = async (code, signature = null) => {
+    await loginApi(code)
     .then(async (response) => {
-        let responseUser = response.data
-        let theme = null;
-        // responseUser.cpf = '0' + 9976919727
-        if(responseUser.cpf.toString().length === 10) {
-          responseUser.cpf = '0' + responseUser.cpf
-        }
-        login(responseUser, theme, resultSSO);
+        let responseUser = response.data.user
+        login(responseUser);
       })
       .catch((error) => {
-        if(error === 'Usuário inválido.') {
+        callGlobalAlert({message: error.message, icon: FiInfo, color: 'red'})
           setDataSSO(null)
           setIsLogged(false)
-          return;
-        }
-        if (!!error) {
-          Alert.alert('Validação', error)
-        }
-        setIsLogged(false)
       })
   }
 
   async function loadLocal() {
     try {
-      let userL = await loadUser();
-      await loadDataSSO()
-      .then((token) => {
-        if(token) {
-          setUser(MOCK_USER)
+      if(localStorage.getItem('toook')) {
+        me()
+        .then(({data}) => {
+          setUser(data)
           setIsLogged(true)
-        }
-        setLoaded(true)
-      });
+        })
+        .catch(() => {
+          setIsLogged(false)
+        })
+        .finally(()=> {
+          setLoaded(true)
+  
+        })
+      }
 
     } catch (error) {
 

@@ -4,9 +4,9 @@ import './style.scss'
 
 const BtnLoginGovBr = ({isLoading, onClick}) => {
   return (
-    <Button variant="secondary" className="gov-br-button" onClick={onClick}>
+    <Button variant='default' className="gov-br-button" onClick={onClick}>
       <Row>
-        <strong>
+        <strong style={{color: 'white'}}>
           Entrar com
         </strong>
       </Row>

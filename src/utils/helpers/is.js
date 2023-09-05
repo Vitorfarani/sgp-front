@@ -29,3 +29,12 @@ export function isString (v) {
 export function isSet (v) {
   return typeof v !== 'undefined'
 }
+
+export function isJson(str) {
+  try {
+      JSON.parse(str);
+  } catch (e) {
+      return false;
+  }
+  return true;
+}

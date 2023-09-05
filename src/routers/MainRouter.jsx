@@ -10,12 +10,13 @@ import {
   Login,
   Dashboard,
   Tarefas,
-  Demo,
   NotFound,
   Projeto,
   Projetos,
   Tarefa,
-  Conhecimentos
+  Conhecimentos,
+  Empresas,
+  Clientes
 } from '@/screens/index';
 import { useTheme } from '@/utils/context/ThemeProvider';
 import CadastrarProjeto from '@/screens/Projetos/CadastrarProjeto';
@@ -54,9 +55,9 @@ const MainRouter = () => {
         <Route path="projetos/editar/:id" Component={Projeto}/>
           
         <Route path="conhecimentos" Component={Conhecimentos}/>
+        <Route path="empresas" Component={Empresas}/>
 
-        <Route path="clientes" />
-        <Route path="clientes/:id"/>
+        <Route path="clientes" Component={Clientes}/>
         <Route path="*" Component={NotFound} />
         {/* <Route path="tarefas" element={<Tarefas />} /> */}
       </Route>

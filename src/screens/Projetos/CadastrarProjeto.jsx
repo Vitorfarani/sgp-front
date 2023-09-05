@@ -162,7 +162,12 @@ export default function CadastrarProjeto() {
               isMulti
               required
               placeholder="Selecione os Conhecimentos necessários para esse projeto"
-              loadOptions={listConhecimentos}
+              loadOptions={async (search) => {
+               return listConhecimentos(search)
+                  .then((result) => {
+                    return Promise.resolve(result.conhecimentos)
+                  })
+              }}
               onChange={(conhecimentos) => handleForm('conhecimentos', conhecimentos)}
               isInvalid={!!errors.conhecimentos} />
             <FeedbackError error={errors.conhecimentos} />

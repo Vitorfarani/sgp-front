@@ -67,14 +67,14 @@ export function getSelectStyles(multi, size, isInvalid = false) {
     },
     multiValueLabel: (styles, { data }) => ({
       ...styles,
-      color: 'white',
+      // color: 'white',
     }),
     multiValueRemove: (styles, { data }) => ({
       ...styles,
       color: data.color,
       ':hover': {
         backgroundColor: data.color,
-        color: 'white',
+        // color: 'white',
       },
     }),
   }
