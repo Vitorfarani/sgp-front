@@ -14,4 +14,5 @@ export { default as CadastrarColaborador } from './Colaboradores/CadastrarColabo
 
 export { default as Conhecimentos } from './Conhecimentos/index.jsx';
 export { default as Clientes } from './Clientes/index.jsx';
+export { default as Setor } from './Setor/index.jsx';
 export { default as Empresas } from './Empresas/index.jsx';

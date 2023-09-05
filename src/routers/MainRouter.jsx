@@ -13,6 +13,7 @@ import {
   NotFound,
   Projeto,
   Projetos,
+  Setor,
   Tarefa,
   Conhecimentos,
   Empresas,
@@ -46,7 +47,8 @@ const MainRouter = () => {
         element={
           <RequireAuth>
             <Layout />
-          </RequireAuth>}>
+          </RequireAuth>
+        }>
         <Route index path="dashboard" Component={Dashboard} />
 
         {/* <Route path="tarefas" Component={Tarefas} />
@@ -55,6 +57,7 @@ const MainRouter = () => {
         <Route path="projetos" Component={Projetos}/>
         <Route path="projetos/cadastrar" Component={CadastrarProjeto}/>
         <Route path="projetos/editar/:id" Component={Projeto}/>
+
           
         <Route path="colaborador" Component={Colaboradores}/>
         <Route path="colaborador/cadastrar" Component={CadastrarColaborador}/>
@@ -63,6 +66,8 @@ const MainRouter = () => {
           
         <Route path="conhecimentos" Component={Conhecimentos}/>
         <Route path="empresas" Component={Empresas}/>
+
+        <Route path="setor" Component={Setor}/>
 
         <Route path="clientes" Component={Clientes}/>
         <Route path="*" Component={NotFound} />
