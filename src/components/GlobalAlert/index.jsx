@@ -1,53 +1,71 @@
-import { useEffect, useRef } from 'react';
+import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 
-const GlobalAlert = (props) => {
+const GlobalAlert = forwardRef((props, ref) => {
   const modal = useRef()
+  const [isShow, setIsShow] = useState(false);
+  const [modalProps, setModalProps] = useState({});
 
   useEffect(() => {
-    if (!!modal.current?.dialog && props.modalProps.color) {
-      modal.current.dialog.children[0].children[0].style.borderColor = props.modalProps.color
+    if (!!modal.current?.dialog && modalProps.color) {
+      modal.current.dialog.children[0].children[0].style.borderColor = modalProps.color
     }
-  }, [props.modalProps.color]);
-  useEffect(() => {
-    if(props.show && props.modalProps.timer) {
-      setTimeout(() => {
-        props.onHide()
-      }, props.modalProps.timer);
-    }
-  }, [props.show])
+  }, [modalProps.color]);
+
+  function hide() {
+    setIsShow(false)
+    setTimeout(() => {
+      setModalProps({})
+    }, 400);
+  }
+
+  function show(params) {
+      setModalProps(params)
+      setIsShow(true)
+      if (params.timer) {
+        setTimeout(() => {
+          hide()
+        }, params.timer);
+      }
+  }
   
+  useImperativeHandle(ref, () => ({
+    show,
+    hide
+  }))
+
   return (
     <Modal
       ref={modal}
-      {...props}
+      show={isShow}
+      onHide={() => hide()}
       size=""
       aria-labelledby="contained-modal-title-vcenter"
       centered
     >
-      <Modal.Header closeButton style={{border: 0}}>
-        <Modal.Title id="contained-modal-title-vcenter" style={props.modalProps.color && {color: props.modalProps.color}}>
-          {props.modalProps?.title}
+      <Modal.Header closeButton style={{ border: 0 }}>
+        <Modal.Title id="contained-modal-title-vcenter" style={modalProps.color && { color: modalProps.color }}>
+          {modalProps?.title}
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <h4 style={props.modalProps.color && {color: props.modalProps.color}} >{props.modalProps.subTitle ?? ''}</h4>
-        {!!props.modalProps?.icon && (
+        <h4 style={modalProps.color && { color: modalProps.color }} >{modalProps.subTitle ?? ''}</h4>
+        {!!modalProps?.icon && (
           <div style={{
             marginBottom: '20px',
             display: 'flex',
             justifyContent: 'center'
           }}>
-            <props.modalProps.icon size={60} color={props.modalProps.color}/>
+            <modalProps.icon size={60} color={modalProps.color} />
           </div>
         )}
-        <p style={props.modalProps.color && {color: props.modalProps.color, textAlign: !props.modalProps?.title && 'center'}}>
-         {props.modalProps.message}
+        <p style={modalProps.color && { color: modalProps.color, textAlign: !modalProps?.title && 'center' }}>
+          {modalProps.message}
         </p>
       </Modal.Body>
     </Modal>
   );
-}
+})
 export default GlobalAlert;
 

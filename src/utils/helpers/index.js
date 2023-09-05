@@ -31,30 +31,6 @@ export function debounce(func, wait) {
     if(!value) return 'N/A'
     return String(value).split('-').reverse().join('/')
   }
-
-// export const createTask = () => {
-//   const timerId = BackgroundTimer.setInterval(async () => {
-//     createSearchPessoaTask(cpf)
-//     .then((result) => {
-//       if (result === expectedResult) {
-//         BackgroundTimer.clearInterval(timerId);
-//       }
-//     })
-//     .catch((err) => {
-//       console.error(err.response)
-//     })
-   
-//   }, 3 * 60 * 1000); // 3 minutos em milissegundos
-// }
-
-// export function isBase64(str) {
-//   if (str ==='' || str.trim() ===''){ return false; }
-//   try {
-//       return btoa(atob(str)) == str;
-//   } catch (err) {
-//       return false;
-//   }
-// }
 export function searchLike(text, query) {
   const escapedQuery = query.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&');
   const regex = new RegExp(`.*${escapedQuery}.*`, 'i');

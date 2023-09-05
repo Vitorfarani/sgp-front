@@ -15,25 +15,31 @@ const MOCK_companySectors = [
 ];
 
 
-export const listGerencias = async (search) => {
-  console.log('listGerencias')
-  let params = '?search='+search
-  return fakeFetch(MOCK_companySectors);
-  let url = `gerencias${params}`;
+export const listSetores = async (search) => {
+  let url = `setor${params}`;
   return _get(url);
 }
 
-export const createGerencia = async (data) => {
-  let url = 'gerencias';
+export const listSimpleSetores = async () => {
+  let url = `setor/simple`;
+  return _get(url);
+}
+
+export const createSetor = async (data) => {
+  let url = 'setor/store';
   return _post(url, data);
 }
 
-export const updateGerencia = async (id, data) => {
-  let url = `gerencias/${id}`;
+export const showSetor = async (id, data) => {
+  let url = `setor/show/${id}`;
+  return _get(url);
+}
+export const updateSetor = async (id, data) => {
+  let url = `setor/update/${id}`;
   return _put(url, data);
 }
 
-export const deleteGerencia = async (id) => {
-  let url = `gerencias/${id}`;
+export const deleteSetor = async (id) => {
+  let url = `setor/delete/${id}`;
   return _delete(url);
 }

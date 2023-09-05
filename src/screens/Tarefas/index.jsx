@@ -1,5 +1,5 @@
 import { Background, HeaderTitle, Section, SelectAsync, Table } from "@/components/index";
-import { listGerencias } from "@/services/gerencias";
+import { listSetores } from "@/services/setores";
 import { useAuth } from "@/utils/context/AuthProvider";
 import { useEffect, useState } from "react";
 import { Breadcrumb, Button, Col, Container, Row, Spinner, Stack } from "react-bootstrap";
@@ -14,7 +14,7 @@ export default function Tarefas() {
     search: '',
     perPage: 20,
     selectedRows: [],
-    gerencia: null,
+    setor: null,
     page: 1,
     sortedColumn: 'id',
     sortOrder: 'asc',
@@ -83,10 +83,10 @@ return (
         filtersComponentes={[
           <Col md={3}>
               <SelectAsync
-                placeholder="Gerencias"
-                loadOptions={listGerencias}
-                value={filtersState.gerencia}
-                onChange={(gerencia) => handleForm('gerencia', gerencia)}
+                placeholder="Setores"
+                loadOptions={listSetores}
+                value={filtersState.setor}
+                onChange={(setor) => handleForm('setor', setor)}
               />
           </Col>
         ]}

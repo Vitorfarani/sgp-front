@@ -14,25 +14,31 @@ const MOCK_peopleNames = [
   { id: 10, nome: 'Isabela Rodrigues' }
 ];
 
-
-export const listResponsaveis = async (params) => {
-  console.log(params)
-  return fakeFetch(MOCK_peopleNames);
-  let url = `responsaveis${params}`;
+export const listSimpleColaboradores = async () => {
+  let url = `colaborador/simple`;
   return _get(url);
 }
 
-export const createResponsavel = async (data) => {
-  let url = 'responsaveis';
+export const listColaboradores = async (params) => {
+  let url = `colaborador${params}`;
+  return _get(url);
+}
+
+export const createColaborador = async (data) => {
+  let url = 'colaborador/store';
   return _post(url, data);
 }
 
-export const updateResponsavel = async (id, data) => {
-  let url = `responsaveis/${id}`;
+export const showColaborador = async (id) => {
+  let url = `colaborador/show/${id}`;
+  return _get(url);
+}
+export const updateColaborador = async (id, data) => {
+  let url = `colaborador/update/${id}`;
   return _put(url, data);
 }
 
-export const deleteResponsavel = async (id) => {
-  let url = `responsaveis/${id}`;
+export const deleteColaborador = async (id) => {
+  let url = `colaborador/delete/${id}`;
   return _delete(url);
 }

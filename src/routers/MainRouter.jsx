@@ -17,7 +17,9 @@ import {
   Tarefa,
   Conhecimentos,
   Empresas,
-  Clientes
+  Clientes,
+  Colaboradores,
+  CadastrarColaborador
 } from '@/screens/index';
 import { useTheme } from '@/utils/context/ThemeProvider';
 import CadastrarProjeto from '@/screens/Projetos/CadastrarProjeto';
@@ -41,7 +43,7 @@ const MainRouter = () => {
       {/* <Route path="login" element={isLogged ? <Navigate to="/dashboard" /> : <Login />} /> */}
       <Route
         path="/"
-       
+        errorElement={<ErrorScreen/>}
         element={
             <Layout />
           // <RequireAuth>
@@ -49,8 +51,8 @@ const MainRouter = () => {
         }>
         <Route index path="dashboard" Component={Dashboard} />
 
-        <Route path="tarefas" Component={Tarefas} />
-        <Route path="tarefas/:id" Component={Tarefa}/>
+        {/* <Route path="tarefas" Component={Tarefas} />
+        <Route path="tarefas/:id" Component={Tarefa}/> */}
 
         <Route path="projetos" Component={Projetos}/>
         <Route path="projetos/cadastrar" Component={CadastrarProjeto}/>
@@ -58,12 +60,16 @@ const MainRouter = () => {
 
         <Route path="setor" Component={Setor}/>
           
+        <Route path="colaborador" Component={Colaboradores}/>
+        <Route path="colaborador/cadastrar" Component={CadastrarColaborador}/>
+        {/* <Route path="colaborador/visualizar/:id" Component={Colaborador}/> */}
+        <Route path="colaborador/editar/:id" Component={CadastrarColaborador}/>
+          
         <Route path="conhecimentos" Component={Conhecimentos}/>
         <Route path="empresas" Component={Empresas}/>
 
         <Route path="clientes" Component={Clientes}/>
         <Route path="*" Component={NotFound} />
-        {/* <Route path="tarefas" element={<Tarefas />} /> */}
       </Route>
     </Routes>
   );

@@ -65,12 +65,14 @@ export const AuthProvider = ({ children }) => {
         })
         .finally(()=> {
           setLoaded(true)
-  
+          
         })
+      } else {
+        setLoaded(true)
       }
-
+      
     } catch (error) {
-
+      setLoaded(true)
     }
   }
 

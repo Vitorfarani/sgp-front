@@ -14,7 +14,7 @@ const basefilters = {
   // search: '',
   // perPage: 20,
   // selectedRows: [],
-  // gerencia: null,
+  // setor: null,
   // page: 1,
   // sortedColumn: 'id',
   // sortOrder: 'asc',
