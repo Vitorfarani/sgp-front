@@ -1,3 +1,5 @@
+import { isSet } from "@/utils/helpers/is";
+
 export function getSelectStyles(multi, size, isInvalid = false) {
   const suffix = size ? `-${size}` : '';
   const multiplicator = multi ? 2 : 1;
@@ -5,8 +7,8 @@ export function getSelectStyles(multi, size, isInvalid = false) {
     control: (provided, { isDisabled, isFocused }) => ({
       ...provided,
       backgroundColor: `var(--bs-body-bg)`,
-     
-      borderColor: !isInvalid ? `var(--bs-border-color)` : `var(--bs-form-invalid-border-color)` ,
+
+      borderColor: !isInvalid ? `var(--bs-border-color)` : `var(--bs-form-invalid-border-color)`,
       // borderWidth: "var(--bs-select-border-width)",
       lineHeight: "var(--bs-select-line-height)",
       fontSize: `var(--bs-select-font-size${suffix})`,
@@ -17,10 +19,13 @@ export function getSelectStyles(multi, size, isInvalid = false) {
         // borderColor: "var(--bs-select-focus-border-color)",
       },
     }),
-    singleValue: ({ marginLeft, marginRight, ...provided }, { isDisabled }) => ({
-      ...provided,
-      color: `var(--bs-body-color)`,
-    }),
+    singleValue: ({ marginLeft, marginRight, ...provided }, { data }) => {
+      return {
+        ...provided,
+        ...dot(data),
+        color: `var(--bs-body-color)`,
+      }
+    },
     // valueContainer: (provided, state) => ({
     //   ...provided,
     //   padding: `calc(var(--bs-select-padding-y${suffix})/${multiplicator}) calc(var(--bs-select-padding-x${suffix})/${multiplicator})`,
@@ -30,12 +35,14 @@ export function getSelectStyles(multi, size, isInvalid = false) {
       color: `var(--bs-body-color)`,
       backgroundColor: `var(--bs-body-bg)`,
     }),
-    input: ({ margin, paddingTop, paddingBottom, ...provided }, state) => ({
+    input: ({ margin, paddingTop, paddingBottom, ...provided }, { data }) => ({
       ...provided,
       color: `var(--bs-body-color)`,
+      ...dot(data),
     }),
-    option: (provided, state) => ({
+    option: (provided, {data}) => ({
       ...provided,
+      ...dot(data),
       color: `var(--bs-body-color)`,
       backgroundColor: `var(--bs-body-bg)`,
       borderColor: `var(--bs-body-bg)`,
@@ -65,20 +72,21 @@ export function getSelectStyles(multi, size, isInvalid = false) {
     multiValue: (styles, { data }) => {
       return {
         ...styles,
-        backgroundColor: data.color,
+        backgroundColor: data.color ? data.color : 'var(--bs-heading-color)',
       };
     },
     multiValueLabel: (styles, { data }) => ({
       ...styles,
-      // color: 'white',
+
+      color: 'white',
+      backgroundColor: data.color ? data.color : 'var(--bs-primary)',
     }),
     multiValueRemove: (styles, { data }) => ({
       ...styles,
-      color: data.color,
-      ':hover': {
-        backgroundColor: data.color,
-        // color: 'white',
-      },
+      // color: data.color ? data.color : 'var(--bs-heading-color)',
+      // ':hover': {
+      //   color: data.color ? data.color : 'var(--bs-heading-color)',
+      // },
     }),
   }
 }
@@ -99,3 +107,20 @@ export function getSelectTheme(theme) {
     }
   }
 }
+export const dot = (data) => {
+  if(!isSet(data) || !isSet(data.color)) return
+  return {
+    alignItems: 'center',
+    display: 'flex',
+
+    ':before': {
+      backgroundColor: !!data.color ? data.color : 'var(--bs-primary)',
+      borderRadius: 10,
+      content: '" "',
+      display: 'block',
+      marginRight: 8,
+      height: 10,
+      width: 10,
+    },
+  }
+};

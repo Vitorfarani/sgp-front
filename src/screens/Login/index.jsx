@@ -8,7 +8,7 @@ import { useAuth } from '@/utils/context/AuthProvider';
 import { useTheme } from '@/utils/context/ThemeProvider';
 
 const Login = () => {
-  const {isLogged, cbSubmit} = useAuth();
+  const {isLogged, cbSubmit, cbSubmitDEV} = useAuth();
   const { callGlobalAlert, callGlobalDialog } = useTheme();
   const navigate = useNavigate();
 
@@ -50,7 +50,7 @@ const Login = () => {
         <h3>Bem vindo ao</h3>
         <h1>Sistema de Gestão de Projetos</h1>
       </div>
-      <div className="image-row">
+      <div className="image-row" onClick={cbSubmitDEV}>
         <img
           src="people-dealing-with-workplace-challenges.png"
           className="centered-image"

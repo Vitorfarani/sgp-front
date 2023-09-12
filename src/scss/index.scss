@@ -53,7 +53,9 @@ body {
   border-color: $secondary !important;
   box-shadow: 0 0 0 0.15rem transparentize($secondary, 0.5) !important;
 }
-
+.table-responsive{
+  padding-bottom: 40px;
+}
 @include color-mode(dark) {
   .btn-primary{
     background-color: $primary-light !important;

@@ -16,7 +16,7 @@ const Observacoes = memo(({ isLoading, observacoes, onRemove }) => {
         <Spinner />
       )}
       <div className="overflow-scroll-gradient">
-        <div class="overflow-scroll-gradient__scroller">
+        <div className="overflow-scroll-gradient__scroller">
           {observacoes.map((o, i) => (
             <CardObservacao
               key={i}

@@ -1,5 +1,6 @@
 import { ENV } from "@/constants/ENV";
 import { getStatusMessage } from "@/utils/helpers/httpHelpers";
+import { formatErrorsToHTML } from "@/utils/helpers/validators";
 import axios from "axios";
 
 export const httpSSO = axios.create({
@@ -38,9 +39,7 @@ export async function _get(url) {
 export async function _post(url, data) {
   return httpSgp.post(url, data)
   .then(({data}) =>  Promise.resolve(data))
-  .catch((response) => {
-    Promise.reject(axiosError(response))
-  })
+  .catch((response) => Promise.reject(axiosError(response)))
 }
 
 export async function _put(url, data) {
@@ -64,16 +63,35 @@ export const standartResponseApiError = (message) => ({title: 'Error', message, 
 export const axiosError = (error) => {
   if (axios.isAxiosError(error)) {
     if (error.response) {
-      return {
-        title: getStatusMessage(error.response.status),
-        subtitle:  error.response.message,
-        message:  error.message,
-        color: 'var(--bs-danger)'
+      try {
+        if(error.response.status == 422) {
+          return {
+            title: getStatusMessage(error.response.status),
+            subtitle:  error.response.data.message,
+            message:  formatErrorsToHTML(error.response.data),
+            color: 'var(--bs-danger)'
+          }
+        }
+        if(error.response.status == 405) {
+          return {
+            title: getStatusMessage(error.response.status),
+            message:  'Rota não habilitada na API',
+            color: 'var(--bs-danger)'
+          }
+        }
+        
+        return {
+          title: getStatusMessage(error.response.status),
+          message:  error.response.data.message,
+          color: 'var(--bs-danger)'
+        }
+      } catch (exception) {
+        return standartResponseApiError('Erro durante a solicitação: '+ error.message);
       }
     } else {
       return standartResponseApiError('Erro durante a solicitação: '+ error.message);
     }
-} else {
+  } else {
     const confirmResult = confirm('Erro inexperado no front, Deseja enviar um e-mail com o erro para o suporte?');
 
     if (confirmResult) {

@@ -9,22 +9,22 @@ import { FiCheckCircle, FiEdit, FiPlus, FiTrash } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import { clienteSchema } from "./validations";
 import InputMask from 'react-input-mask';
+import { celularMask } from "@/utils/helpers/mask";
 
 const basefilters = {
-  // search: '',
-  // perPage: 20,
-  // selectedRows: [],
-  // setor: null,
-  // page: 1,
-  // sortedColumn: 'id',
-  // sortOrder: 'asc',
+  search: '',
+  perPage: 20,
+  selectedRows: [],
+  page: 1,
+  sortedColumn: 'id',
+  sortOrder: 'asc',
 };
 
 const columnsFields = [
-  { field: 'nome', label: 'Nome', order: true, style: { width: 300 } },
-  { field: 'email', label: 'Email', order: true },
-  { field: 'telefone', label: 'Telefone', order: true },
-  { field: 'responsavel', label: 'Responsável', order: true },
+  { field: 'nome', label: 'Nome', enabledOrder: true},
+  { field: 'email', label: 'Email', enabledOrder: true },
+  { field: 'telefone', label: 'Telefone', enabledOrder: true, piper: (field) => !!field ? celularMask(field) : 'aa' },
+  { field: 'responsavel', label: 'Responsável', enabledOrder: true },
 ];
 
 const cadastroInitialValue = {
@@ -37,7 +37,7 @@ const cadastroInitialValue = {
 export default function Clientes() {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { callGlobalDialog, handleGlobalLoading, callGlobalAlert } = useTheme();
+  const { callGlobalDialog, handleGlobalLoading, callGlobalAlert, callGlobalNotify } = useTheme();
 
   const {
     rows,
@@ -91,14 +91,10 @@ export default function Clientes() {
         let method = !result.id ? createCliente : updateCliente;
         method(result)
           .then((res) => {
-            callGlobalAlert({ title: '', message: res.mensagem, color: 'green', icon: FiCheckCircle, timer: 2000 })
-            load()
+            callGlobalNotify({ message: res.message, variant: 'success' })
             resetFilters()
           })
-          .catch((erro) => {
-            callGlobalAlert(erro)
-
-          })
+          .catch(callGlobalAlert)
           .finally(handleGlobalLoading.hide)
       })
       .catch(console.log)
@@ -131,28 +127,19 @@ export default function Clientes() {
               label: 'Editar',
               onClick: (row) => {
                 callModalCadastro(row)
-                // handleGlobalLoading.show()
-                // showCliente(row.cliente_id)
-                //   .then((result) => {
-                //     return formatForm(result).rebaseIdsToObj(['classe_id', 'cliente_nivel'])
-                //   })
-                //   .then((result) => {
-                //   })
-                //   .catch(callGlobalAlert)
-                //   .finally(handleGlobalLoading.hide)
               },
               icon: FiEdit,
             },
             {
               label: 'Excluir',
-              onClick: (row) =>{
-                 handleGlobalLoading.show()
-                  deleteCliente(row.id)
-                    .then((result) => {
-                      callGlobalAlert({title: 'Sucesso', message: 'Cliente excluida com sucesso', color: 'green'})
-                    })
-                    .catch(callGlobalAlert)
-                    .finally(handleGlobalLoading.hide)
+              onClick: (row) => {
+                handleGlobalLoading.show()
+                deleteCliente(row.id)
+                  .then((result) => {
+                    callGlobalNotify({ message: result.message, variant: 'danger' })
+                  })
+                  .catch(callGlobalAlert)
+                  .finally(handleGlobalLoading.hide)
               },
               icon: FiTrash,
             },

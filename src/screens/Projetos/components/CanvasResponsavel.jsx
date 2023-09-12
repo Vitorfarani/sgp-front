@@ -2,14 +2,14 @@ import React, { forwardRef, useCallback, useImperativeHandle, useRef, useState }
 import { CustomOffCanvas, DateInput, FeedbackError, SelectAsync } from '@/components/index';
 import { Button, Col, Form, Row, Spinner } from 'react-bootstrap';
 import { isSet } from '@/utils/helpers/is';
-import { listColaboradores } from '@/services/colaboradores';
+import { listColaboradores } from '@/services/colaborador/colaboradores';
 import { dateValidation, validateSchema } from '@/utils/helpers/yup';
 import { responsavelSchema } from '../validations';
 
 const MOCK_responsavel = {
   responsavel: null,
-  dataInicio: '',
-  dataFim: '',
+  inicio: '',
+  fim: null,
 }
 const CanvasResponsavel = forwardRef(({ listParams, onSave, ...props }, ref) => {
   const [show, setShow] = useState(false);
@@ -19,6 +19,7 @@ const CanvasResponsavel = forwardRef(({ listParams, onSave, ...props }, ref) => 
   const [index, setIndex] = useState();
   
   function handleForm(propertyName, newValue) {
+    console.log(newValue)
     setformData((prevState) => ({
       ...prevState,
       [propertyName]: newValue
@@ -70,28 +71,28 @@ const CanvasResponsavel = forwardRef(({ listParams, onSave, ...props }, ref) => 
             <Form.Label>Responsável</Form.Label>
             <SelectAsync
               placeholder=""
-              loadOptions={() => listColaboradores(listParams)}
+              loadOptions={(search) => listColaboradores(`${listParams}&search=${search}`)}
               value={formData.responsavel}
               isInvalid={!!errors.responsavel}
               onChange={(responsavel) => handleForm('responsavel', responsavel)} />
             <FeedbackError error={errors.responsavel} />
           </Form.Group>
         )}
-        {isSet(formData.dataInicio) && (
+        {isSet(formData.inicio) && (
           <Form.Group className='mb-4'>
             <Form.Label>Data de Início</Form.Label>
             <DateInput
-              value={formData.dataInicio}
-              onChangeValid={date => handleForm('dataInicio', date)}
-              isInvalid={!!errors.dataInicio} />
-            <FeedbackError error={errors.dataInicio} />
+              value={formData.inicio}
+              onChangeValid={date => handleForm('inicio', date)}
+              isInvalid={!!errors.inicio} />
+            <FeedbackError error={errors.inicio} />
           </Form.Group>
         )}
-        {isSet(formData.dataFim) && (
+        {isSet(formData.fim) && (
           <Form.Group className='mb-4'>
             <Form.Label>Data de Fim</Form.Label>
-            <DateInput value={formData.dataFim} onChangeValid={date => handleForm('dataFim', date)} />
-            <FeedbackError error={errors.dataFim} />
+            <DateInput value={formData.fim} onChangeValid={date => handleForm('fim', date)} />
+            <FeedbackError error={errors.fim} />
           </Form.Group>
         )}
         <Col md={'auto'} className='mx-auto'>

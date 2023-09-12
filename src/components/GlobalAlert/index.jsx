@@ -60,9 +60,9 @@ const GlobalAlert = forwardRef((props, ref) => {
             <modalProps.icon size={60} color={modalProps.color} />
           </div>
         )}
-        <p style={modalProps.color && { color: modalProps.color, textAlign: !modalProps?.title && 'center' }}>
-          {modalProps.message}
-        </p>
+        <div dangerouslySetInnerHTML={{ __html: modalProps.message ?? '' }} style={modalProps.color && { color: modalProps.color, textAlign: !modalProps?.title && 'center' }}>
+          
+        </div>
       </Modal.Body>
     </Modal>
   );

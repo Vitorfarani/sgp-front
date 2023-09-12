@@ -1,12 +1,7 @@
 import axios from "axios";
 import { _delete, _get, _post, _put, fakeFetch } from ".";
 
-export const listSimpleClientes = async () => {
-  let url = `cliente/simple`;
-  return _get(url);
-}
-
-export const listClientes = async (params) => {
+export const listClientes = async (params = "") => {
   let url = `cliente${params}`;
   return _get(url);
 }
@@ -21,8 +16,8 @@ export const showCliente = async (id) => {
   return _get(url);
 }
 
-export const updateCliente = async (id, data) => {
-  let url = `cliente/update/${id}`;
+export const updateCliente = async (data) => {
+  let url = `cliente/update/${data.id}`;
   return _put(url, data);
 }
 

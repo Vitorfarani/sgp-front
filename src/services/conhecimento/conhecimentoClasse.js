@@ -1,13 +1,8 @@
 import axios from "axios";
-import { _delete, _get, _post, _put, fakeFetch } from ".";
+import { _delete, _get, _post, _put, fakeFetch } from "..";
 
 
-export const listSimpleConhecimentoClasses = async () => {
-  let url = `conhecimentoclasse/simple`;
-  return _get(url);
-}
-
-export const listConhecimentoClasses = async (params) => {
+export const listConhecimentoClasses = async (params = "") => {
   let url = `conhecimentoclasse${params}`;
   return _get(url);
 }

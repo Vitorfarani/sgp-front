@@ -35,6 +35,7 @@
 .sidebarLeft .subitem {
   padding-left: 41px;
   font-size: 14px;
+  background-color: darken(#333, 6);
 }
 .sidebarLeft .active {
     color: lighten($primary, 40%) !important;
@@ -81,7 +82,6 @@
   }
  
   .sidebarLeft:is(.open) {
-    padding-left: 20px !important;
     width: 100vh !important;
   }
  
@@ -92,7 +92,13 @@
    display: block !important;
   }
   .nav-link {
-    font-size: 24px !important;
+    font-size: 20px !important;
+    padding-left: 20px !important;
+
+  }
+  .nav-link.subitem  {
+    padding-left: 48px !important;
+    font-size: 16px !important;
   }
 }
 

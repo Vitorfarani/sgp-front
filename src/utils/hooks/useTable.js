@@ -26,7 +26,6 @@ const useTable = (columnsFields, methodlister = (new Promise), initialFiltersVal
   const isEmpty = useMemo(() => !isTableLoading && !rows.length, [isTableLoading, rows]);
   // const isEmpty = () => !isTableLoading && !rows.length;
 
-console.log(filtersState)
   useEffect(() => {
     if(isLoaded) {
       load()
@@ -34,7 +33,8 @@ console.log(filtersState)
   }, [debouncedFilters]);
 
   const resetFilters = () => {
-    setFiltersState(initialValues);
+    setFiltersState(initialFiltersValues);
+    load()
     setTableIsLoading(false);
   };
 
@@ -49,7 +49,6 @@ console.log(filtersState)
         } else {
           tratedResuts = results
         }
-        console.log(tratedResuts)
         setRows(tratedResuts);
       })
       .catch(callGlobalAlert)

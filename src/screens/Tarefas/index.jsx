@@ -23,10 +23,10 @@ export default function Tarefas() {
   const [isLoading, setIsLoading] = useState(false);
 
   const [collumns, setCollumns] = useState([
-    { field: 'id', label: 'ID', order: true, style: { width: 100 } },
-    { field: 'name', label: 'Name', order: true },
-    { field: 'age', label: 'Age', order: true },
-    { field: 'subn', label: 'subn', order: false },
+    { field: 'id', label: 'ID', enabledOrder: true, style: { width: 100 } },
+    { field: 'name', label: 'Name', enabledOrder: true },
+    { field: 'age', label: 'Age', enabledOrder: true },
+    { field: 'subn', label: 'subn', enabledOrder: false },
   ]);
 
   const [rows, setRows] = useState([

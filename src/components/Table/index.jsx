@@ -87,7 +87,7 @@ const Table = ({
           {filtersComponentes}
         </Row>
       </Form>
-        <TableBootstrap striped hover responsive>
+        <TableBootstrap striped hover responsive >
           <thead>
             <tr>
               {!!filters.selectedRows && (
@@ -157,7 +157,7 @@ const Table = ({
                 </td>
               )}
                 {columns.map((column) => (
-                  <td key={column.field}>{column.piper ? column.piper(row[column.field]) : renderCellValue(row[column.field])}</td>
+                  <td key={column.field}>{column.piper ? renderCellValue(column.piper(row[column.field])) : renderCellValue(row[column.field])}</td>
                 ))}
                 {actions && (
                   <td>

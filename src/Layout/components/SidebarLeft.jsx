@@ -4,7 +4,7 @@ import sidebarLeftListRoutes from '../sidebarLeftListRoutes';
 import { NavLink, useLocation } from 'react-router-dom';
 import { FiArrowDownLeft, FiChevronLeft, FiChevronRight, FiSearch } from 'react-icons/fi';
 import { useAuth } from '@/utils/context/AuthProvider';
-import { searchLike } from '@/utils/helpers';
+import { searchLike } from '@/utils/helpers/mask';
 import '../style.scss'
 
 const SidebarLeft = ({ isOpenSideBarLeft, setIsOpenSideBarLeft }) => {
@@ -48,7 +48,7 @@ const SidebarLeft = ({ isOpenSideBarLeft, setIsOpenSideBarLeft }) => {
             {isOpenSideBarLeft && item.nome}
           </NavLink>
           {isOpenSideBarLeft && !!item.childrens && item.childrens.map((subItem, subindex) => (
-            <NavLink className="nav-link subitem text-white" key={'subItem' + subindex}>
+            <NavLink className="nav-link subitem text-white" key={'subItem' + subindex} to={subItem.path}>
               <subItem.icon />
               {isOpenSideBarLeft && subItem.nome}
             </NavLink>

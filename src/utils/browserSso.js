@@ -1,5 +1,5 @@
 import { ENV } from '@/constants/ENV';
-import { getRedirectUrl } from './helpers';
+import { getRedirectUrl } from './helpers/mask';
 
 export const getCode = async (url) => {
     const code = url.replace(/.*code=/, '');

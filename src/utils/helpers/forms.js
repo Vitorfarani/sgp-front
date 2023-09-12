@@ -1,6 +1,28 @@
+import { isString } from "./is";
+
 export function formatForm(formData) {
   const state = { ...formData };
 
+  const trimTextInputs = () => {
+    Object.keys(state).map((field) => {
+      if(isString(state[field])) {
+        state[field] = state[field].trim()
+        if(state[field] === '') {
+          state[field] = null
+        }
+      }
+    });
+
+    return {
+      ...state,
+      trimTextInputs,
+      rebaseIds,
+      formatDates,
+      rebaseIdsToObj,
+      getResult
+    };
+  };
+  
   const rebaseIds = fieldsToRebase => {
     fieldsToRebase.forEach(field => {
       if (!!state[field]) {
@@ -11,9 +33,11 @@ export function formatForm(formData) {
 
     return {
       ...state,
+      trimTextInputs,
       rebaseIds,
       formatDates,
-      rebaseIdsToObj
+      rebaseIdsToObj,
+      getResult
     };
   };
   const rebaseIdsToObj = fieldsToRebase => {
@@ -25,9 +49,11 @@ export function formatForm(formData) {
 
     return {
       ...state,
+      trimTextInputs,
       rebaseIds,
       formatDates,
-      rebaseIdsToObj
+      rebaseIdsToObj,
+      getResult
     };
   };
 
@@ -41,14 +67,22 @@ export function formatForm(formData) {
 
     return {
       ...state,
+      trimTextInputs,
       rebaseIds,
-      formatDates
+      formatDates,
+      rebaseIdsToObj,
+      getResult
     };
   };
-
+  function getResult() {
+    return state
+  }
   return {
+    trimTextInputs,
     rebaseIds,
-    formatDates
+    formatDates,
+    rebaseIdsToObj,
+    getResult
   };
 }
 

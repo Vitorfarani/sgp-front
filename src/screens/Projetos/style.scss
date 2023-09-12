@@ -3,6 +3,15 @@
   flex: 0 0 240px;
   height: 200px;
   margin-right: 10px;
+  strong {
+    font-size: 12px;
+    font-weight: 800;
+  }
+  p {
+    font-size: 16px;
+    font-weight: 300;
+    margin-bottom: 3px;
+  }
 }
 
 .card-observacao-produto {

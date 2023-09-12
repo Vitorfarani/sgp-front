@@ -6,7 +6,7 @@ export const conhecimentoSchema = Yup.object().shape({
   nome: Yup.string().required( yupRequired('Nome')),
   descricao: Yup.string().required( yupRequired('Descrição')),
   dificuldade:  Yup.number().required(yupRequired('Dificuldade')),
-  conhecimento_classe:  Yup.object().nonNullable(yupRequired('Classe')).shape(yupOptionStandart('Classe')),
+  conhecimento_classe:  Yup.object().nonNullable(yupRequired('Classe')),
   conhecimento_nivel: Yup.object().nullable(),
 });
 

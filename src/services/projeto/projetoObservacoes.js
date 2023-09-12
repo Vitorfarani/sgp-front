@@ -1,4 +1,4 @@
-import { _delete, _get, _post, _put, fakeFetch } from ".";
+import { _delete, _get, _post, _put, fakeFetch } from "..";
 let MOCK_observacoes = [
   {
     colaborador: {

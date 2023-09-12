@@ -148,12 +148,12 @@ const Notify = forwardRef((p, ref) => {
               className="u-notification"
               {...notif}
             >
-              <Row>
-                <Col sm={2}>
+              <Row style={{width: '100%'}}>
+                <Col sm={1}>
                   {notif.icon ? <notif.icon size={'1.6em'}/> : <FiCheck size={'1.6em'}/>}
                 </Col>
-                <Col className='m-auto'>
-                  <span>
+                <Col sm={10} className='m-auto'  >
+                  <span style={{textWrap: 'nowrap'}}>
                     {notif.message}
                   </span>
                 </Col>

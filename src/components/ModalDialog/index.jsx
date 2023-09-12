@@ -3,7 +3,7 @@ import { Form } from 'react-bootstrap';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import PropTypes from 'prop-types';
-import { FeedbackError, SelectAsync } from '..';
+import { FeedbackError, InfoDropdown, SelectAsync } from '..';
 import { validateSchema } from '@/utils/helpers/yup';
 
 const ModalDialog = forwardRef(({
@@ -25,15 +25,16 @@ const ModalDialog = forwardRef(({
     setValidated(false);
     setTimeout(() => {
       setModalProps({})
+      setFormData({})
     }, 400);
     onHide()
   }
 
-  function show({data, ...params}) {
-    if(params.forms) params.forms = params.forms.map(f => {f.id = self.crypto.randomUUID(); return f})
-      setModalProps(params)
-      setFormData(data)
-      setIsShow(true)
+  function show({ data, ...params }) {
+    if (params.forms) params.forms = params.forms.map(f => { f.id = self.crypto.randomUUID(); return f })
+    setModalProps(params)
+    data && setFormData(data)
+    setIsShow(true)
   }
 
   useImperativeHandle(ref, () => ({
@@ -46,6 +47,7 @@ const ModalDialog = forwardRef(({
       document.getElementById('btn-submit-hided').click();
     } else {
       onSuccess()
+      hide()
     }
   }
 
@@ -55,22 +57,27 @@ const ModalDialog = forwardRef(({
         .then(() => {
           setErrors(true)
           setValidated(true);
-          if(modalProps.method) {
-              modalProps.afterSubmit(formData)
+          if (modalProps.method) {
+            modalProps.afterSubmit(formData)
               .then((res) => {
 
                 onSuccess(formData)
+                hide()
+
               })
               .catch((err) => {
                 console.log(err)
               })
           } else {
             onSuccess(formData)
+            hide()
+
           }
-          
+
 
         })
         .catch((errors) => {
+          console.log(errors)
           setErrors(errors)
           setValidated(false);
         })
@@ -79,6 +86,8 @@ const ModalDialog = forwardRef(({
       const form = event.currentTarget;
       if (form.checkValidity()) {
         onSuccess(formData)
+        hide()
+
       }
     }
     event.preventDefault();
@@ -112,9 +121,9 @@ const ModalDialog = forwardRef(({
         {!!modalProps.forms && (
           <Form id="formModalDialog" autoComplete="off" noValidate={!!modalProps.yupSchema} validated={validated} onSubmit={onSubmited} style={{ marginTop: 20 }}>
             {modalProps.forms.map((form, i) => (
-              <>
+              <div key={form.id}>
                 {!['select', 'selectAsync'].includes(form.type) && (
-                  <Form.Group key={form.id} className="mb-4" controlId={form.id}>
+                  <Form.Group key={form.id} className="mb-4" >
                     <Form.Label><strong> {form.label} </strong></Form.Label>
                     <Form.Control
                       value={formData[form.name]}
@@ -134,7 +143,7 @@ const ModalDialog = forwardRef(({
                   </Form.Group>
                 )}
                 {form.type === 'select' && (
-                  <Form.Group key={form.id} className="mb-4" controlId={form.id}>
+                  <Form.Group key={form.id} className="mb-4" >
                     <Form.Label><strong> {form.label} </strong></Form.Label>
                     <Form.Select
                       value={formData[form.name]}
@@ -158,7 +167,7 @@ const ModalDialog = forwardRef(({
                   </Form.Group>
                 )}
                 {form.type === 'selectAsync' && (
-                  <Form.Group key={form.id} className="mb-4" controlId={form.id}>
+                  <Form.Group key={form.id} className="mb-4">
                     <Form.Label><strong> {form.label} </strong></Form.Label>
                     <SelectAsync
                       value={formData[form.name]}
@@ -169,19 +178,20 @@ const ModalDialog = forwardRef(({
                           ...prev,
                           [form.name]: value
                         }));
-                      }} 
-                      {...form}/>
+                      }}
+                      {...form} />
                     <FeedbackError error={errors[form.name]} />
                   </Form.Group>
                 )}
-              </>
+              </div>
             ))}
             <Button style={{ display: 'none' }} type='submit' id="btn-submit-hided" />
           </Form>
         )}
       </Modal.Body>
       <Modal.Footer>
-        <Button variant="default" type="button" onClick={onCancel}>
+       {!!formData.id && <InfoDropdown style={{marginRight: 'auto'}} data={formData}/>}
+        <Button variant="default" type="button" onClick={hide}>
           {modalProps.labelCancel ?? 'Cancelar'}
 
         </Button>

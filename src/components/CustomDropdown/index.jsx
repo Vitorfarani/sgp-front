@@ -8,7 +8,7 @@ const CustomDropdown = ({ items, size, param }) => {
     if(visibled === false) return null
     return (
       <Button variant="primary" onClick={() => onClick(param)}>
-        {Icon && <Icon className='me-2' />}
+        {Icon && React.createElement(Icon, {className:'me-2'})}
         {label}
       </Button>
     );
@@ -21,7 +21,7 @@ const CustomDropdown = ({ items, size, param }) => {
 
         <Dropdown.Menu>
           {items.map((item, index) => item.visibled !== false ? (
-            <Dropdown.Item key={index} {...item}  onClick={() => item.onClick(param)}>
+            <Dropdown.Item key={index}  onClick={() => item.onClick(param)}>
               {item.icon && <item.icon className='me-2' />}
               {item.label}
             </Dropdown.Item>

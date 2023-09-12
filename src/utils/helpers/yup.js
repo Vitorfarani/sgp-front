@@ -6,8 +6,11 @@ export async function validateSchema(validationSchema, formData) {
     await validationSchema.validate(formData, { abortEarly: false });
     return Promise.resolve();
   } catch (validationErrors) {
-    console.log(validationErrors)
     const newErrors = {};
+    if(validationErrors === 'Cpf inválido') {
+      newErrors['cpf'] = 'Cpf inválido';
+      return Promise.reject(newErrors);
+    }
     validationErrors.inner.forEach(error => {
       newErrors[error.path] = error.message;
     });
@@ -16,7 +19,7 @@ export async function validateSchema(validationSchema, formData) {
 }
 
 export function dateValidation (originalValue) {
-  if(originalValue == '') return true
+  if(originalValue == '' || originalValue == null) return true
   return moment(originalValue, 'YYYY-MM-DD', true).isValid();
 };
 

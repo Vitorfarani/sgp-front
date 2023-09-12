@@ -1,5 +1,5 @@
 import { FiBarChart, FiBookmark, FiGrid, FiPieChart, FiUsers, FiBriefcase } from "react-icons/fi";
-import { FaArchive, FaBrain, FaBuilding, FaTasks } from "react-icons/fa";
+import { FaArchive, FaBity, FaBrain, FaBuilding, FaClock, FaLevelUpAlt, FaListAlt, FaPeopleCarry, FaTasks } from "react-icons/fa";
 
 export default [
   {
@@ -11,8 +11,8 @@ export default [
   },
   {
     nome: 'Colaboradores',
-    icon: FiUsers,
-    path: 'colaborador',
+    icon: FaPeopleCarry,
+    path: 'colaboradores',
     childrens: []
   },
   {
@@ -20,7 +20,22 @@ export default [
     icon: FiGrid,
     path: 'projetos',
     rolesPermited: [],
-    childrens: []
+    childrens: [
+      {
+        nome: 'Status de projetos',
+        icon: FaListAlt,
+        path: 'projetos/status',
+        rolesPermited: [],
+        childrens: []
+      },
+      {
+        nome: 'Fases de projetos',
+        icon: FaClock,
+        path: 'projetos/fases',
+        rolesPermited: [],
+        childrens: []
+      },
+    ]
   },
 
   {
@@ -28,7 +43,22 @@ export default [
     icon: FaBrain,
     path: 'conhecimentos',
     rolesPermited: [],
-    childrens: []
+    childrens: [
+      {
+        nome: 'Classes de conhecimento',
+        icon: FaBity,
+        path: 'conhecimentos/classe',
+        rolesPermited: [],
+        childrens: []
+      },
+      {
+        nome: 'Níveis de conhecimento',
+        icon: FaLevelUpAlt,
+        path: 'conhecimentos/nivel',
+        rolesPermited: [],
+        childrens: []
+      },
+    ]
   },
   {
     nome: 'Empresas',
@@ -44,9 +74,9 @@ export default [
     childrens: []
   },
   {
-    nome: 'Setor',
+    nome: 'Setores',
     icon: FiBriefcase,
-    path: 'setor',
+    path: 'setores',
     childrens: []
   },
 ]

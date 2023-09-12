@@ -17,6 +17,21 @@ export const loginApi = async (code) => {
 
         })
 }
+export const loginDEVApi = async () => {
+    let url = `login-dev`
+    return httpSgp.post(url)
+        .then(response => {
+            localStorage.setItem('toook', response.data.token.access_token)
+            Object.assign(httpSgp.defaults, {
+                headers: { authorization: 'Bearer ' + response.data.token.access_token },
+            });
+            return Promise.resolve(response)
+        })
+        .catch((error) => {
+            return Promise.reject(ApiAlertError(error))
+
+        })
+}
 export const me = async () => {
     let url = `me`
     return httpSgp.get(url)

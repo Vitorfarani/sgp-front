@@ -1,12 +1,7 @@
 import axios from "axios";
 import { _delete, _get, _post, _put, fakeFetch } from ".";
 
-export const listSimpleSetores = async () => {
-  let url = `setor/simple`;
-  return _get(url);
-}
-
-export const listSetores = async (params) => {
+export const listSetores = async (params = "") => {
   let url = `setor${params}`;
   return _get(url);
 }

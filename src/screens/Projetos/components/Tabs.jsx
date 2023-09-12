@@ -1,5 +1,5 @@
 import { Row, Tabs as BTabs, Tab, Badge, Form, Button } from 'react-bootstrap'
-import { createProjetoObservacao, deleteProjetoObservacao, listProjetoObservacoes } from "@/services/projetoObservacoes";
+import { createProjetoObservacao, deleteProjetoObservacao, listProjetoObservacoes } from "@/services/projeto/projetoObservacoes";
 import { useTheme } from "@/utils/context/ThemeProvider";
 import { useEffect, useState } from "react";
 import Observacoes from './Observacoes';

@@ -7,12 +7,16 @@ export default function Home() {
   const navigate = useNavigate();
   const {isLoaded, isLogged} = useAuth();
 
-  console.log({isLoaded, isLogged})
     useEffect(() => {
-      console.log({isLoaded, isLogged})
       if(isLoaded) {
         if(isLogged) {
-          navigate('/dashboard')
+          const savedPath = localStorage.getItem('savedPath');
+          if (savedPath) {
+            console.log(savedPath)
+            navigate(savedPath)
+          } else {
+            navigate('/dashboard')
+          }
         } else {
           navigate('/login')
         }

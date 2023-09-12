@@ -1,6 +1,6 @@
 
 import { ENV } from "@/constants/ENV";
-import { getRedirectUrl } from "@/utils/helpers";
+import { getRedirectUrl } from "@/utils/helpers/mask";
 
 // export const sendCodeToGov = async (code) => {
 //     // return MOCK_SSO; //mock para tests, TODO: normalizar auth

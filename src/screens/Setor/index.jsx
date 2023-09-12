@@ -8,37 +8,38 @@ import { useEffect, useState } from "react";
 import { FiCheckCircle, FiEdit, FiPlus, FiTrash } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import { setorSchema } from "./validations";
-import { listSimpleSetores } from "@/services/setores";
-import { listSimpleColaboradores } from "@/services/colaboradores";
+import { listColaboradores } from "@/services/colaborador/colaboradores";
+import { formatForm } from "@/utils/helpers/forms";
+import { Col } from "react-bootstrap";
 
 const basefilters = {
-  // search: '',
-  // perPage: 20,
-  // selectedRows: [],
-  // gerencia: null,
-  // page: 1,
-  // sortedColumn: 'id',
-  // sortOrder: 'asc',
+  search: '',
+  perPage: 20,
+  selectedRows: [],
+  subordinacao: null,
+  page: 1,
+  sortedColumn: 'id',
+  sortOrder: 'asc',
 };
 
 const columnsFields = [
-  { field: 'nome', label: 'Nome', order: true, style: { width: 300 } },
-  { field: 'sigla', label: 'Sigla', order: true },
-  { field: 'responsavel_list', label: 'Responsável', enabledOrder: true, piper: (field) => !!field && field.nome },
-  { field: 'setor_list', label: 'Subordinação', enabledOrder: true, piper: (field) => !!field && field.nome },
+  { field: 'nome', label: 'Nome', enabledOrder: true, style: { width: 300 } },
+  { field: 'sigla', label: 'Sigla', enabledOrder: true },
+  { field: 'responsavel', label: 'Responsável', enabledOrder: true, piper: (field) => !!field ? field.nome : '' },
+  { field: 'subordinacao', label: 'Subordinação', enabledOrder: true, piper: (field) => !!field ? field.sigla : '' },
 ];
 
 const cadastroInitialValue = {
   nome: '',
   sigla: '',
-  responsavel_list: '',
-  setor_list: '',
+  responsavel: null,
+  setor: null,
 };
 
 export default function Setor() {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { callGlobalDialog, handleGlobalLoading, callGlobalAlert } = useTheme();
+  const { callGlobalDialog, handleGlobalLoading, callGlobalAlert, callGlobalNotify } = useTheme();
 
   const {
     rows,
@@ -50,7 +51,7 @@ export default function Setor() {
     resetFilters,
     isEmpty,
   } = useTable(columnsFields, listSetores, basefilters, (results) => {
-    return results
+    return results.data
   });
 
   function callModalCadastro(data = {}) {
@@ -70,36 +71,39 @@ export default function Setor() {
           placeholder: '',
         },
         {
-          name: 'responsavel_list',
+          name: 'responsavel',
           label: 'Responsável',
           type: 'selectAsync',
-          loadOptions: listSimpleColaboradores
+          loadOptions: listColaboradores
         },
         {
-          name: 'setor_list',
+          name: 'subordinacao',
           label: 'Subordinação',
           type: 'selectAsync',
-          loadOptions: listSimpleSetores
+          loadOptions: listSetores
         },
       ],
       labelSucessColor: 'green',
       labelSuccess: 'Salvar',
       labelCancel: 'Cancelar',
     })
+      .then((result) => {
+        return formatForm(result).rebaseIds(['responsavel', 'subordinacao']).getResult()
+      })
       .then(async (result) => {
         handleGlobalLoading.show()
         let method = !result.id ? createSetor : updateSetor;
         method(result)
           .then((res) => {
-            callGlobalAlert({ title: '', message: res.mensagem, color: 'green', icon: FiCheckCircle, timer: 2000 })
-            load()
+            callGlobalNotify({ message: res.message, variant: 'success' })
             resetFilters()
-          })
-          .catch((erro) => {
-            callGlobalAlert(erro)
+            handleGlobalLoading.hide()
 
           })
-          .finally(handleGlobalLoading.hide)
+          .catch((error) => {
+            callGlobalAlert(error)
+            handleGlobalLoading.hide()
+          })
       })
       .catch(console.log)
 
@@ -110,7 +114,7 @@ export default function Setor() {
 
   return (
     <Background>
-      <HeaderTitle title="Setor" optionsButtons={[
+      <HeaderTitle title="Setores" optionsButtons={[
         {
           label: 'Cadastrar',
           onClick: () => callModalCadastro(cadastroInitialValue),
@@ -124,7 +128,17 @@ export default function Setor() {
           isLoading={isTableLoading}
           filtersState={filtersState}
           searchPlaceholder="Pesquisar Setor"
-          searchOffiline
+          filtersComponentes={
+            <>
+            <Col md={3}>
+            <SelectAsync
+              placeholder="Subordinados de um setor"
+              loadOptions={(search) => listSetores(`?search=${search}`)}
+              getOptionLabel={(option) => option.sigla}
+              onChange={(setor) => handleChangeFilters('subordinacao', setor.id)} />
+            </Col>
+            </>
+          }
           handleFilters={handleChangeFilters}
           actions={[
             {
@@ -136,11 +150,11 @@ export default function Setor() {
             },
             {
               label: 'Excluir',
-              onClick: (row) =>{
+              onClick: (row) => {
                 handleGlobalLoading.show()
                 deleteSetor(row.id)
                   .then((result) => {
-                    callGlobalAlert({title: 'Sucesso', message: 'Setor excluido com sucesso', color: 'green'})
+                    callGlobalNotify({ message: result.message, variant: 'danger' })
                   })
                   .catch(callGlobalAlert)
                   .finally(handleGlobalLoading.hide)

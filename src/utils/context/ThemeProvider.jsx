@@ -1,7 +1,7 @@
 
 
 
-import React, { createContext, memo, useContext, useEffect, useRef, useState } from "react";
+import React, { createContext, memo, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { useLocalStorage } from "@/utils/hooks/useLocalStorage";
 import { GlobalAlert, LoadingOverLay, ModalDialog, Notify } from "@/components/index";
 import { ThemeContext } from "./index";
@@ -12,65 +12,45 @@ import { isString } from "../helpers/is";
 export const ThemeProvider = memo(({ children }) => {
   const [colorModeSelected, setColorModeSelected, loadColorModeSelected] = useLocalStorage('colorModeSelected', document.querySelector("html").getAttribute("data-bs-theme"));
   const [promiseDialog, setPromiseDialog] = useState();
-  const [isLoading, setIsLoading] = useState(false);
-  const [loadingMsg, setLoadingMsg] = useState();
   const dialog = useRef();
   const notify = useRef();
-
+  const loadingOverLay = useRef();
   const globalAlertRef = useRef();
 
-  function toggleTheme() {
+  const toggleTheme = useCallback(() => {
     let newColorMode = colorModeSelected === "dark" ? "light" : "dark";
-    console.log(newColorMode)
     setColorModeSelected(newColorMode)
     document.querySelector("html").setAttribute("data-bs-theme", newColorMode);
-  }
+  },[colorModeSelected]);
 
-  function callGlobalAlert(body) {
-    console.log(body)
-    if (Object.keys(body).includes('message') && isString(body.message)) {
+  const callGlobalAlert = useCallback((body) => {
+    if (isString(body.message)) {
       globalAlertRef.current.show(body)
     } else {
-      throw 'message is required';
+      console.error('message is required');
     }
-  }
+  },[])
 
   //Example: callGlobalNotify({variant: 'success', message: 'Tarefa foi salva com sucesso', icon: FiCheck, position: 'bottom'})
-  function callGlobalNotify(body) {
-    if (Object.keys(body).includes('message')) {
+  const callGlobalNotify = useCallback((body) => {
+    if (isString(body.message)) {
+      console.log(body)
       notify.current.add(body)
     } else {
-      throw 'message is required';
+      console.error('message is required');
     }
-  }
+  }, [])
 
-  async function callGlobalDialog(body) {
-    if (Object.keys(body).includes('title')) {
+  const callGlobalDialog = useCallback((body) => {
       dialog.current.show(body)
       return new Promise((resolve, reject) => {
         setPromiseDialog({ resolve, reject })
       })
-    } else {
-      return Promise.reject('title is required');
-    }
-  }
+  }, []);
   
-  // function closeModalDialog() {
-  //   setPromiseDialog(null)
-  //   dialog.current.hide()
-  // }
-
   const handleGlobalLoading = {
-    show: (msg) => {
-      setIsLoading(true)
-      if (msg) {
-        setLoadingMsg(msg)
-      }
-    },
-    hide: () => {
-      setIsLoading(false)
-      setLoadingMsg(undefined)
-    }
+    show: (msg) => loadingOverLay.current.show(msg),
+    hide: () => loadingOverLay.current.hide(),
   }
   
   useEffect(() => {
@@ -79,24 +59,28 @@ export const ThemeProvider = memo(({ children }) => {
     })()
   }, []);
 
-  return (
-    <ThemeContext.Provider value={{
+  const contextValues = useMemo(() => ({
       colorModeSelected,
       toggleTheme,
       callGlobalAlert,
       callGlobalNotify,
       callGlobalDialog,
       handleGlobalLoading
-    }}>
+  }), [colorModeSelected])
+  return (
+    <ThemeContext.Provider value={contextValues}>
       {children}
       <GlobalAlert ref={globalAlertRef} />
       <ModalDialog
         ref={dialog}
-        onSuccess={(results) => promiseDialog.resolve(results)}
+        onSuccess={(results) => {
+          promiseDialog.resolve(results)
+        }}
         onCancel={() => promiseDialog.reject()}
         onHide={() => promiseDialog.reject()}/>
-      {isLoading && <LoadingOverLay label={loadingMsg} />}
-      {/* )} */}
+
+      <LoadingOverLay ref={loadingOverLay} />
+      <Notify ref={notify} />
     </ThemeContext.Provider>
   );
 })

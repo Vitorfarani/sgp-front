@@ -4,7 +4,7 @@ import { dateValidation, yupOptionStandart, yupRequired } from "@/utils/helpers/
 
 export const empresaSchema = Yup.object().shape({
   nome: Yup.string().required( yupRequired('Nome')),
-  endereco: Yup.string().required( yupRequired('Descrição')),
+  endereco: Yup.string().required( yupRequired('Endereço')),
 });
 
 // export const projetoSchema = Yup.object().shape({

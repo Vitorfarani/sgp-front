@@ -1,5 +1,5 @@
 import { Background, HeaderTitle, Section, Table } from "@/components/index";
-import { deleteProjeto, listProjetos } from "@/services/projetos";
+import { deleteProjeto, listProjetos } from "@/services/projeto/projetos";
 import { useAuth } from "@/utils/context/AuthProvider";
 import { useTheme } from "@/utils/context/ThemeProvider";
 import useTable from "@/utils/hooks/useTable";
@@ -20,9 +20,9 @@ const basefilters = {
 
 const columnsFields = [
   { field: 'nome', label: 'Projeto', enabledOrder: true },
-  { field: 'responsavel', label: 'Responsável', enabledOrder: true, piper: (field) => !!field && field.nome },
-  { field: 'fase', label: 'Fase',  enabledOrder: true, piper: (field) =>  !!field && field.nome  },
-  { field: 'situacao', label: 'Situação', enabledOrder: true, piper: (field) => !!field && field.nome  }
+  { field: 'projeto_setor', label: 'Setor Responsável', enabledOrder: true, piper: (field) => field.find(s => !!s.principal)?.setor.sigla || field[0]?.setor.sigla || '' },
+  { field: 'projeto_fase', label: 'Fase',  enabledOrder: true, piper: (field) =>  field.nome   },
+  { field: 'projeto_status', label: 'Status', enabledOrder: true, piper: (field) => field.nome  }
 ];
 
 export default function Projetos() {

@@ -1,24 +1,24 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FiCheckCircle, FiEdit, FiPlus, FiTrash } from "react-icons/fi";
-import { Background, HeaderTitle, Section, SelectAsync, Table } from "@/components/index";
+import { Background, BadgeColor, HeaderTitle, Section, SelectAsync, Table } from "@/components/index";
 import { getDificuldade } from "@/constants/index";
-import { createConhecimento, deleteConhecimento, listConhecimentos, updateConhecimento } from "@/services/conhecimentos";
+import { createConhecimento, deleteConhecimento, listConhecimentos, updateConhecimento } from "@/services/conhecimento/conhecimentos";
 import { useAuth } from "@/utils/context/AuthProvider";
 import { useTheme } from "@/utils/context/ThemeProvider";
 import { formatForm } from "@/utils/helpers/forms";
 import useTable from "@/utils/hooks/useTable";
 import { conhecimentoSchema } from "./validations";
 import { standartResponseApiError } from "@/services/index";
-import { listSimpleConhecimentoClasses } from "@/services/conhecimentoClasse";
-import { listSimpleConhecimentoNivels } from "@/services/conhecimentoNivel";
+import { listConhecimentoClasses } from "@/services/conhecimento/conhecimentoClasse";
+import { listConhecimentoNivels } from "@/services/conhecimento/conhecimentoNivel";
 
 const basefilters = {
   search: '',
   perPage: 20,
   selectedRows: [],
   page: 1,
-  sortedColumn: '',
+  sortedColumn: 'id',
   sortOrder: 'asc',
 };
 
@@ -26,12 +26,14 @@ const columnsFields = [
   { field: 'nome', label: 'Nome', enabledOrder: true, style: { width: 100 } },
   { field: 'descricao', label: 'Descricão', enabledOrder: true },
   { field: 'dificuldade', label: 'Dificuldade', enabledOrder: true, piper: (field) => getDificuldade(field)},
+  { field: 'color', label: 'Color', enabledOrder: true, piper: (field) => <BadgeColor color={field}>{field ?? "sem cor"}</BadgeColor>},
   { field: 'conhecimento_classe', label: 'Classe', enabledOrder: true, piper: (field) =>  !!field && field.nome },
-  { field: 'conhecimento_nivel', label: 'Nível', enabledOrder: true, piper: (field) => !!field && field.nome },
+  { field: 'conhecimento_nivel', label: 'Nível', enabledOrder: true, piper: (field) => !!field && field.grau },
 ];
 const cadastroInitialValue = {
   nome: '',
   descricao: '',
+  color: null,
   dificuldade: 5,
   conhecimento_classe: null,
   conhecimento_nivel: null
@@ -40,7 +42,7 @@ const cadastroInitialValue = {
 export default function Conhecimentos() {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { callGlobalDialog, handleGlobalLoading, callGlobalAlert } = useTheme();
+  const { callGlobalDialog, handleGlobalLoading, callGlobalAlert, callGlobalNotify } = useTheme();
 
   const {
     rows,
@@ -84,10 +86,15 @@ export default function Conhecimentos() {
           ]
         },
         {
+          name: 'color',
+          label: 'Color',
+          type: 'color',
+        },
+        {
           name: 'conhecimento_classe',
           label: 'Classe',
           type: 'selectAsync',
-          loadOptions: listSimpleConhecimentoClasses,
+          loadOptions: listConhecimentoClasses,
           required: true,
         },
         {
@@ -95,7 +102,7 @@ export default function Conhecimentos() {
           label: 'Nível',
           type: 'selectAsync',
           getOptionLabel: (option) => option.grau,
-          loadOptions: listSimpleConhecimentoNivels
+          loadOptions: listConhecimentoNivels
         },
 
       ],
@@ -104,20 +111,18 @@ export default function Conhecimentos() {
       labelCancel: 'Cancelar',
     })
       .then((result) => {
-        return formatForm(result).rebaseIds(['conhecimento_classe', 'conhecimento_nivel'])
+        return formatForm(result).rebaseIds(['conhecimento_classe', 'conhecimento_nivel']).getResult()
       })
       .then(async (result) => {
         handleGlobalLoading.show()
         let method = !result.id ? createConhecimento : updateConhecimento;
         method(result)
           .then((res) => {
-            callGlobalAlert({ message: res.mensagem, color: 'green', icon: FiCheckCircle, timer: 2000 })
-            load()
+            callGlobalNotify({ message: res.message, variant: 'success' })
             resetFilters()
           })
           .catch((erro) => {
             callGlobalAlert(erro)
-
           })
           .finally(handleGlobalLoading.hide)
       })
@@ -162,8 +167,7 @@ export default function Conhecimentos() {
                     .then((result) => {
                       callGlobalAlert({title: 'Sucesso', message: 'Conhecimento excluido com sucesso', color: 'green'})
                     })
-                    .catch(() =>
-                    callGlobalAlert(standartResponseApiError('Erro de comunicação')))
+                    .catch(callGlobalAlert)
                     .finally(handleGlobalLoading.hide)
               },
               icon: FiTrash,

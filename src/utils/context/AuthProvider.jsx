@@ -1,9 +1,8 @@
 import React, { createContext, Fragment, useCallback, useContext, useEffect, useMemo, useReducer, useState } from "react";
 import moment from "moment";
-import { loginApi, me, logout as logoutApi } from "@/services/AuthService.js";
+import { loginApi, me, logout as logoutApi, loginDEVApi } from "@/services/AuthService.js";
 import { logoutGov } from "@/services/sso.js";
 import { useLocalStorage } from "@/utils/hooks/useLocalStorage";
-import { isExpired } from "@/utils/helpers";
 import { AuthContext } from ".";
 import { useTheme } from "./ThemeProvider";
 import { FiInfo } from "react-icons/fi";
@@ -41,6 +40,18 @@ export const AuthProvider = ({ children }) => {
   
   const cbSubmit = async (code, signature = null) => {
     await loginApi(code)
+    .then(async (response) => {
+        let responseUser = response.data.user
+        login(responseUser);
+      })
+      .catch((error) => {
+        callGlobalAlert({message: error.message, icon: FiInfo, color: 'red'})
+          setDataSSO(null)
+          setIsLogged(false)
+      })
+  }
+  const cbSubmitDEV = async () => {
+    await loginDEVApi()
     .then(async (response) => {
         let responseUser = response.data.user
         login(responseUser);
@@ -89,6 +100,7 @@ export const AuthProvider = ({ children }) => {
       login,
       logout,
       cbSubmit,
+      cbSubmitDEV,
       dataSSO,
       hmlMode,
       sethmlMode,

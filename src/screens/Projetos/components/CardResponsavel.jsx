@@ -18,9 +18,15 @@ const CardResponsavel = ({ title, dataInicio, dataFim, onEdit, onRemove, size = 
           <FiTrash color='red'/>
         </a>
       </Card.Header>
-      <Card.Body>
+      {/* <Card.Body>
         <Card.Text>Início: {dateEnToPt(dataInicio)}</Card.Text>
         <Card.Text>Fim: {dataFim ? dateEnToPt(dataFim) : 'Até o momento'}</Card.Text>
+      </Card.Body> */}
+      <Card.Body>
+        <strong>Desde</strong>
+        <p>{dateEnToPt(dataInicio)}</p>
+        <strong>Até</strong>
+        <p>{dataFim ? dateEnToPt(dataFim) : 'O momento'}</p>
       </Card.Body>
       <Card.Footer>
         <BtnSimple onClick={onEdit}>Editar</BtnSimple>

@@ -8,6 +8,7 @@ export const AuthContext = createContext({
   login: () => {},
   logout: () => { },
   cbSubmit: () => {},
+  cbSubmitDEV: () => {},
   isLoaded: false,
   dataSSO: null,
   verifing: false,

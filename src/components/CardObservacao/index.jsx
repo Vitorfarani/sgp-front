@@ -1,6 +1,6 @@
 import AnexoItem from "@/components/AnexoItem";
 import { HorizontalScrollview, ThumbnailUploader } from "@/components/index";
-import { deleteProjetoObservacao, listProjetoObservacoes } from "@/services/projetoObservacoes";
+import { deleteProjetoObservacao, listProjetoObservacoes } from "@/services/projeto/projetoObservacoes";
 import { useAuth } from "@/utils/context/AuthProvider";
 import { useTheme } from "@/utils/context/ThemeProvider";
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useState } from "react";

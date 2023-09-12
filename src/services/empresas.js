@@ -1,11 +1,8 @@
 import axios from "axios";
 import { _delete, _get, _post, _put, fakeFetch } from ".";
 
-export const listSimpleEmpresas = async () => {
-  let url = `empresa/simple`;
-  return _get(url);
-}
-export const listEmpresas = async (params) => {
+
+export const listEmpresas = async (params = "") => {
   let url = `empresa${params}`;
   return _get(url);
 }

@@ -2,21 +2,36 @@ import * as Yup from 'yup';
 import { dateValidation, yupOptionStandart, yupRequired } from "@/utils/helpers/yup";
 
 export const responsavelSchema = Yup.object().shape({
-  responsavel: Yup.object().nonNullable('Responsável é obrigatória'),
-  dataInicio: Yup.string().test('validDate', 'Data inválida', dateValidation).required('Data de início é obrigatória'),
-  dataFim: Yup.string().test('validDate', 'Data inválida', dateValidation),
+  responsavel: Yup.object().nonNullable(yupRequired('Responsável')),
+  inicio: Yup.string().test('validDate', 'Data inválida', dateValidation).required('Data de início é obrigatória'),
+  fim: Yup.string().test('validDate', 'Data inválida', dateValidation).nullable(),
+});
+export const setorSchema = Yup.object().shape({
+  setor: Yup.object().nonNullable(yupRequired('Setor')),
+  inicio: Yup.string().test('validDate', 'Data inválida', dateValidation).required('Data de início é obrigatória'),
+  fim: Yup.string().test('validDate', 'Data inválida', dateValidation).nullable(),
 });
 
 export const projetoSchema = Yup.object().shape({
+  id: Yup.number().nullable(),
   nome: Yup.string().required('Nome é obrigatório'),
-  responsaveis: Yup.array().of(responsavelSchema),
-  conhecimentos: Yup.array().min(1, yupRequired('Conhecimento')),
+  descricao: Yup.string().required(yupRequired('Descrição')),
+  projeto_responsavel: Yup.array().when("id", (id, schema) => !id ? schema.of(responsavelSchema).min(1, 'É necessário no minimo 1 Responsável') : schema),
+  projeto_setor: Yup.array().when("id", (id, schema) => !id ? schema.of(setorSchema).min(1, 'É necessário no minimo 1 setor') : schema),
+  projeto_conhecimento: Yup.array().when("id", (id, schema) => !id ? schema.min(1, 'É necessário no minimo 1 conhecimento').required(yupRequired('Conhecimento')) : schema),
   thumbnail: Yup.string().nullable(),
-  cliente: Yup.object().nonNullable(yupRequired('Cliente')).shape(yupOptionStandart('Cliente')),
-  fase: Yup.object().nonNullable(yupRequired('Fase')).shape(yupOptionStandart('Fase')),
-  situacao: Yup.object().nonNullable(yupRequired('Status')).shape(yupOptionStandart('Status')),
-  linkRepositorio: Yup.string(),
-  setor: Yup.object().nonNullable(yupRequired('Gerencia')).shape(yupOptionStandart('Gerencia')),
+  cliente: Yup.object().nonNullable(yupRequired('Cliente')),
+  projeto_fase: Yup.object().nonNullable(yupRequired('Fase')),
+  projeto_status: Yup.object().nonNullable(yupRequired('Status')),
+  repositorio: Yup.string().nullable(),
+  sei: Yup.string().required(yupRequired('SEI')),
+  contato_nome: Yup.string().required(yupRequired('contato nome')),
+  contato_email: Yup.string().required(yupRequired('contato email')),
+  contato_telefone: Yup.string().required(yupRequired('contato telefone')),
+  hml_ip: Yup.string().nullable(),
+  hml_banco: Yup.string().nullable(),
+  prod_ip: Yup.string().nullable(),
+  prod_banco: Yup.string().nullable(),
 });
 
 // export const projetoSchema = Yup.object().shape({

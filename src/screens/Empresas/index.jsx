@@ -31,7 +31,7 @@ const cadastroInitialValue = {
 export default function Empresas() {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { callGlobalDialog, handleGlobalLoading, callGlobalAlert } = useTheme();
+  const { callGlobalDialog, handleGlobalLoading, callGlobalAlert, callGlobalNotify } = useTheme();
 
   const {
     rows,
@@ -48,7 +48,7 @@ export default function Empresas() {
 
   function callModalCadastro(data = {}) {
     callGlobalDialog({
-      title: 'Novo Empresa',
+      title: 'Nova Empresa',
       yupSchema: empresaSchema,
       data,
       forms: [
@@ -72,8 +72,7 @@ export default function Empresas() {
         let method = !result.id ? createEmpresa : updateEmpresa;
         method(result)
           .then((res) => {
-            callGlobalAlert({ title: '', message: res.mensagem, color: 'green', icon: FiCheckCircle, timer: 2000 })
-            load()
+            callGlobalNotify({ message: res.message, variant: 'success'})
             resetFilters()
           })
           .catch((erro) => {
@@ -111,15 +110,6 @@ export default function Empresas() {
               label: 'Editar',
               onClick: (row) => {
                 callModalCadastro(row)
-                // handleGlobalLoading.show()
-                // showEmpresa(row.empresa_id)
-                //   .then((result) => {
-                //     return formatForm(result).rebaseIdsToObj(['classe_id', 'empresa_nivel'])
-                //   })
-                //   .then((result) => {
-                //   })
-                //   .catch(callGlobalAlert)
-                //   .finally(handleGlobalLoading.hide)
               },
               icon: FiEdit,
             },
@@ -129,7 +119,8 @@ export default function Empresas() {
                  handleGlobalLoading.show()
                   deleteEmpresa(row.id)
                     .then((result) => {
-                      callGlobalAlert({title: 'Sucesso', message: 'Empresa excluida com sucesso', color: 'green'})
+                      callGlobalNotify({ message: result.message, variant: 'danger'})
+                      load()
                     })
                     .catch(callGlobalAlert)
                     .finally(handleGlobalLoading.hide)

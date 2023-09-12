@@ -6,30 +6,32 @@ import { useEffect, useState } from "react";
 import { FiCheckCircle, FiEdit, FiPlus, FiTrash } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import { standartResponseApiError } from "@/services/index";
-import { deleteColaborador, listColaboradores } from "@/services/colaboradores";
+import { deleteColaborador, listColaboradores } from "@/services/colaborador/colaboradores";
+import { celularMask } from "@/utils/helpers/mask";
+import { dateEnToPt, getIdade } from "@/utils/helpers/date";
 
 const basefilters = {
-  // search: '',
-  // perPage: 20,
-  // selectedRows: [],
-  // page: 1,
-  // sortedColumn: 'id',
-  // sortOrder: 'asc',
+  search: '',
+  perPage: 20,
+  selectedRows: [],
+  page: 1,
+  sortedColumn: 'id',
+  sortOrder: 'asc',
 };
 
 const columnsFields = [
-  { field: 'nome', label: 'Nome', order: true, style: { width: 100 } },
-  { field: 'pr', label: 'PR', order: false},
-  { field: 'email', label: 'Email', order: false },
-  { field: 'telefone', label: 'Telefone', order: false, piper: (field) => field},
-  { field: 'nascimento', label: 'Idade', order: false, piper: (field) => field },
-  { field: 'setor', label: 'Setor', order: false, piper: (field) => !!field ? field.nome : '' },
+  { field: 'nome', label: 'Nome', enabledOrder: true, style: { width: 100 } },
+  { field: 'pr', label: 'PR', enabledOrder: false},
+  { field: 'email', label: 'Email', enabledOrder: false },
+  { field: 'telefone', label: 'Telefone', enabledOrder: false, piper: (field) => field && celularMask(field)},
+  { field: 'nascimento', label: 'Idade', enabledOrder: false, piper: (field) => field && getIdade(field) + ' anos' },
+  { field: 'setor', label: 'Setor', enabledOrder: false, piper: (field) => !!field ? field.nome : '' },
 ];
 
 export default function Conhecimentos() {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { callGlobalDialog, handleGlobalLoading, callGlobalAlert } = useTheme();
+  const { callGlobalDialog, handleGlobalLoading, callGlobalAlert, callGlobalNotify } = useTheme();
 
   const {
     rows,
@@ -47,7 +49,7 @@ export default function Conhecimentos() {
   function handleDelete(data) {
     callGlobalDialog({
       title: 'Excluir Colaborador',
-      subtitle: 'Para confirmar a exclusão digite "<strong>excluir colaborador</strong>"!',
+      subTitle: 'Para confirmar a exclusão digite "<strong>excluir colaborador</strong>"!',
       forms: [
         {
           name: 'confirm',
@@ -60,14 +62,14 @@ export default function Conhecimentos() {
       labelCancel: 'Cancelar',
     })
       .then((result) => {
-        if(result.confirm !== "excluir colaborador") callGlobalAlert(standartResponseApiError('Confirmação inválida'))
+        if(result.confirm !== "excluir colaborador") return callGlobalNotify({message: 'Confirmação inválida', variant: 'warning'})
         handleGlobalLoading.show()
          deleteColaborador(data.id)
            .then((result) => {
-             callGlobalAlert({title: 'Sucesso', message: 'Conhecimento excluido com sucesso', color: 'green'})
+            callGlobalNotify({message: result.message, variant: 'danger'})
+            load()
            })
-           .catch(() =>
-           callGlobalAlert(standartResponseApiError('Erro de comunicação')))
+           .catch(callGlobalAlert)
            .finally(handleGlobalLoading.hide)
       })
 
@@ -81,7 +83,7 @@ export default function Conhecimentos() {
       <HeaderTitle title="Colaboradores" optionsButtons={[
         {
           label: 'Cadastrar',
-          onClick: () => navigate('/colaborador/cadastrar'),
+          onClick: () => navigate('/colaboradores/cadastrar'),
           icon: FiPlus,
         },
       ]} />
@@ -98,7 +100,7 @@ export default function Conhecimentos() {
             {
               label: 'Editar',
               onClick: (row) => {
-                navigate('/colaborador/editar/'+row.id)
+                navigate('/colaboradores/editar/'+row.id)
               },
               icon: FiEdit,
             },

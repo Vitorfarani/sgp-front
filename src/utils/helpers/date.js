@@ -40,3 +40,14 @@ export const convertDate = function (varDate, splitDateTime = false) {
   }
   return null
 }
+
+export const getIdade = (dataNascimento) =>  {
+    let dataAtual = moment();
+    return dataAtual.diff(moment(dataNascimento, 'YYYY-MM-DD'), 'years');
+}
+
+export function isExpired(init, expireIn, unit = 'seconds') {
+  const now = moment();
+  const tempoExpiracao = moment(init).add(expireIn, unit);
+  return now.isAfter(tempoExpiracao)
+}
