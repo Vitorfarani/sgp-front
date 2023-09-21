@@ -2,10 +2,10 @@ import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import './style.scss'
 
-const TextareaEditor = (props) => {
+const TextareaEditor = ({bounds = 3, ...props}) => {
   return (
     <ReactQuill
-      bounds={3}
+      bounds={bounds}
       style={{marginBottom: 60}}
      theme='snow'
       {...props}

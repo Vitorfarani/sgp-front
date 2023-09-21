@@ -9,12 +9,10 @@ import {
   Home,
   Login,
   Dashboard,
-  Tarefas,
   NotFound,
   Projeto,
   Projetos,
   Setor,
-  Tarefa,
   Conhecimentos,
   Empresas,
   Clientes,
@@ -23,7 +21,11 @@ import {
   ProjetoStatus,
   ProjetoFases,
   ConhecimentoClasse,
-  ConhecimentoNivel
+  ConhecimentoNivel,
+  TarefaStatus,
+  TarefaDashboard,
+  TarefaBase,
+  TarefaClasse
 } from '@/screens/index';
 import { useTheme } from '@/utils/context/ThemeProvider';
 import CadastrarProjeto from '@/screens/Projetos/CadastrarProjeto';
@@ -73,7 +75,13 @@ const MainRouter = () => {
         <Route path="projetos/status" Component={ProjetoStatus}/>
         <Route path="projetos/fases" Component={ProjetoFases}/>
         <Route path="projetos/cadastrar" Component={CadastrarProjeto}/>
+        <Route path="projetos/visualizar/:id" Component={Projeto}/>
         <Route path="projetos/editar/:id" Component={CadastrarProjeto}/>
+
+        <Route path="tarefas" Component={TarefaDashboard}/>
+        <Route path="tarefas/status" Component={TarefaStatus}/>
+        <Route path="tarefas/bases" Component={TarefaBase}/>
+        <Route path="tarefas/classes" Component={TarefaClasse}/>
 
           
         <Route path="colaboradores" Component={Colaboradores}/>

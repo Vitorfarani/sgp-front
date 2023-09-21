@@ -9,6 +9,7 @@ export function getStatusMessage(statusCode) {
       404: 'Não Encontrado',
       405: 'Método não habilitado',
       422: 'Erro no processamento',
+      429: 'Muitas requisições',
       500: 'Erro Interno do Servidor',
       // Adicione mais códigos de status e traduções conforme necessário
   };

@@ -1,5 +1,5 @@
 import { FiBarChart, FiBookmark, FiGrid, FiPieChart, FiUsers, FiBriefcase } from "react-icons/fi";
-import { FaArchive, FaBity, FaBrain, FaBuilding, FaClock, FaLevelUpAlt, FaListAlt, FaPeopleCarry, FaTasks } from "react-icons/fa";
+import { FaArchive, FaBalanceScale, FaBity, FaBrain, FaBuilding, FaClock, FaFlag, FaLevelUpAlt, FaListAlt, FaMarkdown, FaPeopleCarry, FaTasks } from "react-icons/fa";
 
 export default [
   {
@@ -32,6 +32,35 @@ export default [
         nome: 'Fases de projetos',
         icon: FaClock,
         path: 'projetos/fases',
+        rolesPermited: [],
+        childrens: []
+      },
+    ]
+  },
+  {
+    nome: 'Tarefas',
+    icon: FaTasks,
+    path: 'tarefas',
+    rolesPermited: [],
+    childrens: [
+      {
+        nome: 'Status de tarefas',
+        icon: FaListAlt,
+        path: 'tarefas/status',
+        rolesPermited: [],
+        childrens: []
+      },
+      {
+        nome: 'Classes de tarefas',
+        icon: FaMarkdown,
+        path: 'tarefas/classes',
+        rolesPermited: [],
+        childrens: []
+      },
+      {
+        nome: 'Bases de tarefas',
+        icon: FaFlag,
+        path: 'tarefas/bases',
         rolesPermited: [],
         childrens: []
       },

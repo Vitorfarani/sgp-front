@@ -19,11 +19,11 @@ const DateInput = ({value, onChangeValid, placeholder, ...props}) => {
   return (
     <>
         <Form.Control
-          {...props}
           type="date"
           placeholder={placeholder ?? "DD/MM/YYYY"}
           value={value}
           onChange={handleInputChange}
+          {...props}
           // isInvalid={isInvalid ?? props.isInvalid}
           // onFocus={(e) => e.target.type = "date"} // Alterna para input de data nativo ao receber foco
           // onBlur={(e) => e.target.type = "text"} // Alterna de volta para o input de texto ao perder foco

@@ -23,7 +23,8 @@ const Layout = React.memo(() => {
           <HeaderBar
             isOpenSideBarLeft={isOpenSideBarLeft}
             setIsOpenSideBarLeft={setIsOpenSideBarLeft} />
-          <div onClick={() => setIsOpenSideBarLeft(false)}>
+          <div 
+            >
 
             <Outlet />
           </div>

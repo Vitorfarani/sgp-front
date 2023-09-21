@@ -36,7 +36,8 @@ const cadastroInitialValue = {
   color: null,
   dificuldade: 5,
   conhecimento_classe: null,
-  conhecimento_nivel: null
+  conhecimento_nivel: null,
+  link: '',
 };
 
 export default function Conhecimentos() {
@@ -73,6 +74,7 @@ export default function Conhecimentos() {
           label: 'Descrição',
           placeholder: '',
         },
+       
         {
           name: 'dificuldade',
           label: 'Dificuldade',
@@ -104,14 +106,18 @@ export default function Conhecimentos() {
           getOptionLabel: (option) => option.grau,
           loadOptions: listConhecimentoNivels
         },
-
+        {
+          name: 'link',
+          label: 'Link para documentação',
+          placeholder: '',
+        },
       ],
       labelSucessColor: 'green',
       labelSuccess: 'Salvar',
       labelCancel: 'Cancelar',
     })
       .then((result) => {
-        return formatForm(result).rebaseIds(['conhecimento_classe', 'conhecimento_nivel']).getResult()
+        return formatForm(result).rebaseIds(['conhecimento_classe', 'conhecimento_nivel']).trimTextInputs().getResult()
       })
       .then(async (result) => {
         handleGlobalLoading.show()

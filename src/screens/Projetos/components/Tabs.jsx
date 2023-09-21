@@ -2,20 +2,22 @@ import { Row, Tabs as BTabs, Tab, Badge, Form, Button } from 'react-bootstrap'
 import { createProjetoObservacao, deleteProjetoObservacao, listProjetoObservacoes } from "@/services/projeto/projetoObservacoes";
 import { useTheme } from "@/utils/context/ThemeProvider";
 import { useEffect, useState } from "react";
-import Observacoes from './Observacoes';
-import { AnexoItem, BtnSimple, HorizontalScrollview, Section, TextareaEditor } from '@/components/index';
+import { AnexoItem, BtnSimple, HorizontalScrollview, Section, TextareaEditor, Observacoes} from '@/components/index';
 import { FiPlus, FiX } from 'react-icons/fi';
+import { useProjetoContext } from '../projetoContext';
 
-const Tabs = ({ projeto }) => {
+const Tabs = () => {
+  const {projeto} = useProjetoContext();
   const [observacoes, setObservacoes] = useState([]);
   const [obsIsLoading, setObsIsLoading] = useState(false);
   const { callGlobalAlert } = useTheme();
   const [observacao, setObservacao] = useState();
   const [anexos, setAnexos] = useState([]);
+  
   useEffect(() => {
+    loadObervacoes(projeto.observacoes)
     if (projeto.id) {
       (async () => {
-        loadObervacoes()
       })()
     }
   }, [projeto.id]);
@@ -71,14 +73,14 @@ const Tabs = ({ projeto }) => {
       <Tab eventKey="observacao"
         title={(
           <span>Observações
-            <Badge bg="primary">{observacoes.length}</Badge>
+            <Badge bg="primary">{projeto.observacoes?.length ?? 0}</Badge>
           </span>
         )}>
         <Observacoes
-          observacoes={observacoes}
+          observacoes={projeto.observacoes}
           isLoading={obsIsLoading}
           onRemove={removeObservacao} />
-        <Section >
+        <Section>
           <Form.Group className="mb-4">
             <Form.Label>Faça uma Observação</Form.Label>
             <TextareaEditor

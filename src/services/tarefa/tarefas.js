@@ -1,5 +1,5 @@
 import axios from "axios";
-import { _delete, _get, _patch, _post, _put } from ".";
+import { _delete, _get, _patch, _post, _put } from "..";
 
 export const listTarefas = async (params) => {
   let url = `tarefa${params}`;
@@ -15,12 +15,12 @@ export const showTarefa = async (id) => {
   let url = `tarefa/show/${id}`;
   return _get(url);
 }
-export const updateTarefa = async (id, data) => {
-  let url = `tarefa/update/${id}`;
+export const updateTarefa = async (data) => {
+  let url = `tarefa/update/${data.id}`;
   return _put(url, data);
 }
-export const updateStatusTarefa = async (id, data) => {
-  let url = `tarefa/update-status/${id}`;
+export const updateTarefaPositionFromKanban = async (id, data) => {
+  let url = `tarefa/update-position/${id}`;
   return _patch(url, data);
 }
 

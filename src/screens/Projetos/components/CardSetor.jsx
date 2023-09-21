@@ -9,27 +9,28 @@ import { FaStar } from 'react-icons/fa';
 
 const CardSetor = ({ title, dataInicio, dataFim, isMain, onEdit, onRemove, onMainChange, size = '13rem' }) => {
   return (
-    <Card className='card-responsavel' style={{flex: '0 0 178px'}}>
+    <Card className='card-responsavel' style={{ flex: '0 0 178px' }}>
       <Card.Header>
-        <Row>
+        <Row className="my-auto">
           <Col xs={2} md={2}>
             <a onClick={onMainChange}>
               {!isMain ? (
-                <FiStar color='var(--bs-body-color)'/>
-                ) : (
+                <FiStar color='var(--bs-body-color)' />
+              ) : (
                 <FaStar color='var(--bs-warning)' />
               )}
             </a>
           </Col>
           <Col xs={8} md={8} className='d-flex justify-content-center align-items-center'>
-            <Card.Title style={{ fontSize: 16, textAlign: 'center' }}>{title}</Card.Title>
+            <Card.Title style={{ fontSize: 16, textAlign: 'center', marginBottom: 0 }}>{title}</Card.Title>
           </Col>
-
-          <Col xs={2} md={2}>
-            <a onClick={onRemove}>
-              <FiTrash color='red' />
-            </a>
-          </Col>
+          {!!onRemove && (
+            <Col xs={2} md={2}>
+              <a onClick={onRemove}>
+                <FiTrash color='red' />
+              </a>
+            </Col>
+          )}
         </Row>
       </Card.Header>
       <Card.Body>
@@ -38,10 +39,12 @@ const CardSetor = ({ title, dataInicio, dataFim, isMain, onEdit, onRemove, onMai
         <strong>Até</strong>
         <p>{dataFim ? dateEnToPt(dataFim) : 'O momento'}</p>
       </Card.Body>
-      <Card.Footer>
-        <BtnSimple onClick={onEdit}>Editar</BtnSimple>
-        {/* <Button variant="primary" onClick={onEdit}>Editar</Button>{' '} */}
-      </Card.Footer>
+      {!!onEdit && (
+        <Card.Footer>
+          <BtnSimple onClick={onEdit}>Editar</BtnSimple>
+          {/* <Button variant="primary" onClick={onEdit}>Editar</Button>{' '} */}
+        </Card.Footer>
+      )}
     </Card>
   );
 };

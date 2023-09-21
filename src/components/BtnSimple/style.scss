@@ -1,7 +1,7 @@
 @import '@/scss/theme.scss';
 
 .btn-simple{
-  color: $secondary !important;
+  color: $secondary;
   text-decoration: solid;
   background-color: transparent;
   border: 0;
@@ -13,6 +13,6 @@
 
 @include color-mode(dark) {
   .btn-simple{
-    color: $secondary-light !important;
+    color: $secondary-light;
   }
 }

@@ -3,9 +3,8 @@ import { FiInfo } from 'react-icons/fi';
 import { Dropdown } from 'react-bootstrap';
 import moment from 'moment';
 
-const InfoDropdown = ({ data, ...props}) => {
+const InfoDropdown = ({ data, align = 'end', ...props}) => {
   const [isOpen, setIsOpen] = useState(false);
-
   const toggleDropdown = () => {
     setIsOpen(!isOpen);
   };
@@ -22,12 +21,12 @@ const InfoDropdown = ({ data, ...props}) => {
   return (
     <div {...props}>
       <FiInfo onClick={toggleDropdown} style={{ cursor: 'pointer' }} />
-      <Dropdown show={isOpen} align="end">
+      <Dropdown show={isOpen} align={align}>
         <Dropdown.Menu>
           {!!data.created_at && <Dropdown.Item disabled>Criado em: <strong>{created_at}</strong></Dropdown.Item>}
-          {!!data.created_by && <Dropdown.Item disabled>Criado por: <strong>{data.created_by}</strong></Dropdown.Item>}
+          {!!data.created_by_name && <Dropdown.Item onClick={() => window.open('/colaboradores/visualizar/' + data.created_by, "_blank", "noreferrer noopener")}>Criado por: <strong>{data.created_by_name}</strong></Dropdown.Item>}
           {!!data.updated_at && <Dropdown.Item disabled>Atualizado em: <strong>{updated_at}</strong></Dropdown.Item>}
-          {!!data.updated_by && <Dropdown.Item disabled>Atualizado por: <strong>{data.updated_by}</strong></Dropdown.Item>}
+          {!!data.updated_by_name && <Dropdown.Item onClick={() => window.open('/colaboradores/visualizar/' + data.update_by, "_blank", "noreferrer noopener")}>Atualizado por: <strong>{data.updated_by_name}</strong></Dropdown.Item>}
         </Dropdown.Menu>
       </Dropdown>
     </div>

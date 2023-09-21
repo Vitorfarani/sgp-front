@@ -5,6 +5,7 @@ import { dateValidation, yupOptionStandart, yupRequired } from "@/utils/helpers/
 export const conhecimentoSchema = Yup.object().shape({
   nome: Yup.string().required( yupRequired('Nome')),
   descricao: Yup.string().required( yupRequired('Descrição')),
+  link: Yup.string().nullable(),
   dificuldade:  Yup.number().required(yupRequired('Dificuldade')),
   conhecimento_classe:  Yup.object().nonNullable(yupRequired('Classe')),
   conhecimento_nivel: Yup.object().nullable(),

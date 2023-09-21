@@ -1,0 +1,15 @@
+@import '@/scss/theme.scss';
+
+.badge-color {
+  padding: 1px 10px;
+  display: inline-block;
+  color: white !important;
+  span {
+    text-shadow: 0.8px 0.8px 1.6px black;
+  }
+}
+
+@include color-mode(dark) {
+  .badge-color{
+  }
+}

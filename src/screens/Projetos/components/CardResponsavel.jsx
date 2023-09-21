@@ -6,17 +6,23 @@ import { Stack } from 'react-bootstrap';
 import { FiTrash } from 'react-icons/fi';
 import { dateEnToPt } from '@/utils/helpers/date';
 
-const CardResponsavel = ({ title, dataInicio, dataFim, onEdit, onRemove, size = '13rem' }) => {
+const CardResponsavel = ({ onOpen, title,thumbnail, subtitle, dataInicio, dataFim, onEdit, onRemove, size = '13rem' }) => {
   return (
     <Card  className='card-responsavel' style={{ }}>
       <Card.Header>
-        <Stack direction='horizontal' gap={2}>
-          <ThumbnailUploader size={36} placeholder={title} />
-          <Card.Title style={{ fontSize: 16 }}>{title}</Card.Title>
+        <Stack 
+          onClick={onOpen} 
+          direction='horizontal' className="my-auto" gap={2}>
+          <ThumbnailUploader size={36} placeholder={title} readonly url={thumbnail}/>
+          <Card.Title style={{ fontSize: 16, marginBottom: 0}}>{title}
+          {!!subtitle && <span style={{ fontSize: 12, color: 'var(--bs-warning)'}}><br />{"\n"}{subtitle}</span>}
+          </Card.Title>
         </Stack>
+      {!!onRemove && (
         <a onClick={onRemove} style={{position: 'absolute', right: 10, top: 10}}>
           <FiTrash color='red'/>
         </a>
+      )}
       </Card.Header>
       {/* <Card.Body>
         <Card.Text>Início: {dateEnToPt(dataInicio)}</Card.Text>
@@ -28,10 +34,12 @@ const CardResponsavel = ({ title, dataInicio, dataFim, onEdit, onRemove, size = 
         <strong>Até</strong>
         <p>{dataFim ? dateEnToPt(dataFim) : 'O momento'}</p>
       </Card.Body>
-      <Card.Footer>
+      {!!onEdit && (
+        <Card.Footer>
         <BtnSimple onClick={onEdit}>Editar</BtnSimple>
         {/* <Button variant="primary" onClick={onEdit}>Editar</Button>{' '} */}
       </Card.Footer>
+      )}
     </Card>
   );
 };

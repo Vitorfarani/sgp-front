@@ -5,7 +5,7 @@ import { useTheme } from "@/utils/context/ThemeProvider";
 import useTable from "@/utils/hooks/useTable";
 import { useEffect, useState } from "react";
 import { Breadcrumb, Button, Col, Container, Row, Spinner, Stack } from "react-bootstrap";
-import { FiEdit, FiPlus, FiTrash } from "react-icons/fi";
+import { FiEdit, FiEye, FiPlus, FiTrash } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import { useDebounce } from "use-debounce";
 
@@ -102,10 +102,10 @@ export default function Projetos() {
           handleFilters={handleChangeFilters}
           actions={[
             {
-              label: 'Editar',
+              label: 'Abrir',
               visible: true,
-              onClick: (row) => navigate('/projetos/editar/' + row.id),
-              icon: FiEdit,
+              onClick: (row) => navigate('/projetos/visualizar/' + row.id),
+              icon: FiEye,
             },
             {
               label: 'Excluir',

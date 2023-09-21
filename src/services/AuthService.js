@@ -1,4 +1,5 @@
 
+import { redirect } from 'react-router-dom';
 import { httpSgp, standartResponseApiError } from '.';
 
 
@@ -48,6 +49,7 @@ export const logout = async () => {
     let url = `logout`
     return httpSgp.post(url)
         .then(response => {
+            window.location.href = (response.data.redirectTo)
             return Promise.resolve(response)
         })
         .catch((error) => {

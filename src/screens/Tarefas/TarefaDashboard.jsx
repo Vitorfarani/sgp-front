@@ -10,19 +10,14 @@ const MOCK = {
 
 }
 
-export default function Tarefa() {
+export default function TarefasDashBoard() {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
 
 
   return (
     <Background>
-      <HeaderTitle title="Tarefas" optionsButtons={[
-          {
-            label: 'cadastrar',
-            onClick: () => console.log('cadastrar'),
-            icon: FiPlus,
-          },
+      <HeaderTitle title="Tarefas dashboard" optionsButtons={[
           {
             label: 'Relatório',
             onClick: () => {},

@@ -4,8 +4,9 @@
   display: flex !important;
   flex-direction: column;
   justify-content: center !important;
-  z-index: 10 !important;
+  z-index: 9999 !important;
   align-items: center !important;
   background-color:  transparentize( $primary, 0.4) !important;
+  pointer-events: 'none'
 }
 

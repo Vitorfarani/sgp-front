@@ -4,3 +4,21 @@
   width: '100%';
   margin-bottom: 20px;
 }
+.card-observacao-produto {
+  width: '80%';
+}
+.list-observacao{
+  padding-left: 30px;
+  padding-right: 30px;
+}
+@media (max-width: 768px) {
+  .list-observacao{
+    padding-left: 0px;
+    padding-right: 0px;
+  }
+  .card-observacao-produto {
+    width: '100%';
+  }
+
+  
+}

@@ -103,10 +103,10 @@ export const createProjetoObservacao = async (data) => {
   return _post(url, data);
 }
 
-export const editProjetoObservacao = async (id, data) => {
-  let url = `projetoObservacaos/${id}`;
-  return _put(url, data);
-}
+// export const editProjetoObservacao = async (id, data) => {
+//   let url = `projetoObservacaos/${id}`;
+//   return _put(url, data);
+// }
 
 export const deleteProjetoObservacao = async (id) => {
   let url = `projetoObservacaos/${id}`;

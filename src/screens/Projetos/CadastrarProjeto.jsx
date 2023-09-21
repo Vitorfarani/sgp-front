@@ -336,7 +336,8 @@ export default function CadastrarProjeto() {
     method(data)
       .then((res) => {
         callGlobalNotify({ message: res.message, variant: 'success' })
-        navigate('/projetos/editar/'+res.projeto.id)
+
+          navigate('/projetos/visualizar/'+res.projeto.id)
       })
       .catch((error) => {
         callGlobalAlert(error)
@@ -481,7 +482,8 @@ export default function CadastrarProjeto() {
             <CardResponsavel
               key={i}
               title={pessoaNomeAbreviadoMask(resp.responsavel.nome)}
-              subtitle={resp.responsavel.setor.nome}
+              thumbnail={resp.responsavel.user?.thumbnail}
+              subtitle={resp.responsavel.setor?.nome}
               dataInicio={resp.inicio}
               dataFim={resp.fim}
               onEdit={() => handleResponsavel(resp, i)}

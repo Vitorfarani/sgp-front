@@ -1,0 +1,30 @@
+@import '@/scss/theme.scss';
+
+.sidebuttons-group{
+  width: 100%;
+  .btn{
+    height: 46px;
+    svg{
+      margin-right: 6px
+    }
+  }
+  .btn:hover{
+    opacity: 0.9;
+  }
+}
+.colaborador-list-select-popover:hover{
+  background-color: $secondary-light;
+}
+.diffPrazos{
+  color: $secondary;
+}
+
+@include color-mode(dark) {
+  .diffPrazos{
+    color: $secondary-light;
+  }
+  .breadcrumb-item-custom a{
+    color: $secondary-light !important;
+    text-decoration: solid;
+  }
+}

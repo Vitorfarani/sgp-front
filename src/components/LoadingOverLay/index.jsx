@@ -27,7 +27,7 @@ const LoadingOverLay = forwardRef((props, ref) => {
   }))
   console.log(isShow)
   return isShow && (
-    <Overlay description={message}>
+    <Overlay description={message} >
       <div className="spinner-border" style={{ width: '6em', height: '6em', borderWidth: '0.59rem' }}>
       </div>
     </Overlay>

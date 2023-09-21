@@ -11,6 +11,8 @@ import { setorSchema } from "./validations";
 import { listColaboradores } from "@/services/colaborador/colaboradores";
 import { formatForm } from "@/utils/helpers/forms";
 import { Col } from "react-bootstrap";
+import { FaDrawPolygon } from "react-icons/fa";
+import SetorTree from "./components/SetorTree";
 
 const basefilters = {
   search: '',
@@ -38,8 +40,10 @@ const cadastroInitialValue = {
 
 export default function Setor() {
   const navigate = useNavigate();
+  const [showCanvasTree, setshowCanvasTree] = useState(false);
   const { user } = useAuth();
   const { callGlobalDialog, handleGlobalLoading, callGlobalAlert, callGlobalNotify } = useTheme();
+  const [setoresSimple, setSetoresSimple] = useState();
 
   const {
     rows,
@@ -53,6 +57,14 @@ export default function Setor() {
   } = useTable(columnsFields, listSetores, basefilters, (results) => {
     return results.data
   });
+
+  function loadSetores() {
+    // handleGlobalLoading.show()
+    listSetores()
+    .then(setSetoresSimple)
+    .catch(callGlobalAlert)
+    // .finally(handleGlobalLoading.hide)
+  }
 
   function callModalCadastro(data = {}) {
     callGlobalDialog({
@@ -95,6 +107,7 @@ export default function Setor() {
         let method = !result.id ? createSetor : updateSetor;
         method(result)
           .then((res) => {
+            loadSetores()
             callGlobalNotify({ message: res.message, variant: 'success' })
             resetFilters()
             handleGlobalLoading.hide()
@@ -110,6 +123,7 @@ export default function Setor() {
   }
   useEffect(() => {
     load();
+    loadSetores()
   }, []);
 
   return (
@@ -119,6 +133,11 @@ export default function Setor() {
           label: 'Cadastrar',
           onClick: () => callModalCadastro(cadastroInitialValue),
           icon: FiPlus,
+        },
+        {
+          label: 'Ver Organograma desenhado',
+          onClick: () => setshowCanvasTree(!showCanvasTree),
+          icon: FaDrawPolygon,
         },
       ]} />
       <Section>
@@ -133,7 +152,7 @@ export default function Setor() {
             <Col md={3}>
             <SelectAsync
               placeholder="Subordinados de um setor"
-              loadOptions={(search) => listSetores(`?search=${search}`)}
+              loadOptions={(search) => listSetores('?search='+search)}
               getOptionLabel={(option) => option.sigla}
               onChange={(setor) => handleChangeFilters('subordinacao', setor.id)} />
             </Col>
@@ -164,6 +183,7 @@ export default function Setor() {
           ]}>
         </Table>
       </Section>
+      {showCanvasTree && <SetorTree onClose={() => setshowCanvasTree(!showCanvasTree)} data={setoresSimple}/>}
     </Background>
   );
 }

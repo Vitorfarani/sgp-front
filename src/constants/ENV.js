@@ -14,8 +14,8 @@ const ENVORIMENTS = {
   HML: {
     API_URL: "https://localhost:8000/",
     API_VERSION: "api/v1/",
-    REACT_APP_CLIENT_ID: "carteira-digital",
-    REACT_APP_API_SSO: "https://login.rj.gov.br/auth/realms/rj/protocol/openid-connect",
+    REACT_APP_CLIENT_ID: "sgtp",
+     REACT_APP_API_SSO: "https://login.rj.gov.br/auth/realms/rj/protocol/openid-connect",
     REACT_APP_API_SSO_KEY: "Api-Key 7nAQ4uv8.JTLoeV2Y5moaVEe3wx8PBwROBidxdmkx",
     HOST: "https://127.0.0.1:5173",
   },
