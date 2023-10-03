@@ -46,7 +46,7 @@ const Notify = forwardRef((p, ref) => {
         notif.position = 'bottom';
       }
 
-      notif._id = self.crypto.randomUUID();
+      notif._id = Math.random().toString(12).substring(2);
 
       if (notif.timeout === undefined) {
         notif.timeout = 5000;

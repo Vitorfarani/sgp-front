@@ -1,11 +1,17 @@
 .card-observacao {
-  flex: 0 0 240px;
   min-height: 100px;
-  width: '100%';
+  width: 90%;
   margin-bottom: 20px;
+  .created-at{
+    font-size: 12px;
+    opacity: 0.8;
+    margin-top: 20px;
+    display: flex;
+    justify-content: end;
+  }
 }
 .card-observacao-produto {
-  width: '80%';
+  width: 80%;
 }
 .list-observacao{
   padding-left: 30px;
@@ -17,7 +23,7 @@
     padding-right: 0px;
   }
   .card-observacao-produto {
-    width: '100%';
+    width: 100%;
   }
 
   

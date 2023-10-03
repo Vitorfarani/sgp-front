@@ -1,6 +1,7 @@
 import React from 'react';
 import { Button, Row, Spinner } from 'react-bootstrap';
 import './style.scss'
+import { ENV } from '@/constants/ENV';
 
 const BtnLoginGovBr = ({isLoading, onClick}) => {
   return (
@@ -12,7 +13,7 @@ const BtnLoginGovBr = ({isLoading, onClick}) => {
       </Row>
       <img
         style={{ width: '45%' }}
-        src="assets/logo-gov.svg"
+        src={ENV.HOST+"/assets/logo-gov.svg"}
 
       />
       {isLoading && <Spinner style={{marginLeft: 10, position: 'absolute'}} animation="grow" size="" />}

@@ -5,7 +5,7 @@ import { FiTrash } from "react-icons/fi";
 import './style.scss';
 import TaskCard from "./TaskCard";
 
-function DraggableCard({ task, onClick }) {
+function DraggableCard({ task, onClick,disabled }) {
 
   const {
     setNodeRef,
@@ -20,6 +20,7 @@ function DraggableCard({ task, onClick }) {
       type: "Task",
       task,
     },
+    disabled: disabled
   });
 
   const style = {

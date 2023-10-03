@@ -42,15 +42,20 @@ const SidebarLeft = ({ isOpenSideBarLeft, setIsOpenSideBarLeft }) => {
         </div>
       )}
       {filteredRoutes.map((item, index) => (
-        <div key={index} style={{marginTop: '10px'}}>
+        <div key={index} style={{ marginTop: '10px' }}>
           <NavLink className="nav-link text-white" to={item.path}>
             <item.icon />
-            {isOpenSideBarLeft && item.nome}
+            <span>
+              {item.nome}
+
+            </span>
           </NavLink>
-          {isOpenSideBarLeft && !!item.childrens && item.childrens.map((subItem, subindex) => (
+          {!!item.childrens && item.childrens.map((subItem, subindex) => (
             <NavLink className="nav-link subitem text-white" key={'subItem' + subindex} to={subItem.path}>
               <subItem.icon />
-              {isOpenSideBarLeft && subItem.nome}
+              <span>
+                {subItem.nome}
+              </span>
             </NavLink>
           ))}
         </div>

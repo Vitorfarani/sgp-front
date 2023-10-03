@@ -15,12 +15,13 @@ const basefilters = {
   perPage: 20,
   selectedRows: [],
   page: 1,
+  active: true,
   sortedColumn: 'id',
   sortOrder: 'asc',
 };
 
 const columnsFields = [
-  { field: 'nome', label: 'Nome', enabledOrder: true, style: { width: 100 } },
+  { field: 'nome', label: 'Nome', enabledOrder: true, style: { width: 100 }, piper: (field, row) => !!row.afastamento.length ?   `${field} - afastado` : field},
   { field: 'pr', label: 'PR', enabledOrder: false},
   { field: 'email', label: 'Email', enabledOrder: false },
   { field: 'telefone', label: 'Telefone', enabledOrder: false, piper: (field) => field && celularMask(field)},

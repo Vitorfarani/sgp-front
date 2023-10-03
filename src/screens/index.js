@@ -8,6 +8,9 @@ export { default as Dashboard } from './Dashboard/index';
 export { default as Colaboradores } from './Colaboradores/index.jsx';
 export { default as CadastrarColaborador } from './Colaboradores/CadastrarColaborador.jsx';
 
+export { default as Afastamentos } from './Afastamentos/index.jsx';
+export { default as AfastamentoTipos } from './Afastamentos/screens/Tipo';
+
 
 export { default as Projetos } from './Projetos/index.jsx';
 export { default as ProjetoFases } from './Projetos/screens/Fases/index.jsx';

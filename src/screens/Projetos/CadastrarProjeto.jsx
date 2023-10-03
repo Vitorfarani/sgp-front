@@ -117,10 +117,9 @@ export default function CadastrarProjeto() {
             .then((result) => {
               callGlobalNotify({ message: result.message, variant: 'danger' })
             })
-            .catch((error) => {
-              callGlobalAlert(error)
-              handleGlobalLoading.hide()
-            })
+            .catch(callGlobalAlert)
+            .finally(handleGlobalLoading.hide)
+
         })
     }
   }

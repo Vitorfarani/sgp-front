@@ -46,6 +46,7 @@ export default function CadastrarColaborador() {
       ...pc,
       colaborador_conhecimento_id: pc.id
     }))
+    results['user_active'] = results.user?.active
     return results
   }
   const load = async (id) => {
@@ -298,6 +299,9 @@ export default function CadastrarColaborador() {
                   maskChar={null}
                   mask={'999.999.999-99'}
                   value={formData.cpf}
+                  disabled={formData.id}
+                  title={formData.id ? "Não é possivel editar cpf de um colaborador, em caso de necessidade crítica favor contactar o desenvolvimento" : null}
+                  aria-disabled
                   onChange={({ target: { value } }) => handleForm('cpf', value)}
                   isInvalid={!!errors.cpf} />
                 <FeedbackError error={errors.cpf} />

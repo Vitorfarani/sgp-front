@@ -12,7 +12,7 @@ const CardConhecimento = ({ title, titleColor, nivel, nivelColor, onEdit, onRemo
     <Card  className='card-conhecimento' style={{ }}>
       <Card.Header>
         <Row className='px-2'>
-          <Col className='px-0' sm={1} onClick={onEdit}>
+          <Col className='px-0' xs={1} sm={1} onClick={onEdit}>
             <PuzzleIcon color={nivelColor}/>
           </Col>
           <Col onClick={onEdit}>
@@ -20,7 +20,7 @@ const CardConhecimento = ({ title, titleColor, nivel, nivelColor, onEdit, onRemo
             {title}
             </BadgeColor>
           </Col>
-          <Col sm={1}>
+          <Col xs={1} sm={1}>
             <a onClick={onRemove}>
               <FiTrash color='var(--bs-danger)'/>
             </a>

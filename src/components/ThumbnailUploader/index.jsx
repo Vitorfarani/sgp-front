@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { memo, useRef, useState } from 'react';
 import { Image, Form } from 'react-bootstrap';
 import { CircleAvatar } from '..';
 import PropTypes from 'prop-types';
@@ -8,7 +8,7 @@ import { toBase64 } from '@/utils/helpers/format';
 import { useTheme } from '@/utils/context/ThemeProvider';
 import { FiInfo } from 'react-icons/fi';
 
-const ThumbnailUploader = ({ url, size = 40, readonly, onImageChange, roundedCircle = true, placeholder }) => {
+const ThumbnailUploader = memo(({ url, size = 40, readonly, onImageChange, roundedCircle = true, placeholder }) => {
   const [selectedImage, setSelectedImage] = useState(url);
   const {callGlobalAlert} = useTheme();
   const input = useRef()
@@ -62,7 +62,7 @@ const ThumbnailUploader = ({ url, size = 40, readonly, onImageChange, roundedCir
       )}
     </div>
   );
-};
+});
 
 ThumbnailUploader.propTypes = {
   url: PropTypes.string,

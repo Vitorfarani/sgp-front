@@ -19,7 +19,7 @@ export const datePtToEn = function (d) {
   return d
 }
 
-export const datetimeToEn = function (d) {
+export const datetimeToEn = function (d, justDate = true) {
   let dt = d.split(' ')
   d = dt[0].split('/')
   let time = dt[1]
@@ -27,7 +27,24 @@ export const datetimeToEn = function (d) {
   if (timeArr.length < 3) {
     timeArr.push('00')
   }
-  d = `${d[2]}-${d[1]}-${d[0]} ${timeArr.join(':')}`
+  d = `${d[2]}-${d[1]}-${d[0]}`
+  if(!justDate) {
+    `${d} ${timeArr.join(':')}`
+  }
+  return d
+}
+export const datetimeToPt = function (d, justDate = true) {
+  let dt = d.split(' ')
+  d = dt[0].split('-')
+  let time = dt[1]
+  let timeArr = time.split(':')
+  if (timeArr.length < 3) {
+    timeArr.push('00')
+  }
+  d = `${d[2]}/${d[1]}/${d[0]}`
+  if(!justDate) {
+    `${d} ${timeArr.join(':')}`
+  }
   return d
 }
 
@@ -57,6 +74,10 @@ export const diffDatetimes = (datetime1, datetime2, type = 'hours') =>  {
 export const diffDatetimesHumanized = (datetime1, datetime2) =>  {
   if (!datetime1) return false;
  return moment.duration(moment(datetime1, 'YYYY-MM-DD[T]HH:mm').locale('pt-br').diff(moment(datetime2, 'YYYY-MM-DD[T]HH:mm'))).humanize();
+}
+export const datetimeFromNow = (datetime) =>  {
+  if (!datetime) return false;
+ return moment(datetime, 'YYYY-MM-DD[T]HH:mm').locale('pt-br').fromNow(false);
 }
 
 export function isExpired(init, expireIn, unit = 'seconds') {

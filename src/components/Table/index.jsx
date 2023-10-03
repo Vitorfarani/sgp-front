@@ -4,7 +4,6 @@ import { AnimatedProgress, CustomDropdown } from '..';
 import PropTypes from 'prop-types';
 import { FiChevronDown, FiChevronUp } from 'react-icons/fi';
 
-//Todo: consertar loading para quando n houver rows;
 
 const Table = ({
   columns,
@@ -84,6 +83,16 @@ const Table = ({
               />
             </Col>
           )}
+          {typeof filters.active !== "undefined" && (
+            <Col md={1}>
+              <Form.Select
+                value={filters.active}
+                onChange={({target: {value}}) => handleFilters('active', value === "true")}>
+                <option value={true}>Ativos</option>
+                <option value={false}>Inativos</option>
+              </Form.Select>
+            </Col>
+          )}
           {filtersComponentes}
         </Row>
       </Form>
@@ -157,7 +166,7 @@ const Table = ({
                 </td>
               )}
                 {columns.map((column) => (
-                  <td key={column.field}>{column.piper ? renderCellValue(column.piper(row[column.field])) : renderCellValue(row[column.field])}</td>
+                  <td key={column.field}>{column.piper ? renderCellValue(column.piper(row[column.field], row)) : renderCellValue(row[column.field])}</td>
                 ))}
                 {actions && (
                   <td>

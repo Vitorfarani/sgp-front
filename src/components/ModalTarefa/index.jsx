@@ -20,7 +20,8 @@ import { useAuth } from '@/utils/context/AuthProvider';
 import { formatForm } from '@/utils/helpers/forms';
 import { listConhecimentos } from '@/services/conhecimento/conhecimentos';
 import { createTarefaConhecimento, deleteTarefaConhecimento } from '@/services/tarefa/tarefaConhecimento';
-import { createTarefa, showTarefa, updateTarefa } from '@/services/tarefa/tarefas';
+import { createTarefa, deleteTarefa, interromperTarefa, restoreTarefa, showTarefa, updateTarefa } from '@/services/tarefa/tarefas';
+import { createTarefaObservacao, deleteTarefaObservacao } from '@/services/tarefa/tarefaObservacao';
 
 
 const ModalTarefa = forwardRef(({
@@ -44,7 +45,7 @@ const ModalTarefa = forwardRef(({
   const [anexos, setAnexos] = useState([]);
   const [showtextareaObs, setshowtextareaObs] = useState(false);
   const { callGlobalDialog, handleGlobalLoading, callGlobalAlert, callGlobalNotify } = useTheme();
-
+  const [haveUpdate, sethaveUpdate] = useState(false);
   const prazoLabels = useMemo(() => {
     return dateDiffWithLabels(formData.data_fim_programado, formData.data_fim_real)
   }, [formData.data_fim_programado, formData.data_fim_real]);
@@ -67,19 +68,19 @@ const ModalTarefa = forwardRef(({
 
   function hide() {
     setIsShow(false)
-
     setErrors(false)
     setValidated(false);
     setshowtextareaObs(false)
     setTimeout(() => {
       setFormData({})
+      sethaveUpdate(false)
     }, 400);
-    onHide()
+    onHide(haveUpdate)
   }
 
   function show(data) {
     setIsShow(true)
-    if(!data.id) {
+    if (!data.id) {
       setFormData(data)
     } else {
       load(data.id)
@@ -106,6 +107,7 @@ const ModalTarefa = forwardRef(({
   }
   useImperativeHandle(ref, () => ({
     show,
+    isShow,
     hide
   }));
 
@@ -128,7 +130,7 @@ const ModalTarefa = forwardRef(({
       }));
 
     } else {
-      let data ={
+      let data = {
         tarefa_id: formData.id,
         colaborador_id: colaborador.id,
       }
@@ -142,6 +144,10 @@ const ModalTarefa = forwardRef(({
             ...prevState,
             ['tarefa_colaborador']: tc
           }));
+          sethaveUpdate(true)
+
+          // load(formData.id)
+          handleGlobalLoading.hide()
         })
         .catch((error) => {
           callGlobalAlert(error)
@@ -172,11 +178,12 @@ const ModalTarefa = forwardRef(({
                 ...prevState,
                 ['tarefa_colaborador']: prevState['tarefa_colaborador'].filter((tc, i) => tc.id !== tarefa_colaborador.id)
               }));
+              sethaveUpdate(true)
             })
             .catch((error) => {
               callGlobalAlert(error)
             })
-              .finally(handleGlobalLoading.hide)
+            .finally(handleGlobalLoading.hide)
         })
     }
   }
@@ -187,27 +194,27 @@ const ModalTarefa = forwardRef(({
 
   function addObservacao() {
     let data = {
-      id: self.crypto.randomUUID(),
-      onwer: user,
-      content: observacao,
+      colaborador: user.colaborador,
+      colaborador_id: user.colaborador.id,
+      conteudo: observacao,
       anexos: []
     };
 
     if (!formData.id) {
-      let updatedObs = [...formData.observacoes]
+      let updatedObs = structuredClone([...formData.tarefa_observacao])
       updatedObs.push(data)
-      handleForm('observacoes', updatedObs)
+      handleForm('tarefa_observacao', updatedObs)
     } else {
-      data.projeto_id = formData.id;
-      data.colaborador_id = data.onwer.id;
+      data.tarefa_id = formData.id;
 
       handleGlobalLoading.show()
       createTarefaObservacao(data)
         .then((result) => {
           callGlobalNotify({ message: result.message, variant: 'success' })
-          let updatedObs = [...formData.observacoes]
-          updatedObs.push(result.observacao)
-          handleForm('observacoes', updatedObs)
+          let updatedObs = [...formData.tarefa_observacao]
+          updatedObs.push(result.tarefa_observacao)
+          handleForm('tarefa_observacao', updatedObs)
+          handleGlobalLoading.hide()
         })
         .catch((error) => {
           callGlobalAlert(error)
@@ -221,7 +228,7 @@ const ModalTarefa = forwardRef(({
     if (!formData.id) {
       setFormData((prevState) => ({
         ...prevState,
-        ['observacoes']: prevState['observacoes'].filter((o, i) => o.id !== id)
+        ['tarefa_observacao']: prevState['tarefa_observacao'].filter((o, i) => o.id !== id)
       }));
     } else {
       callGlobalDialog({
@@ -237,9 +244,10 @@ const ModalTarefa = forwardRef(({
               callGlobalNotify({ message: result.message, variant: 'danger' })
               setFormData((prevState) => ({
                 ...prevState,
-                ['observacoes']: prevState['observacoes'].filter((o, i) => o.id !== id)
+                ['tarefa_observacao']: prevState['tarefa_observacao'].filter((o, i) => o.id !== id)
               }));
             })
+          handleGlobalLoading.hide()
             .catch((error) => {
               callGlobalAlert(error)
               handleGlobalLoading.hide()
@@ -261,7 +269,7 @@ const ModalTarefa = forwardRef(({
     prev.push(updatedFiles)
     setAnexos(prev)
   }
- 
+
   function removeFile(index) {
     setAnexos(anexos.filter((_, i) => index !== i))
   }
@@ -309,6 +317,44 @@ const ModalTarefa = forwardRef(({
         })
     }
   }
+
+  function onInterruption(data) {
+    callGlobalDialog({
+      title: 'Interomper tarefa',
+      subTitle: 'Tem certeza que deseja interromper esse tarefa?',
+      color: 'red',
+      labelSuccess: 'Sim',
+    })
+      .then(() => {
+        handleGlobalLoading.show()
+        interromperTarefa({id: formData.id, deleted_at: data.interrompido_at,  ...data})
+          .then((result) => {
+            sethaveUpdate(true)
+            hide()
+          })
+          .catch(callGlobalAlert)
+          .finally(handleGlobalLoading.hide)
+      })
+  }
+  function onRestore(data) {
+    callGlobalDialog({
+      title: 'Restaurar tarefa',
+      subTitle: 'Tem certeza que deseja restaurar esse tarefa?',
+      color: 'green',
+      labelSuccess: 'Sim',
+    })
+      .then(() => {
+        handleGlobalLoading.show()
+        restoreTarefa(formData.id)
+          .then((result) => {
+            sethaveUpdate(true)
+            load(formData.id)
+          })
+          .catch(callGlobalAlert)
+          .finally(handleGlobalLoading.hide)
+      })
+  }
+
   function beforeSave(form) {
     try {
 
@@ -345,9 +391,10 @@ const ModalTarefa = forwardRef(({
     method(data)
       .then((res) => {
         callGlobalNotify({ message: res.message, variant: 'success' })
-        onSuccess()
         load(res.tarefa.id)
         handleGlobalLoading.hide()
+        sethaveUpdate(true)
+
       })
       .catch((error) => {
         callGlobalAlert(error)
@@ -375,7 +422,7 @@ const ModalTarefa = forwardRef(({
       ref={modal}
       show={isShow}
       autoFocus
-      onHide={hide}
+      onHide={() => hide()}
       backdrop={!formData.id ? 'static' : null}
       size="xl"
       aria-labelledby="contained-modal-title-vcenter"
@@ -400,7 +447,7 @@ const ModalTarefa = forwardRef(({
             <Col xs={12} md={9} className='pr-3'>
               <Row className='mb-3'>
                 <Col md={4}>
-                  <ColaboradoresSelecteds tarefa={formData} onRemove={removeTarefaColaborador} />
+                  <ColaboradoresSelecteds title={"Executores"} tarefa={formData} onRemove={removeTarefaColaborador} />
                 </Col>
                 <Col className='mt-auto'>
                   {prazoLabels && (
@@ -429,7 +476,7 @@ const ModalTarefa = forwardRef(({
                   isMulti
                   required
                   placeholder="Selecione os Conhecimentos necessários para essa tarefa"
-                  loadOptions={(search) => listConhecimentos('?search='+search)}
+                  loadOptions={(search) => listConhecimentos('?search=' + search)}
                   value={formData.tarefa_conhecimento}
                   onChange={(tarefa_conhecimento, action) => {
                     if (action.action === 'select-option') {
@@ -442,55 +489,60 @@ const ModalTarefa = forwardRef(({
                 <FeedbackError error={errors.tarefa_conhecimento} />
               </Row>
               <Checklist ref={checklistRef} handleForm={handleForm} />
-              <h5><FaTasks style={{ marginRight: 10 }} />Atividades</h5>
+              {!!user.colaborador && (
+                <h5><FaTasks style={{ marginRight: 10 }} />Atividades</h5>
+              )}
               <Observacoes
-                observacoes={formData.observacoes}
+                observacoes={formData.tarefa_observacao}
                 isLoading={false}
                 onRemove={(id) => removeObservacao(id)} />
-              <Section >
-                <Form.Group className="mb-4 ">
-                  <Form.Label>Escrever um comentário</Form.Label>
-                  <TextareaEditor
-                    value={observacao}
-                    bounds={1}
-                    onChange={(value) => setObservacao(value)} />
-                </Form.Group>
-                {/* <Row className="m-auto justify-content-center">
-                  <BtnSimple Icon={FiPlus} onClick={addFiles}>Anexar arquivos</BtnSimple>
-                  <span style={{ display: 'contents' }}>{"(máximo de 6 arquivos)"}</span>
-                </Row>
-                {anexos.length > 0 && (
-                  <HorizontalScrollview style={{ justifyContent: 'start' }}>
-                    <>
-                      {anexos.map((anexo, index) => (
-                        <AnexoItem
-                          key={index}
-                          title={anexo.name}
-                          type={anexo.type}
-                          url={anexo.uri}
-                          onRemove={() => removeFile(index)}
-                        />
-                      ))}
-                    </>
-                  </HorizontalScrollview>
-                )}
-                <input
-                  id="file-input"
-                  type="file"
-                  multiple
-                  style={{ display: 'none' }}
-                  onChange={handleFilesChange}
-                /> */}
-                <div className='flex-row-reverse d-grid  mt-3'>
-                  <Button onClick={addObservacao}>Adicionar Atividade</Button>
-                </div>
-              </Section>
+              {!!user.colaborador && (
+                <Section>
+                  <Form.Group className="mb-4 ">
+                    <Form.Label>Escrever um comentário</Form.Label>
+                    <TextareaEditor
+                      value={observacao}
+                      bounds={1}
+                      onChange={(value) => setObservacao(value)} />
+                  </Form.Group>
+                  {/* <Row className="m-auto justify-content-center">
+                    <BtnSimple Icon={FiPlus} onClick={addFiles}>Anexar arquivos</BtnSimple>
+                    <span style={{ display: 'contents' }}>{"(máximo de 6 arquivos)"}</span>
+                  </Row>
+                  {anexos.length > 0 && (
+                    <HorizontalScrollview style={{ justifyContent: 'start' }}>
+                      <>
+                        {anexos.map((anexo, index) => (
+                          <AnexoItem
+                            key={index}
+                            title={anexo.name}
+                            type={anexo.type}
+                            url={anexo.uri}
+                            onRemove={() => removeFile(index)}
+                          />
+                        ))}
+                      </>
+                    </HorizontalScrollview>
+                  )}
+                  <input
+                    id="file-input"
+                    type="file"
+                    multiple
+                    style={{ display: 'none' }}
+                    onChange={handleFilesChange}
+                  /> */}
+                  <div className='flex-row-reverse d-grid  mt-3'>
+                    <Button onClick={addObservacao}>Adicionar Atividade</Button>
+                  </div>
+                </Section>
+              )}
             </Col>
             <Col xs={12} md={3}>
               <SideButtons
                 tarefa={formData}
                 onCreateChecklist={() => enabledChecklist()}
-                onInterruption={(data) => onDelete(data)}
+                onInterruption={onInterruption}
+                onRestore={onRestore}
                 onStart={() => handleForm('data_inicio_real', new Date().toISOString().slice(0, 16))}
                 onEnd={() => handleForm('data_fim_real', new Date().toISOString().slice(0, 16))}
                 addTarefaColaborador={addTarefaColaborador} />
@@ -513,7 +565,7 @@ const ModalTarefa = forwardRef(({
               </Form.Group>
 
               <Form.Group className='mb-4'>
-                <Form.Label>Fim Estimado  <strong className='diffPrazos'>Prazo de {diffProgramado}</strong></Form.Label>
+                <Form.Label>Fim Estimado  {diffProgramado && <strong className='diffPrazos'>Prazo de {diffProgramado}</strong>}</Form.Label>
                 <DateInput
                   type={"datetime-local"}
                   value={formData.data_fim_programado}

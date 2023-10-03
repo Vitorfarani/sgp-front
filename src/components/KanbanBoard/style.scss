@@ -90,7 +90,10 @@
   background-color: $primary;
   padding: 0 6px;
   /* Substitua pelo seu valor de cor principal */
-
+  
+}
+.column-single::-webkit-scrollbar {
+  width: 6px;
 }
 
 @media (max-width: 768px) {
@@ -109,7 +112,7 @@
 
   .column-title{
     min-width: 70vw;
-max-width: 70vw;
+    max-width: 70vw;
     width: 70vw;
   }
 }

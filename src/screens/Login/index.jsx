@@ -6,6 +6,7 @@ import './style.scss'
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/utils/context/AuthProvider';
 import { useTheme } from '@/utils/context/ThemeProvider';
+import { ENV } from '@/constants/ENV';
 
 const Login = () => {
   const {isLogged, cbSubmit, cbSubmitDEV} = useAuth();
@@ -52,7 +53,7 @@ const Login = () => {
       </div>
       <div className="image-row" onClick={cbSubmitDEV}>
         <img
-          src="people-dealing-with-workplace-challenges.png"
+          src={ENV.HOST+"/assets/people-dealing-with-workplace-challenges.png"}
           className="centered-image"
         />
       </div>

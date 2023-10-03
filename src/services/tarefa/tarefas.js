@@ -25,6 +25,15 @@ export const updateTarefaPositionFromKanban = async (id, data) => {
 }
 
 export const deleteTarefa = async (id) => {
-  let url = `tarefas/${id}`;
+  let url = `tarefa/delete/${id}`;
   return _delete(url);
+}
+export const interromperTarefa = async (data) => {
+  let url = `tarefa/interromper/${data.id}`;
+  return _patch(url, data);
+}
+
+export const restoreTarefa = async (id) => {
+  let url = `tarefa/restaurar/${id}`;
+  return _patch(url);
 }

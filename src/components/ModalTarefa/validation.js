@@ -7,7 +7,7 @@ export const tarefaSchema = Yup.object().shape({
   tarefa_base: Yup.object().nonNullable(yupRequired('Base')),
   tarefa_status: Yup.object().nonNullable(yupRequired('Status')),
   tarefa_conhecimento: Yup.array().when("id", (id, schema) => !id ? schema.min(1, 'É necessário no minimo 1 conhecimento').required(yupRequired('Conhecimento')) : schema),
-  nome: Yup.string().required(yupRequired('nome')).max(255),
+  nome: Yup.string().required(yupRequired('nome')).max(255, 'Máximo de 255 caracteres'),
   descricao: Yup.string().required(yupRequired('descricao')).max(2255),
   // dificuldade: Yup.string().max(45).nullable(),
   observacoes: Yup.array().nullable(),

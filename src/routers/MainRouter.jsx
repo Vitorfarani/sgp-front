@@ -25,7 +25,9 @@ import {
   TarefaStatus,
   TarefaDashboard,
   TarefaBase,
-  TarefaClasse
+  TarefaClasse,
+  AfastamentoTipos,
+  Afastamentos
 } from '@/screens/index';
 import { useTheme } from '@/utils/context/ThemeProvider';
 import CadastrarProjeto from '@/screens/Projetos/CadastrarProjeto';
@@ -60,7 +62,7 @@ const MainRouter = () => {
       <Route path="login" element={isLogged ? <Navigate to="/dashboard" /> : <Login />} />
       <Route
         path="/"
-        errorElement={<ErrorScreen/>}
+        errorElement={() => <ErrorScreen/>}
         element={
           <RequireAuth>
             <Layout />
@@ -68,9 +70,13 @@ const MainRouter = () => {
         }>
         <Route index path="dashboard" Component={Dashboard} />
 
-        {/* <Route path="tarefas" Component={Tarefas} />
-        <Route path="tarefas/:id" Component={Tarefa}/> */}
-
+        <Route path="colaboradores" Component={Colaboradores}/>
+        <Route path="colaboradores/cadastrar" Component={CadastrarColaborador}/>
+        <Route path="colaboradores/editar/:id" Component={CadastrarColaborador}/>
+        
+        <Route path="afastamentos" Component={Afastamentos}/>
+        <Route path="afastamentos/tipos" Component={AfastamentoTipos}/>
+    
         <Route path="projetos" Component={Projetos}/>
         <Route path="projetos/status" Component={ProjetoStatus}/>
         <Route path="projetos/fases" Component={ProjetoFases}/>
@@ -83,20 +89,17 @@ const MainRouter = () => {
         <Route path="tarefas/bases" Component={TarefaBase}/>
         <Route path="tarefas/classes" Component={TarefaClasse}/>
 
-          
-        <Route path="colaboradores" Component={Colaboradores}/>
-        <Route path="colaboradores/cadastrar" Component={CadastrarColaborador}/>
-        {/* <Route path="colaborador/visualizar/:id" Component={Colaborador}/> */}
-        <Route path="colaboradores/editar/:id" Component={CadastrarColaborador}/>
-          
         <Route path="conhecimentos" Component={Conhecimentos}/>
         <Route path="conhecimentos/classe" Component={ConhecimentoClasse}/>
         <Route path="conhecimentos/nivel" Component={ConhecimentoNivel}/>
+          
+
         <Route path="empresas" Component={Empresas}/>
 
         <Route path="setores" Component={Setor}/>
 
         <Route path="clientes" Component={Clientes}/>
+        
         <Route path="*" Component={NotFound} />
       </Route>
     </Routes>

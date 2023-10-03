@@ -93,13 +93,12 @@ let MOCK_observacoes = [
 
 
 export const listProjetoObservacoes = async (params) => {
-  return fakeFetch(MOCK_observacoes);
-  let url = `projetoObservacaos${params}`;
+  let url = `projetoobservacao${params}`;
   return _get(url);
 }
 
 export const createProjetoObservacao = async (data) => {
-  let url = 'projetoObservacaos';
+  let url = 'projetoobservacao/store';
   return _post(url, data);
 }
 
@@ -109,6 +108,6 @@ export const createProjetoObservacao = async (data) => {
 // }
 
 export const deleteProjetoObservacao = async (id) => {
-  let url = `projetoObservacaos/${id}`;
+  let url = `projetoobservacao/delete/${id}`;
   return _delete(url);
 }

@@ -41,7 +41,7 @@ const Checklist = forwardRef(({ handleForm }, ref) => {
 
   const addItem = () => {
     let updatedChecklist = [...checklist];
-    updatedChecklist.push({ ...MOCK, id: self.crypto.randomUUID(), content: 'item ' + (checklist.length + 1) });
+    updatedChecklist.push({ ...MOCK, id: Math.random().toString(12).substring(2), content: 'item ' + (checklist.length + 1) });
     setChecklist(updatedChecklist);
   };
 
@@ -76,8 +76,8 @@ const Checklist = forwardRef(({ handleForm }, ref) => {
   useEffect(() => {
     handleForm('checklist', checklist)
   }, [checklist]);
-
-  if (!isShow) return null;
+console.log(checklist)
+  if (!isShow || !checklist) return null;
   return (
     <>
       <h5><FaCheckSquare style={{ marginRight: 10 }} />Checklist</h5>
@@ -93,7 +93,7 @@ const Checklist = forwardRef(({ handleForm }, ref) => {
           </Col>
         </Row>
 
-        {!!checklist && checklist.map((item, index) => (
+        {checklist.map((item, index) => (
           <Row key={item.id} title={item.checked_at ?? null} className={"checklist-item" + (item.checked_at !== false ? " checked" : "")} style={{ textDecoration: item.checked_at ? 'line-through' : 'none' }}>
             <Col style={{ width: 50 }} md={'auto'}>
               <div onClick={() => handleCheckboxClick(index)}>

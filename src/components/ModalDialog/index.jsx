@@ -3,7 +3,7 @@ import { Form } from 'react-bootstrap';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import PropTypes from 'prop-types';
-import { FeedbackError, InfoDropdown, SelectAsync } from '..';
+import { DateInput, FeedbackError, InfoDropdown, SelectAsync } from '..';
 import { validateSchema } from '@/utils/helpers/yup';
 
 const ModalDialog = forwardRef(({
@@ -31,7 +31,7 @@ const ModalDialog = forwardRef(({
   }
 
   function show({ data, ...params }) {
-    if (params.forms) params.forms = params.forms.map(f => { f.id = self.crypto.randomUUID(); return f })
+    if (params.forms) params.forms = params.forms.map(f => { f.id = Math.random().toString(12).substring(2); return f })
     setModalProps(params)
     data && setFormData(data)
     setIsShow(true)
@@ -122,7 +122,7 @@ const ModalDialog = forwardRef(({
           <Form id="formModalDialog" autoComplete="off" noValidate={!!modalProps.yupSchema} validated={validated} onSubmit={onSubmited} style={{ marginTop: 20 }}>
             {modalProps.forms.map((form, i) => (
               <div key={form.id}>
-                {!['select', 'selectAsync'].includes(form.type) && (
+                {!['select', 'selectAsync', 'date'].includes(form.type) && (
                   <Form.Group key={form.id} className="mb-4" >
                     <Form.Label><strong> {form.label} </strong></Form.Label>
                     <Form.Control
@@ -183,6 +183,21 @@ const ModalDialog = forwardRef(({
                     <FeedbackError error={errors[form.name]} />
                   </Form.Group>
                 )}
+                {form.type === 'date' && (
+                  <Form.Group key={form.id} className="mb-4">
+                    <Form.Label><strong> {form.label} </strong></Form.Label>
+                    <DateInput
+                      value={formData[form.name]}
+                      onChangeValid={value => {
+                        setFormData((prev) => ({
+                          ...prev,
+                          [form.name]: value
+                        }));
+                      }}
+                      isInvalid={!!errors[form.name]} />
+                    <FeedbackError error={errors[form.name]} />
+                  </Form.Group>
+                )}
               </div>
             ))}
             <Button style={{ display: 'none' }} type='submit' id="btn-submit-hided" />
@@ -190,7 +205,7 @@ const ModalDialog = forwardRef(({
         )}
       </Modal.Body>
       <Modal.Footer>
-       {!!formData.id && <InfoDropdown style={{marginRight: 'auto'}} data={formData}/>}
+        {!!formData.id && <InfoDropdown style={{ marginRight: 'auto' }} data={formData} />}
         <Button variant="default" type="button" onClick={hide}>
           {modalProps.labelCancel ?? 'Cancelar'}
 

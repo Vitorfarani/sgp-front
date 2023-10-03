@@ -11,27 +11,11 @@ import CardSetor from "./components/CardSetor";
 import Tabs from "./components/Tabs";
 import { ProjetoProvider, useProjetoContext } from "./projetoContext";
 import { deleteTarefa, listTarefas, updateTarefaPositionFromKanban, updateTarefa } from "@/services/tarefa/tarefas";
+import { buildQueryString } from "@/utils/helpers/format";
+import { useDebounce } from "use-debounce";
+import { listProjetoResponsavel } from "@/services/projeto/projetoResponsavel";
 
-const MOCK = {
-  id: null,
-  nome: '',
-  descricao: '',
-  projeto_setor: [],
-  projeto_responsavel: [],
-  projeto_conhecimento: [],
-  thumbnail: null,
-  cliente: null,
-  projeto_fase: null,
-  projeto_status: null,
-  repositorio: '',
-  contato_nome: '',
-  contato_email: '',
-  contato_telefone: '',
-  hml_ip: '',
-  hml_banco: '',
-  prd_ip: '',
-  prd_banco: '',
-}
+
 const MOCK_tarefa = {
   id: null,
   projeto_id: null,
@@ -42,7 +26,7 @@ const MOCK_tarefa = {
   nome: '',
   descricao: '',
   // dificuldade: 0,
-  observacoes: [],
+  tarefa_observacao: [],
   checklist: null,
   // coeficiente: 0,
   data_inicio_programado: null,
@@ -54,47 +38,65 @@ const MOCK_tarefa = {
   // order: null,
   active: true
 }
+
+const baseTarefafilters = {
+  search: '',
+  deleted: false,
+  colaborador: null,
+};
+
 function Projeto() {
   let params = useParams();
   const [tarefaLoading, setTarefaLoading] = useState(false);
   const [errors, setErrors] = useState({});
-  const {projeto, load} = useProjetoContext();
+  const { projeto, load } = useProjetoContext();
   const navigate = useNavigate();
   const { callGlobalDialog, handleGlobalLoading, callGlobalAlert, callGlobalNotify } = useTheme();
   const kanban = useRef(null);
   const modalTarefa = useRef(null);
   const projetoRef = useRef(projeto);
+  const [filtersState, setFiltersState] = useState({ projeto: params.id, ...baseTarefafilters });
+  const [debouncedFilters] = useDebounce(filtersState, 200);
+  const handleChangeFilters = useCallback((name, value) => {
+    setFiltersState((prevFiltersState) => {
+      return {
+        ...prevFiltersState,
+        [name]: value,
+      };
+    });
+  }, []);
 
   useEffect(() => {
-    if(params.id){
+    if (params.id) {
       load(params.id)
-      .then(({tarefaStatusResult,tarefasResult}) => {
-        kanban.current.handleColumns(tarefaStatusResult)
-        kanban.current.handleTasks(tarefasResult)
-      })
-    } 
+        .then(({ tarefaStatusResult, tarefasResult }) => {
+          kanban.current.handleColumns(tarefaStatusResult)
+          kanban.current.handleTasks(tarefasResult)
+        })
+    }
   }, []);
 
   function removeTarefa(tarefa) {
-      handleGlobalLoading.show()
-      deleteTarefa(tarefa.id)
-        .then((result) => {
-          callGlobalNotify({ message: result.message, variant: 'danger' })
-          loadTarefas()
-        })
-        .catch((error) => {
-          callGlobalAlert(error)
-          handleGlobalLoading.hide()
-        })
+    handleGlobalLoading.show()
+    deleteTarefa(tarefa.id)
+      .then((result) => {
+        callGlobalNotify({ message: result.message, variant: 'danger' })
+        loadTarefas()
+      })
+      .catch((error) => {
+        callGlobalAlert(error)
+        handleGlobalLoading.hide()
+      })
   }
-  function loadTarefas() {
+  function loadTarefas(forceReLoad = false) {
+    if (modalTarefa.current.isShow && !forceReLoad) return
     setTarefaLoading(true)
-    listTarefas('?projeto='+params.id)
-    .then((result) => {
-      kanban.current.handleTasks(result)
-    })
-    .catch(callGlobalAlert)
-    .finally(() => setTarefaLoading(false))
+    listTarefas(buildQueryString({...filtersState, colaborador: filtersState.colaborador?.colaborador_id}))
+      .then((result) => {
+        kanban.current.handleTasks(result)
+      })
+      .catch(callGlobalAlert)
+      .finally(() => setTarefaLoading(false))
   }
 
   function updatePositionTasks(task) {
@@ -106,24 +108,29 @@ function Projeto() {
     }
     console.log(task.order)
     updateTarefaPositionFromKanban(task.id, data)
-    .then((result) => {
-      loadTarefas()
-    })
-    .catch((error) => {
-      if(error.code === 429){
+      .then((result) => {
         loadTarefas()
-      }
-      callGlobalAlert(error)
-    })
+      })
+      .catch((error) => {
+        if (error.code === 429) {
+          loadTarefas()
+        }
+        callGlobalAlert(error)
+      })
   }
 
   useEffect(() => {
     const loopLoadtarefa = setInterval(() => {
-      loadTarefas();
+      // loadTarefas();
     }, 12000);
     return () => clearInterval(loopLoadtarefa);
   }, []);
 
+  useEffect(() => {
+    if (!!projeto) {
+      loadTarefas()
+    }
+  }, [debouncedFilters]);
   return (
     <Background>
       <HeaderTitle title="Projeto" breadcrumbBlockeds={['editar']} />
@@ -284,25 +291,65 @@ function Projeto() {
           </Section>
         </Col> */}
           </Row>
-      <Row className="d-flex justify-content-center mb-3">
-        <h1 className="w-auto">Tarefas {tarefaLoading && <Spinner style={{fontSize: '0.59rem'}}/>}</h1>
-      </Row>
+          <Row className="d-flex justify-content-center mb-3">
+            <h1 className="w-auto">Tarefas {tarefaLoading && <Spinner style={{ fontSize: '0.59rem' }} />}</h1>
+          </Row>
+          <Row className="d-flex justify-content-center mb-3 px-5">
+            <Accordion flush >
+              <Accordion.Item eventKey="0" >
+                <Accordion.Header className="flex-row-center">Filtros</Accordion.Header>
+                <Accordion.Body>
+                  <Row className="d-flex justify-content-center">
+                    <Col md={3}>
+                      <Form.Label>Interrompidos</Form.Label>
+                      <Form.Check
+                        label="Interrompidos"
+                        type="checkbox"
+                        checked={filtersState.deleted}
+                        onChange={() => handleChangeFilters('deleted', !filtersState.deleted)}
+                      />
+                    </Col>
+                    <Col md={3}>
+                      <Form.Label>Filtrar por Executor</Form.Label>
+                      <SelectAsync
+                        placeholder=""
+                        loadOptions={(search) => listProjetoResponsavel(`?projeto=${params.id}&search=${search}`)}
+                        value={filtersState.colaborador}
+                        getOptionLabel={(option) => option.responsavel.nome}
+                        getOptionValue={(option) => option.responsavel.id}
+                        onChange={(colaborador) => handleChangeFilters('colaborador', colaborador)} />
+                    </Col>
+                    <Col md={3}>
+                      <Form.Label>Pesquisar</Form.Label>
+                      <Form.Control
+                        type="text"
+                        placeholder={"por nome"}
+                        value={filtersState.search}
+                        onChange={({ target: { value } }) => handleChangeFilters('search', value)}
+                      />
+                    </Col>
+                  </Row>
+                </Accordion.Body>
+              </Accordion.Item>
+            </Accordion>
+          </Row>
         </>
       )}
       <KanbanBoard
         ref={kanban}
+        disabled={filtersState.deleted}
         onChangeTask={(task) => updatePositionTasks(task)}
         onAddClick={(tarefa_status) => modalTarefa.current.show({ ...MOCK_tarefa, tarefa_status, projeto_id: projeto.id })}
         onEditClick={(row) => modalTarefa.current.show(row)}
         fieldColumnPivot="id"
         fieldTaskPivot="tarefa_status_id" />
-      <ModalTarefa ref={modalTarefa} onHide={() => {}} onDelete={removeTarefa} onSuccess={loadTarefas}/>
+      <ModalTarefa ref={modalTarefa} onHide={(forceReLoad) => loadTarefas(forceReLoad)} onDelete={removeTarefa} onSuccess={() => loadTarefas} />
     </Background>
   );
 }
 
 export default () => (
   <ProjetoProvider>
-    <Projeto/>
+    <Projeto />
   </ProjetoProvider>
 ) 

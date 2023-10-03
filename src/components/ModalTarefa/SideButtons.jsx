@@ -12,7 +12,7 @@ import { useProjetoContext } from '@/screens/Projetos/projetoContext';
 import { FiClock, FiDroplet, FiPlus, FiStopCircle, FiUser, FiUsers } from 'react-icons/fi';
 import moment from 'moment';
 
-const SideButtons = ({ tarefa, addTarefaColaborador, onStart, onEnd, onCreateChecklist, onInterruption }) => {
+const SideButtons = ({ tarefa, addTarefaColaborador, onStart, onEnd, onCreateChecklist, onInterruption, onRestore }) => {
   const { projeto } = useProjetoContext();
 
 
@@ -89,30 +89,75 @@ const SideButtons = ({ tarefa, addTarefaColaborador, onStart, onEnd, onCreateChe
     )
   }
 
+  const Restaurar = () => {
+    return (
+      <ButtonWithPopover
+        width={400}
+        title={'Interrompido'}
+        variant={"success"}
+        labelButton="Restaurar"
+        Icon={FaStopCircle}
+      >
+        <Form.Group className='mb-4'>
+          <Form.Label>Motivo</Form.Label>
+          <Form.Control
+            as="textarea"
+            rows={3}
+            readOnly
+
+            value={tarefa.interrompido_motivo}
+          />
+        </Form.Group>
+        <Form.Group className='mb-4'>
+          <Form.Label>Data Interrupção</Form.Label>
+          <DateInput
+            type={"datetime-local"}
+            readOnly
+            
+            value={tarefa.interrompido_at} />
+        </Form.Group>
+        <Button variant="success" onClick={() => onRestore()}>
+          <FaStopCircle />
+          Restaurar
+        </Button>
+      </ButtonWithPopover>
+    )
+  }
+
   if (!tarefa) return null;
   return (
     <ButtonGroup className='sidebuttons-group' vertical>
-      <Executores />
-      {!!!tarefa.data_inicio_real && (
-        <Button variant="warning" onClick={onStart}>
-          <FaStopwatch />
-          Iniciar
-        </Button>
-      )}
-      {!!!tarefa.data_fim_real && (
-        <Button variant="success" onClick={onEnd}>
-          <FiDroplet />
-          Entegrar
-        </Button>
-      )}
-      {!!!tarefa.checklist && (
-      <Button variant="primary" onClick={onCreateChecklist}>
-        <FaCheckSquare />
-        Checklist
-      </Button>
-      )}
-      {!!tarefa.id && (
-        <Interromper />
+      {!tarefa.deleted_at ? (
+        <>
+          <Executores />
+          {!!!tarefa.data_inicio_real && (
+            <Button variant="warning" onClick={onStart}>
+              <FaStopwatch />
+              Iniciar
+            </Button>
+          )}
+          {!!!tarefa.data_fim_real && (
+            <Button variant="success" onClick={onEnd}>
+              <FiDroplet />
+              Entegrar
+            </Button>
+          )}
+          {!!!tarefa.checklist && (
+            <Button variant="primary" onClick={onCreateChecklist}>
+              <FaCheckSquare />
+              Checklist
+            </Button>
+          )}
+          {!!tarefa.id && (
+            <Interromper />
+          )}
+        </>
+      ) : !!tarefa.id && (
+        // <Button variant="success" onClick={onRestore}>
+        //       <FaStopCircle />
+        //       Restaurar
+        //     </Button>
+        <Restaurar/>
       )}
     </ButtonGroup>
   );

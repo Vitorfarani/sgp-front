@@ -101,7 +101,6 @@ export const AuthProvider = ({ children }) => {
       logout,
       cbSubmit,
       cbSubmitDEV,
-      dataSSO,
       hmlMode,
       sethmlMode,
       setIsLogged,

@@ -12,6 +12,7 @@ function ColumnContainer({
   tasks,
   onAddClick,
   onEditClick,
+  disabled
 }) {
 
   const {
@@ -22,7 +23,7 @@ function ColumnContainer({
     transition,
     isDragging,
   } = useSortable({
-    id: '_'+column.id,
+    id: '_' + column.id,
     data: {
       type: "Column",
       column,
@@ -40,32 +41,35 @@ function ColumnContainer({
 
   return (
     <div ref={setNodeRef} style={style} {...attributes} {...listeners} className="column-container">
-      <div className="column-title">
+      <div className="column-title shadow">
         <div className="d-flex gap-2">
           <Badge>{tasks.length}</Badge> {column.nome}
         </div>
       </div>
-      <div  className="column-single h-auto overflow-y-auto" style={{minHeight: 100}}>
+      <div className="column-single h-auto overflow-y-auto" style={{ minHeight: 100 }}>
         <SortableContext items={tasksIds}>
           {tasks.map((task) => (
             <DraggableCard
               key={task.id}
+              disabled={disabled}
               task={task}
               onClick={onEditClick}
             />
           ))}
         </SortableContext>
       </div>
+      {!disabled && (
+        <button
+          className="add-task-button shadow"
+          onClick={() => {
+            onAddClick(column);
+          }}
+        >
+          <FiPlus />
+          <strong> Criar Tarefa</strong>
+        </button>
 
-      <button
-        className="add-task-button"
-        onClick={() => {
-          onAddClick(column);
-        }}
-      >
-        <FiPlus />
-        <strong> Criar Tarefa</strong>
-      </button>
+      )}
     </div>
   );
 }

@@ -1,15 +1,14 @@
+import { Background, Section } from "@/components/index";
 import { useRouteError } from "react-router-dom";
 
 export default function NotFound() {
-  console.log('errr')
-  const error = useRouteError();
   return (
-    <div id="error-page">
+    <Background>
+      <Section>
+
       <h1>Oops!</h1>
       <p>Página não encontrada.</p>
-      <p>
-        <i>{error.statusText || error.message}</i>
-      </p>
-    </div>
+      </Section>
+    </Background>
   );
 }

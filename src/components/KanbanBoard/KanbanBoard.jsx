@@ -29,6 +29,7 @@ const KanbanBoard = forwardRef(({
   fieldTaskPivot = 'status_id',
   onAddClick,
   onEditClick,
+  disabled,
   onChangeTask
 }, ref) => {
 
@@ -78,6 +79,7 @@ const KanbanBoard = forwardRef(({
           {columns.map((col) => (
             <ColumnContainer
               key={col[fieldColumnPivot]}
+              disabled={disabled}
               column={col}
               onAddClick={onAddClick}
               onEditClick={onEditClick}
@@ -90,6 +92,8 @@ const KanbanBoard = forwardRef(({
             {activeColumn && (
               <ColumnContainer
                 column={activeColumn}
+              disabled={disabled}
+
                 onAddClick={onAddClick}
                 onEditClick={onEditClick}
                 tasks={tasks.filter((task) => task[fieldTaskPivot] === activeColumn.id)}
@@ -109,92 +113,6 @@ const KanbanBoard = forwardRef(({
 
   );
 
-  function createTask(status_id, task) {
-    setTasks([...tasks, newTask]);
-  }
-
-  function deleteTask(id) {
-    const newTasks = tasks.filter((task) => task.id !== id);
-    setTasks(newTasks);
-  }
-
-  function updateTask(id, content) {
-    const newTasks = tasks.map((task) => {
-      if (task.id !== id) return task;
-      return { ...task, content };
-    });
-    setTasks(newTasks);
-  }
-
-
-  // function onDragStart(event) {
-  //   if (event.active.data.current?.type === "Task") {
-  //     console.log(event.active.data.current.task)
-  //     setActiveTask(event.active.data.current.task);
-  //     return;
-  //   }
-  // }
-
-  // function onDragEnd(event) {
-  //   setActiveTask(null);
-
-  //   const { active, over } = event;
-  //   if (!over) return;
-
-  //   const activeId = active.id;
-  //   const overId = over.id;
-  //   // onChangeColumn
-  //   if (activeId === overId) return;
-  //   onChangeColumn(over.id)
-
-  // }
-
-  // function onDragOver(event) {
-  //   const { active, over } = event;
-  //   console.log(active, over)
-  //   if (!over) return;
-  //   const activeId = active.id;
-  //   const overId = over.id;
-
-  //   // if (activeId === overId) return;
-
-  //   const isActiveATask = active.data.current?.type === "Task";
-  //   const isOverATask = over.data.current?.type === "Task";
-
-  //   if (!isActiveATask) return;
-
-  //   // Im dropping a Task over another Task
-  //   if (isActiveATask && isOverATask) {
-  //     setTasks((tasks) => {
-
-  //       const activeIndex = tasks.findIndex((t) => t.id === activeId);
-  //       const overIndex = tasks.findIndex((t) => t.id === overId);
-
-  //       if (tasks[activeIndex][fieldTaskPivot] != tasks[overIndex][fieldTaskPivot]) {
-  //         // Fix introduced after video recording
-  //         tasks[activeIndex][fieldTaskPivot] = tasks[overIndex][fieldTaskPivot];
-  //         return arrayMove(tasks, activeIndex, overIndex - 1);
-  //       }
-
-  //       return arrayMove(tasks, activeIndex, overIndex);
-  //     });
-  //   }
-
-  //   const isOverAColumn = over.data.current?.type === "Column";
-  //   console.log(isOverAColumn)
-  //   // Im dropping a Task over a column
-  //   if (isActiveATask && isOverAColumn) {
-
-  //     setTasks((tasks) => {
-  //       const activeIndex = tasks.findIndex((t) => t.id === activeId);
-
-  //       tasks[activeIndex][fieldTaskPivot] = overId;
-  //       console.log("DROPPING TASK OVER COLUMN", { activeIndex });
-  //       return arrayMove(tasks, activeIndex, activeIndex);
-  //     });
-  //   }
-  // }
-  
   function onDragStart(event) {
     if (event.active.data.current?.type === "Column") {
       setActiveColumn(event.active.data.current.column);
@@ -212,11 +130,14 @@ const KanbanBoard = forwardRef(({
     setActiveTask(null);
     const { active, over } = event;
    
-    if (!over) return;
+    if (!over || disabled) return;
     
     const activeId = active.id;
     const overId = over.id;
-    onChangeTask(tarefaActive.current);
+    let indexDropped = tasks.filter((task) => task[fieldTaskPivot] === activeTask[fieldTaskPivot]).findIndex(e => e.id === activeTask.id);
+    let changed = structuredClone(activeTask);
+    changed.order = indexDropped;
+    onChangeTask(changed)
     if (activeId === overId) return;
     
 
@@ -226,6 +147,7 @@ const KanbanBoard = forwardRef(({
 
 
     setColumns((columns) => {
+      console.log('aa')
       const activeColumnIndex = columns.findIndex((col) => col.id === activeId);
 
       const overColumnIndex = columns.findIndex((col) => col.id === overId);
@@ -246,27 +168,18 @@ const KanbanBoard = forwardRef(({
     const isActiveATask = active.data.current?.type === "Task";
     const isOverATask = over.data.current?.type === "Task";
 
-    if (!isActiveATask) return;
+    if (!isActiveATask || disabled) return;
 
     // Im dropping a Task over another Task
     if (isActiveATask && isOverATask) {
       setTasks((_tasks) => {
         const activeIndex = _tasks.findIndex((t) => t.id === activeId);
         const overIndex = _tasks.findIndex((t) => t.id === overId);
-
         if (_tasks[activeIndex][fieldTaskPivot] != _tasks[overIndex][fieldTaskPivot]) {
           // Fix introduced after video recording
           _tasks[activeIndex][fieldTaskPivot] = _tasks[overIndex][fieldTaskPivot];
-          _tasks[activeIndex].order = (overIndex - 1) >= 0 ? overIndex - 1 : 0;
-          console.log('1')
-          tarefaActive.current = _tasks[activeIndex]
           return arrayMove(_tasks, activeIndex, overIndex - 1);
         }
-        tarefaActive.current = _tasks[activeIndex]
-        console.log('2')
-
-        _tasks[activeIndex].order = (overIndex - 1) >= 0 ? overIndex - 1 : 0;;
-
         return arrayMove(_tasks, activeIndex, overIndex);
       });
     }
@@ -277,9 +190,10 @@ const KanbanBoard = forwardRef(({
     if (isActiveATask && isOverAColumn) {
       setTasks((_tasks) => {
         const activeIndex = _tasks.findIndex((t) => t.id === activeId);
-        _tasks[activeIndex][fieldTaskPivot] = checkIsColumn(overId);
-        _tasks[activeIndex].order = activeIndex
-        console.log('3')
+        if(checkIsColumn(overId)) {
+          _tasks[activeIndex][fieldTaskPivot] = checkIsColumn(overId);
+        }
+        _tasks[activeIndex].order = activeIndex;
 
         tarefaActive.current = _tasks[activeIndex]
         return arrayMove(_tasks, activeIndex, activeIndex);

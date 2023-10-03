@@ -1,5 +1,5 @@
 import { FiBarChart, FiBookmark, FiGrid, FiPieChart, FiUsers, FiBriefcase } from "react-icons/fi";
-import { FaArchive, FaBalanceScale, FaBity, FaBrain, FaBuilding, FaClock, FaFlag, FaLevelUpAlt, FaListAlt, FaMarkdown, FaPeopleCarry, FaTasks } from "react-icons/fa";
+import { FaArchive, FaBalanceScale, FaBity, FaBrain, FaBuilding, FaClock, FaFlag, FaLevelUpAlt, FaListAlt, FaMarkdown, FaPeopleCarry, FaStopCircle, FaStopwatch, FaTasks } from "react-icons/fa";
 
 export default [
   {
@@ -14,6 +14,21 @@ export default [
     icon: FaPeopleCarry,
     path: 'colaboradores',
     childrens: []
+  },
+  {
+    nome: 'Afastamento',
+    icon: FaStopCircle,
+    path: 'afastamentos',
+    rolesPermited: [],
+    childrens: [
+      {
+        nome: 'Tipos de afastamento',
+        icon: FaStopwatch,
+        path: 'afastamentos/tipos',
+        rolesPermited: [],
+        childrens: []
+      },
+    ]
   },
   {
     nome: 'Projetos',
