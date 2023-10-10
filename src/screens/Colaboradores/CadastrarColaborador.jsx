@@ -235,8 +235,12 @@ export default function CadastrarColaborador() {
     let data = structuredClone(form);
     data.thumbnail = ''
     data.cpf = data.cpf.replace(/\D/g, '')
-    data = formatForm(data).rebaseIds(['setor']).getResult()
-    data.vinculo = formatForm(data.vinculo).rebaseIds(['empresa', 'funcao']).getResult()
+    data = formatForm(data).rebaseIds(['setor']).getResult();
+    data.vinculo = formatForm(data.vinculo).rebaseIds(['empresa', 'funcao']).trimTextInputs().getResult();
+    console.log(data.vinculo)
+    if(!data.vinculo.funcao_id && !data.vinculo.empresa_id) {
+      delete data.vinculo;
+    }
     if (!data.id) {
       data.colaborador_conhecimento = data.colaborador_conhecimento.map(c => {
         return {
@@ -293,6 +297,7 @@ export default function CadastrarColaborador() {
               <SelectAsync
                 placeholder="Selecione um setor"
                 loadOptions={listSetores}
+                getOptionLabel={(option) => option.sigla+' - '+option.nome}
                 value={formData.setor}
                 onChange={(setor) => handleForm('setor', setor)}
                 isInvalid={!!errors.setor} />
@@ -384,8 +389,8 @@ export default function CadastrarColaborador() {
                 loadOptions={listEmpresas}
                 value={formData.vinculo?.empresa}
                 onChange={(empresa) => handleVinculoForm('empresa', empresa)}
-                isInvalid={!!errors.vinculo?.empresa} />
-              <FeedbackError error={errors.vinculo?.empresa} />
+                isInvalid={!!errors?.['vinculo.empresa']} />
+              <FeedbackError error={errors?.['vinculo.empresa']} />
             </Form.Group>
             <Form.Group as={Col} md={2}>
             <Form.Label>Função</Form.Label>
@@ -394,24 +399,24 @@ export default function CadastrarColaborador() {
                 loadOptions={listFuncao}
                 value={formData.vinculo?.funcao}
                 onChange={(funcao) => handleVinculoForm('funcao', funcao)}
-                isInvalid={!!errors.vinculo?.funcao} />
-              <FeedbackError error={errors.vinculo?.funcao} />
+                isInvalid={!!errors?.['vinculo.funcao']} />
+              <FeedbackError error={errors?.['vinculo.funcao']} />
             </Form.Group>
             <Form.Group as={Col} md={2}>
             <Form.Label>Data de Início</Form.Label>
               <DateInput
                 value={formData.vinculo?.data_inicio}
                 onChangeValid={date => handleVinculoForm('data_inicio', date)}
-                isInvalid={!!errors.vinculo?.data_inicio} />
-              <FeedbackError error={errors.vinculo?.data_inicio} />
+                isInvalid={!!errors?.['vinculo.data_inicio']} />
+              <FeedbackError error={errors?.['vinculo.data_inicio']} />
             </Form.Group>
             <Form.Group as={Col} md={2}>
             <Form.Label>Data de Fim</Form.Label>
               <DateInput              
                 value={formData.vinculo?.data_fim}
                 onChangeValid={date => handleVinculoForm('data_fim', date)}
-                isInvalid={!!errors.vinculo?.data_fim} />
-              <FeedbackError error={errors.vinculo?.data_fim} />
+                isInvalid={!!errors?.['vinculo.data_fim']} />
+              <FeedbackError error={errors?.['vinculo.data_fim']} />
             </Form.Group>
             <Form.Group as={Col} md={1}>
             <Form.Label>Carga Horária</Form.Label>
@@ -419,8 +424,8 @@ export default function CadastrarColaborador() {
                 value={formData.vinculo?.carga_horaria}
                 type="number"
                 onChange={({ target: { value } }) => handleVinculoForm('carga_horaria', value)}
-                isInvalid={!!errors.vinculo?.carga_horaria} />
-              <FeedbackError error={errors.vinculo?.carga_horaria} />
+                isInvalid={!!errors?.['vinculo.carga_horaria']} />
+              <FeedbackError error={errors?.['vinculo.carga_horaria']} />
             </Form.Group>
             <Form.Group as={Col}>
             <Form.Label>

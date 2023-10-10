@@ -523,7 +523,7 @@ export default function CadastrarProjeto() {
               </Form.Group>
             </Section>
             <Section>
-              <h4>Ambiente prdução</h4>
+              <h4>Ambiente Produção</h4>
               <Form.Group as={Row} className="mt-4 mb-4">
                 <Form.Label column sm="4">Servidor</Form.Label>
                 <Col sm="8">

@@ -75,6 +75,7 @@ const CanvasSetor = forwardRef(({ listParams, onSave, ...props }, ref) => {
               placeholder=""
               loadOptions={(search) => listSetores(`?search=${search}`)}
               value={formData.setor}
+              getOptionLabel={(option) => option.sigla+' - '+option.nome}
               isInvalid={!!errors.setor}
               onChange={(setor) => handleForm('setor', setor)} />
             <FeedbackError error={errors.setor} />

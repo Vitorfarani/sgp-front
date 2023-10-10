@@ -9,11 +9,14 @@ import { standartResponseApiError } from "@/services/index";
 import { deleteColaborador, listColaboradores } from "@/services/colaborador/colaboradores";
 import { celularMask } from "@/utils/helpers/mask";
 import { dateEnToPt, getIdade } from "@/utils/helpers/date";
+import { listSetores } from "@/services/setores";
+import { Col } from "react-bootstrap";
 
 const basefilters = {
   search: '',
   perPage: 20,
   selectedRows: [],
+  setor: null,
   page: 1,
   active: true,
   sortedColumn: 'id',
@@ -26,7 +29,7 @@ const columnsFields = [
   { field: 'email', label: 'Email', enabledOrder: false },
   { field: 'telefone', label: 'Telefone', enabledOrder: false, piper: (field) => field && celularMask(field)},
   { field: 'nascimento', label: 'Idade', enabledOrder: false, piper: (field) => field && getIdade(field) + ' anos' },
-  { field: 'setor', label: 'Setor', enabledOrder: false, piper: (field) => !!field ? field.nome : '' },
+  { field: 'setor', label: 'Setor', enabledOrder: false, piper: (field) => !!field ? field.sigla : '' },
 ];
 
 export default function Conhecimentos() {
@@ -96,6 +99,19 @@ export default function Conhecimentos() {
           filtersState={filtersState}
           searchPlaceholder="Buscar Colaborador"
           searchOffiline
+          filtersComponentes={
+            <>
+            <Col md={3}>
+            <SelectAsync
+              placeholder="Filtrar por Setor"
+              loadOptions={(search) => listSetores('?search='+search)}
+              // getOptionLabel={(option) => option.sigla}
+              getOptionLabel={(option) => option.sigla+' - '+option.nome}
+
+              onChange={(setor) => handleChangeFilters('setor', setor.id)} />
+            </Col>
+            </>
+          }
           handleFilters={handleChangeFilters}
           actions={[
             {

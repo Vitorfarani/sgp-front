@@ -70,7 +70,7 @@ const CanvasConhecimento = forwardRef(({ onSave, ...props }, ref) => {
             <Form.Label>Conhecimento</Form.Label>
             <SelectAsync
               placeholder=""
-              loadOptions={listConhecimentos}
+              loadOptions={(search) => listConhecimentos('?search='+search)}
               value={formData.conhecimento}
               isInvalid={!!errors.conhecimento}
               onChange={(conhecimento) => handleForm('conhecimento', conhecimento)} />
@@ -82,7 +82,7 @@ const CanvasConhecimento = forwardRef(({ onSave, ...props }, ref) => {
           <Form.Label>Nivel de conhecimento</Form.Label>
           <SelectAsync
             placeholder=""
-            loadOptions={listConhecimentoNivels}
+            loadOptions={(search) => listConhecimentoNivels('?search='+search)}
             value={formData.conhecimento_nivel}
             isInvalid={!!errors.conhecimento_nivel}
           getOptionLabel={(option) => option.grau}
