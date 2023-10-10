@@ -376,30 +376,9 @@ export default function CadastrarColaborador() {
               </>
             )}
           </h4>
-          <Row className="mt-3" >
+          <Row className="mt-3">
             <Form.Group as={Col} md={2}>
-              <Form.Label>Empresa</Form.Label>
-            </Form.Group>
-            <Form.Group as={Col} md={2}>
-              <Form.Label>Função</Form.Label>
-            </Form.Group>
-            <Form.Group as={Col} md={2}>
-              <Form.Label>Data de Início</Form.Label>
-            </Form.Group>
-            <Form.Group as={Col} md={2}>
-              <Form.Label>Data de Fim</Form.Label>
-            </Form.Group>
-            <Form.Group as={Col} md={1}>
-              <Form.Label>Carga Horária</Form.Label>
-            </Form.Group>
-            <Form.Group as={Col}>
-              <Form.Label>
-                Dias da Semana
-              </Form.Label>
-            </Form.Group>
-          </Row>
-          <Row className="">
-            <Form.Group as={Col} md={2}>
+            <Form.Label>Empresa</Form.Label>
               <SelectAsync
                 placeholder="Empresa contratante"
                 loadOptions={listEmpresas}
@@ -409,6 +388,7 @@ export default function CadastrarColaborador() {
               <FeedbackError error={errors.vinculo?.empresa} />
             </Form.Group>
             <Form.Group as={Col} md={2}>
+            <Form.Label>Função</Form.Label>
               <SelectAsync
                 placeholder="Função / Cargo"
                 loadOptions={listFuncao}
@@ -418,6 +398,7 @@ export default function CadastrarColaborador() {
               <FeedbackError error={errors.vinculo?.funcao} />
             </Form.Group>
             <Form.Group as={Col} md={2}>
+            <Form.Label>Data de Início</Form.Label>
               <DateInput
                 value={formData.vinculo?.data_inicio}
                 onChangeValid={date => handleVinculoForm('data_inicio', date)}
@@ -425,13 +406,15 @@ export default function CadastrarColaborador() {
               <FeedbackError error={errors.vinculo?.data_inicio} />
             </Form.Group>
             <Form.Group as={Col} md={2}>
-              <DateInput
+            <Form.Label>Data de Fim</Form.Label>
+              <DateInput              
                 value={formData.vinculo?.data_fim}
                 onChangeValid={date => handleVinculoForm('data_fim', date)}
                 isInvalid={!!errors.vinculo?.data_fim} />
               <FeedbackError error={errors.vinculo?.data_fim} />
             </Form.Group>
             <Form.Group as={Col} md={1}>
+            <Form.Label>Carga Horária</Form.Label>
               <Form.Control
                 value={formData.vinculo?.carga_horaria}
                 type="number"
@@ -440,6 +423,9 @@ export default function CadastrarColaborador() {
               <FeedbackError error={errors.vinculo?.carga_horaria} />
             </Form.Group>
             <Form.Group as={Col}>
+            <Form.Label>
+                Dias da Semana
+              </Form.Label>
               <Col className="weekdays-checkbox">
                 {Object.keys(weekdays).map((key, index) => (
                   <Form.Check
@@ -464,7 +450,7 @@ export default function CadastrarColaborador() {
           <BtnSimple Icon={FaBrain} onClick={() => handleConhecimento()}>Adicionar Conhecimento</BtnSimple>
         </Row>
         {/* <Stack direction="horizontal" className="mx-auto justify-content-center mb-3" gap={formData.colaborador_conhecimento.length}> */}
-        <HorizontalScrollview className="" style={formData.colaborador_conhecimento.length <= 1 ? { justifyContent: 'center' } : null}>
+        <HorizontalScrollview className="" style={{flexWrap: 'wrap', gap: '0.6em'}}>
           <>
             {formData.colaborador_conhecimento.map((resp, i) => (
               <CardConhecimento

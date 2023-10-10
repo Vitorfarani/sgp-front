@@ -15,7 +15,7 @@ const CardConhecimento = ({ title, titleColor, nivel, nivelColor, onEdit, onRemo
           <Col className='px-0' xs={1} sm={1} onClick={onEdit}>
             <PuzzleIcon color={nivelColor}/>
           </Col>
-          <Col onClick={onEdit}>
+          <Col onClick={onEdit} style={{marginLeft: 5}}>
             <BadgeColor color={titleColor}>
             {title}
             </BadgeColor>
