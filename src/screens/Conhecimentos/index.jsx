@@ -28,7 +28,6 @@ const columnsFields = [
   { field: 'dificuldade', label: 'Dificuldade', enabledOrder: true, piper: (field) => getDificuldade(field)},
   { field: 'color', label: 'Color', enabledOrder: true, piper: (field) => <BadgeColor color={field}>{field ?? "sem cor"}</BadgeColor>},
   { field: 'conhecimento_classe', label: 'Classe', enabledOrder: true, piper: (field) =>  !!field && field.nome },
-  { field: 'conhecimento_nivel', label: 'Nível', enabledOrder: true, piper: (field) => !!field && field.grau },
 ];
 const cadastroInitialValue = {
   nome: '',
@@ -36,7 +35,6 @@ const cadastroInitialValue = {
   color: null,
   dificuldade: 5,
   conhecimento_classe: null,
-  conhecimento_nivel: null,
   link: '',
 };
 
@@ -100,13 +98,6 @@ export default function Conhecimentos() {
           required: true,
         },
         {
-          name: 'conhecimento_nivel',
-          label: 'Nível',
-          type: 'selectAsync',
-          getOptionLabel: (option) => option.grau,
-          loadOptions: listConhecimentoNivels
-        },
-        {
           name: 'link',
           label: 'Link para documentação',
           placeholder: '',
@@ -117,7 +108,7 @@ export default function Conhecimentos() {
       labelCancel: 'Cancelar',
     })
       .then((result) => {
-        return formatForm(result).rebaseIds(['conhecimento_classe', 'conhecimento_nivel']).trimTextInputs().getResult()
+        return formatForm(result).rebaseIds(['conhecimento_classe']).trimTextInputs().getResult()
       })
       .then(async (result) => {
         handleGlobalLoading.show()

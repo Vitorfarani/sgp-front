@@ -10,12 +10,29 @@ import './style.scss'
 import { formatForm } from "@/utils/helpers/forms";
 import { createColaborador, showColaborador, updateColaborador } from "@/services/colaborador/colaboradores";
 import { useTheme } from "@/utils/context/ThemeProvider";
-import { FaBrain } from "react-icons/fa";
+import { FaBrain, FaHistory, FaPlus } from "react-icons/fa";
 import CardConhecimento from "./components/CardConhecimento";
 import CanvasConhecimento from "./components/CanvasConhecimento";
 import { isNumber } from "@/utils/helpers/is";
 import { createColaboradorConhecimento, deleteColaboradorConhecimento, updateColaboradorConhecimento } from "@/services/colaborador/colaboradorConhecimento";
+import { listEmpresas } from "@/services/empresas";
+import { listFuncao } from "@/services/funcoes";
+import { FiClock, FiInfo } from "react-icons/fi";
+import { listVinculo } from "@/services/vinculos";
+import { dateEnToPt } from "@/utils/helpers/date";
 
+const MOCK_VINCULO = {
+  carga_horaria: 8,
+  empresa: null,
+  funcao: null,
+  data_inicio: '',
+  data_fim: null,
+  segunda: true,
+  terca: true,
+  quarta: true,
+  quinta: true,
+  sexta: true,
+}
 const MOCK = {
   id: null,
   thumbnail: null,
@@ -29,13 +46,25 @@ const MOCK = {
   nascimento: '',
   setor: null,
   colaborador_conhecimento: [],
+  vinculo: MOCK_VINCULO
 }
 
+const weekdays = {
+  'segunda': 'Segunda',
+  'terca': 'Terça',
+  'quarta': 'Quarta',
+  'quinta': 'Quinta',
+  'sexta': 'Sexta'
+};
 
 
+//Todo: finalizar vinculo
 export default function CadastrarColaborador() {
   const [errors, setErrors] = useState({});
   const [formData, setformData] = useState(MOCK);
+  const [showHistoryVinculo, setShowHistoryVinculo] = useState(false);
+  const [historyVinculo, setHistoryVinculo] = useState([]);
+  const [showBtnNewVinculo, setShowBtnNewVinculo] = useState(true);
   let params = useParams();
   const navigate = useNavigate();
   const { callGlobalDialog, handleGlobalLoading, callGlobalAlert, callGlobalNotify } = useTheme();
@@ -46,8 +75,32 @@ export default function CadastrarColaborador() {
       ...pc,
       colaborador_conhecimento_id: pc.id
     }))
-    results['user_active'] = results.user?.active
+    results['user_active'] = results.user?.active ?? true;
+    results['vinculo'] = !results.vinculo ? MOCK_VINCULO : results.vinculo;
+
     return results
+  }
+  function handleToggleHistoryVinculo() {
+    
+    if (showHistoryVinculo) {
+      setHistoryVinculo([])
+      setShowHistoryVinculo(false)
+    } else {
+      handleGlobalLoading.show()
+      listVinculo('?colaborador_id=' + formData.id)
+        .then((results) => {
+          let resultsFiltered = results.filter(e => e.id !== formData.vinculo.id);
+          if(resultsFiltered.length > 0) {
+            setShowHistoryVinculo(true)
+            setHistoryVinculo(resultsFiltered)
+          } else {
+            callGlobalNotify({message: 'O vinculo atual é o único desse colaborador', icon: FiInfo})
+          }
+
+        })
+        .catch(callGlobalAlert)
+        .finally(handleGlobalLoading.hide)
+    }
   }
   const load = async (id) => {
     setErrors({})
@@ -65,7 +118,7 @@ export default function CadastrarColaborador() {
   }
 
   function saveConhecimento(data, index) {
-    if(!formData.id) {
+    if (!formData.id) {
       let prev = [...formData.colaborador_conhecimento]
       if (isNumber(index)) {
         prev = formData['colaborador_conhecimento'].map((item, i) => i === index ? data : item)
@@ -85,7 +138,7 @@ export default function CadastrarColaborador() {
       let method = !data.id ? createColaboradorConhecimento : updateColaboradorConhecimento;
       method(data)
         .then((result) => {
-          callGlobalNotify({message: result.message, variant: 'success'})
+          callGlobalNotify({ message: result.message, variant: 'success' })
           load(params.id)
         })
         .catch((error) => {
@@ -94,9 +147,33 @@ export default function CadastrarColaborador() {
         })
     }
   }
-
+  function newVinculo() {
+    let prev = [...historyVinculo];
+    setShowBtnNewVinculo(false)
+    setShowHistoryVinculo(true)
+    prev.push(formData.vinculo)
+    setHistoryVinculo(prev)
+    setformData((prevState) => ({
+      ...prevState,
+      ['vinculo']: { ...MOCK_VINCULO, isNew: true }
+    }));
+  }
+  // function saveNewVinculo(params) {
+  //   let data = formatForm(form)
+  //   handleGlobalLoading.show()
+  //   let method = !data.id ? createColaboradorConhecimento : updateColaboradorConhecimento;
+  //   method(data)
+  //     .then((result) => {
+  //       callGlobalNotify({ message: result.message, variant: 'success' })
+  //       load(params.id)
+  //     })
+  //     .catch((error) => {
+  //       callGlobalAlert(error)
+  //       handleGlobalLoading.hide()
+  //     })
+  // }
   function removeConhecimento(index) {
-    if(!formData.id) {
+    if (!formData.id) {
       setformData((prevState) => ({
         ...prevState,
         ['colaborador_conhecimento']: prevState['colaborador_conhecimento'].filter((r, i) => i !== index)
@@ -104,43 +181,40 @@ export default function CadastrarColaborador() {
     } else {
       let cc = formData['colaborador_conhecimento'][index];
       callGlobalDialog({
-            title: 'Excluir Conhecimento',
-            subTitle: 'Tem certeza que deseja excluir esse conhecimento do colaborador?',
-            color: 'red',
-            labelSuccess: 'Excluir',
-          })
-            .then(() => {
-              handleGlobalLoading.show()
-              deleteColaboradorConhecimento(cc.id)
-                .then((result) => {
-                  callGlobalNotify({message: result.message, variant: 'danger'})
-                  load(params.id)
-                })
-                .catch((error) => {
-                  callGlobalAlert(error)
-                  handleGlobalLoading.hide()
-                })
+        title: 'Excluir Conhecimento',
+        subTitle: 'Tem certeza que deseja excluir esse conhecimento do colaborador?',
+        color: 'red',
+        labelSuccess: 'Excluir',
+      })
+        .then(() => {
+          handleGlobalLoading.show()
+          deleteColaboradorConhecimento(cc.id)
+            .then((result) => {
+              callGlobalNotify({ message: result.message, variant: 'danger' })
+              load(params.id)
             })
-          }
+            .catch((error) => {
+              callGlobalAlert(error)
+              handleGlobalLoading.hide()
+            })
+        })
+    }
   }
 
   function handleForm(propertyName, newValue, subPropertyName = null, index = null) {
-    console.log(newValue)
-    if (subPropertyName) {
-      setformData((prevState) => ({
+    setformData((prevState) => ({
+      ...prevState,
+      [propertyName]: newValue
+    }));
+  }
+  function handleVinculoForm(propertyName, newValue) {
+    setformData((prevState) => {
+      console.log(prevState['vinculo'])
+      return {
         ...prevState,
-        [propertyName]: prevState[propertyName].map((item, i) =>
-          i === index
-            ? { ...item, [subPropertyName]: newValue }
-            : item
-        )
-      }));
-    } else {
-      setformData((prevState) => ({
-        ...prevState,
-        [propertyName]: newValue
-      }));
-    }
+        ['vinculo']: { ...prevState['vinculo'], [propertyName]: newValue }
+      }
+    });
   };
 
   const handleSubmit = useCallback((event) => {
@@ -162,7 +236,8 @@ export default function CadastrarColaborador() {
     data.thumbnail = ''
     data.cpf = data.cpf.replace(/\D/g, '')
     data = formatForm(data).rebaseIds(['setor']).getResult()
-    if(!data.id) {
+    data.vinculo = formatForm(data.vinculo).rebaseIds(['empresa', 'funcao']).getResult()
+    if (!data.id) {
       data.colaborador_conhecimento = data.colaborador_conhecimento.map(c => {
         return {
           conhecimento_id: c.conhecimento.id,
@@ -170,17 +245,17 @@ export default function CadastrarColaborador() {
         }
       })
     }
-    return data;    
+    return data;
   }
 
   function save() {
     let data = beforeSave(formData);
     handleGlobalLoading.show()
     let method = !data.id ? createColaborador : updateColaborador;
-     method(data)
+    method(data)
       .then((res) => {
         callGlobalNotify({ message: res.message, variant: 'success' })
-        navigate('/colaboradores/editar/'+res.colaborador.id)
+        navigate('/colaboradores/editar/' + res.colaborador.id)
       })
       .catch((error) => {
         callGlobalAlert(error)
@@ -219,23 +294,171 @@ export default function CadastrarColaborador() {
                 placeholder="Selecione um setor"
                 loadOptions={listSetores}
                 value={formData.setor}
-                onChange={(setor) =>  handleForm('setor', setor)}
+                onChange={(setor) => handleForm('setor', setor)}
                 isInvalid={!!errors.setor} />
               <FeedbackError error={errors.setor} />
             </Col>
             <Col md={'auto'} className="m-auto">
-              <Form.Check 
+              <Form.Check
                 type="switch"
                 id="custom-switch"
                 label="Ativo"
                 checked={formData.active}
                 onChange={({ target: { value } }) => handleForm('active', !formData.active)}
               />
-              </Col>
+            </Col>
             <Col md={'auto'} className="m-auto">
               <Button type="submit">Salvar</Button>
             </Col>
           </Row>
+        </Section>
+        {showHistoryVinculo && (
+          <Section>
+            <h4>Histórico Vínculo</h4>
+            <Row className="mt-3" >
+            <Col md="auto">
+                </Col>
+              <Form.Group as={Col} md={2}>
+                <Form.Label>Empresa</Form.Label>
+              </Form.Group>
+              <Form.Group as={Col} md={2}>
+                <Form.Label>Função</Form.Label>
+              </Form.Group>
+              <Form.Group as={Col} md={2}>
+                <Form.Label>Data de Início</Form.Label>
+              </Form.Group>
+              <Form.Group as={Col} md={2}>
+                <Form.Label>Data de Fim</Form.Label>
+              </Form.Group>
+              <Form.Group as={Col} md={1}>
+                <Form.Label>Carga Horária</Form.Label>
+              </Form.Group>
+              <Form.Group as={Col}>
+                <Form.Label>
+                  Dias da Semana
+                </Form.Label>
+              </Form.Group>
+            </Row>
+            {historyVinculo.map((vinculo) => (
+              <Row className="mb-3" style={{ backgroundColor: 'var(--bs-gray)' }}>
+                <Col md="auto">
+                  <FaHistory />
+                </Col>
+                <Form.Group as={Col} md={2} className="px-1">
+                  <span>{vinculo?.empresa.nome}</span>
+                </Form.Group>
+                <Form.Group as={Col} md={2} className="px-1">
+                  <span>{vinculo?.funcao.nome}</span>
+                </Form.Group>
+                <Form.Group as={Col} md={2} className="px-1">
+                  <span>{dateEnToPt(vinculo?.data_inicio)}</span>
+                </Form.Group>
+                <Form.Group as={Col} md={2} className="px-1">
+                  <span>{dateEnToPt(vinculo?.data_fim)}</span>
+                </Form.Group>
+                <Form.Group as={Col} md={1} className="px-1">
+                  <span>{vinculo?.carga_horaria}</span>
+                </Form.Group>
+                <Form.Group as={Col} className="px-1">
+                  <div className="d-flex">
+                    {Object.keys(weekdays).map((key, index) => vinculo[key] === 1 && (<span>{weekdays[key]},</span>))}
+                  </div>
+                </Form.Group>
+              </Row>
+            ))}
+          </Section>
+        )}
+        <Section>
+          <h4>Vínculo
+            {formData.id && (
+              <>
+                <Button onClick={handleToggleHistoryVinculo}><FaHistory title="Histórico" /></Button>
+              </>
+            )}
+          </h4>
+          <Row className="mt-3" >
+            <Form.Group as={Col} md={2}>
+              <Form.Label>Empresa</Form.Label>
+            </Form.Group>
+            <Form.Group as={Col} md={2}>
+              <Form.Label>Função</Form.Label>
+            </Form.Group>
+            <Form.Group as={Col} md={2}>
+              <Form.Label>Data de Início</Form.Label>
+            </Form.Group>
+            <Form.Group as={Col} md={2}>
+              <Form.Label>Data de Fim</Form.Label>
+            </Form.Group>
+            <Form.Group as={Col} md={1}>
+              <Form.Label>Carga Horária</Form.Label>
+            </Form.Group>
+            <Form.Group as={Col}>
+              <Form.Label>
+                Dias da Semana
+              </Form.Label>
+            </Form.Group>
+          </Row>
+          <Row className="">
+            <Form.Group as={Col} md={2}>
+              <SelectAsync
+                placeholder="Empresa contratante"
+                loadOptions={listEmpresas}
+                value={formData.vinculo?.empresa}
+                onChange={(empresa) => handleVinculoForm('empresa', empresa)}
+                isInvalid={!!errors.vinculo?.empresa} />
+              <FeedbackError error={errors.vinculo?.empresa} />
+            </Form.Group>
+            <Form.Group as={Col} md={2}>
+              <SelectAsync
+                placeholder="Função / Cargo"
+                loadOptions={listFuncao}
+                value={formData.vinculo?.funcao}
+                onChange={(funcao) => handleVinculoForm('funcao', funcao)}
+                isInvalid={!!errors.vinculo?.funcao} />
+              <FeedbackError error={errors.vinculo?.funcao} />
+            </Form.Group>
+            <Form.Group as={Col} md={2}>
+              <DateInput
+                value={formData.vinculo?.data_inicio}
+                onChangeValid={date => handleVinculoForm('data_inicio', date)}
+                isInvalid={!!errors.vinculo?.data_inicio} />
+              <FeedbackError error={errors.vinculo?.data_inicio} />
+            </Form.Group>
+            <Form.Group as={Col} md={2}>
+              <DateInput
+                value={formData.vinculo?.data_fim}
+                onChangeValid={date => handleVinculoForm('data_fim', date)}
+                isInvalid={!!errors.vinculo?.data_fim} />
+              <FeedbackError error={errors.vinculo?.data_fim} />
+            </Form.Group>
+            <Form.Group as={Col} md={1}>
+              <Form.Control
+                value={formData.vinculo?.carga_horaria}
+                type="number"
+                onChange={({ target: { value } }) => handleVinculoForm('carga_horaria', value)}
+                isInvalid={!!errors.vinculo?.carga_horaria} />
+              <FeedbackError error={errors.vinculo?.carga_horaria} />
+            </Form.Group>
+            <Form.Group as={Col}>
+              <Col className="weekdays-checkbox">
+                {Object.keys(weekdays).map((key, index) => (
+                  <Form.Check
+                    key={index}
+                    type="checkbox"
+                    label={weekdays[key]}
+                    checked={formData?.vinculo?.[key]}
+                    onChange={({ target: { checked } }) => handleVinculoForm(key, checked)}
+                    inline
+                  />
+                ))}
+              </Col>
+            </Form.Group>
+          </Row>
+          {formData.id && showBtnNewVinculo && (
+            <Row className="justify-content-center mt-4 mb-4">
+              <BtnSimple Icon={FaPlus} onClick={() => newVinculo()}>Novo Vínculo</BtnSimple>
+            </Row>
+          )}
         </Section>
         <Row className="justify-content-center mt-4 mb-4">
           <BtnSimple Icon={FaBrain} onClick={() => handleConhecimento()}>Adicionar Conhecimento</BtnSimple>
@@ -243,20 +466,20 @@ export default function CadastrarColaborador() {
         {/* <Stack direction="horizontal" className="mx-auto justify-content-center mb-3" gap={formData.colaborador_conhecimento.length}> */}
         <HorizontalScrollview className="" style={formData.colaborador_conhecimento.length <= 1 ? { justifyContent: 'center' } : null}>
           <>
-          {formData.colaborador_conhecimento.map((resp, i) => (
-            <CardConhecimento
-              key={i}  
-              title={resp.conhecimento.nome}
-              titleColor={resp.conhecimento.color}
-              nivelColor={resp.conhecimento_nivel?.color}
-              nivel={resp.conhecimento_nivel?.grau}
-              onEdit={() => handleConhecimento(resp, i)}
-              onRemove={() => removeConhecimento(i)} />
-          ))}
+            {formData.colaborador_conhecimento.map((resp, i) => (
+              <CardConhecimento
+                key={i}
+                title={resp.conhecimento.nome}
+                titleColor={resp.conhecimento.color}
+                nivelColor={resp.conhecimento_nivel?.color}
+                nivel={resp.conhecimento_nivel?.grau}
+                onEdit={() => handleConhecimento(resp, i)}
+                onRemove={() => removeConhecimento(i)} />
+            ))}
           </>
         </HorizontalScrollview>
         <Row>
-       
+
           <Col md={3}>
             <Section>
               <h4>Contato</h4>
@@ -280,10 +503,10 @@ export default function CadastrarColaborador() {
                 <FeedbackError error={errors.email} />
               </Form.Group>
             </Section>
-            </Col>
+          </Col>
           <Col md={3}>
             <Section>
-            <h4>Informações</h4>
+              <h4>Informações</h4>
               <Form.Group className="mt-4 mb-4">
                 <Form.Control
                   placeholder="PR"
@@ -319,10 +542,10 @@ export default function CadastrarColaborador() {
           </Col>
           <Col md={3}>
             <Section>
-            <h4>Usuário</h4>
+              <h4>Usuário</h4>
               <Form.Group className="mt-4 mb-4">
-                  <Form.Label>Habilitar usuário para logar no SGP?</Form.Label>
-                <Form.Check 
+                <Form.Label>Habilitar usuário para logar no SGP?</Form.Label>
+                <Form.Check
                   type="switch"
                   id="custom-switch"
                   label=""
@@ -334,12 +557,12 @@ export default function CadastrarColaborador() {
             </Section>
           </Col>
           <Col md={6} className="">
-        
+
           </Col>
-         
+
         </Row>
       </Form>
-      <CanvasConhecimento ref={canvasConhecimentoRef} onSave={saveConhecimento}/>
-    </Background>
+      <CanvasConhecimento ref={canvasConhecimentoRef} onSave={saveConhecimento} />
+    </Background >
   );
 }

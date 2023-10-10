@@ -15,6 +15,7 @@ export const showColaborador = async (id) => {
   let url = `colaborador/show/${id}`;
   return _get(url);
 }
+
 export const updateColaborador = async (data) => {
   let url = `colaborador/update/${data.id}`;
   return _put(url, data);
