@@ -171,7 +171,7 @@ const ModalDialog = forwardRef(({
                     <Form.Label><strong> {form.label} </strong></Form.Label>
                     <SelectAsync
                       value={formData[form.name]}
-                      loadOptions={form.loadOptions}
+                      loadOptions={(search) => form.loadOptions('?search='+search)}
                       isInvalid={!!errors[form.name]}
                       onChange={value => {
                         setFormData((prev) => ({

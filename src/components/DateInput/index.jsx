@@ -7,6 +7,7 @@ const DateInput = ({value, onChangeValid, placeholder, ...props}) => {
 
   const handleInputChange = (event) => {
     const newInputValue = event.target.value;
+    console.log(newInputValue)
     onChangeValid(newInputValue)
 
     // if (moment(newInputValue, 'YYYY-MM-DD', true).isValid()) {

@@ -64,32 +64,43 @@ export const axiosError = (error) => {
   if (axios.isAxiosError(error)) {
     if (error.response) {
       try {
-        if(error.response.status == 422) {
+        if(error.response?.status == 422) {
           return {
-            title: getStatusMessage(error.response.status),
+            title: getStatusMessage(error.response?.status),
             subtitle:  error.response.data.message,
             message:  formatErrorsToHTML(error.response.data),
             color: 'var(--bs-danger)',
-            code: error.response.status
+            code: error.response?.status
           }
         }
-        if(error.response.status == 405) {
+        if(error.response?.status == 405) {
           return {
-            title: getStatusMessage(error.response.status),
+            title: getStatusMessage(error.response?.status),
             message:  'Rota não habilitada na API',
             color: 'var(--bs-danger)',
-            code: error.response.status
+            code: error.response?.status
+          }
+        }
+        if(error.response?.status == 401) {
+          localStorage.removeItem('toook')
+          localStorage.removeItem('user')
+          window.location.href = '/'
+          return {
+            title: getStatusMessage(error.response?.status),
+            message:  error.response.data.message,
+            color: 'var(--bs-danger)',
+            code: error.response?.status
           }
         }
         
         return {
-          title: getStatusMessage(error.response.status),
+          title: getStatusMessage(error.response?.status),
           message:  error.response.data.message,
           color: 'var(--bs-danger)',
-          code: error.response.status
+          code: error.response?.status
         }
       } catch (exception) {
-        return standartResponseApiError('Erro durante a solicitação: '+ error.message);
+        return standartResponseApiError('Erro durante a solicitação: '+ exception);
       }
     } else {
       return standartResponseApiError('Erro durante a solicitação: '+ error.message);

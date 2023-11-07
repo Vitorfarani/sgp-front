@@ -77,6 +77,10 @@ export default function CadastrarColaborador() {
     }))
     results['user_active'] = results.user?.active ?? true;
     results['vinculo'] = !results.vinculo ? MOCK_VINCULO : results.vinculo;
+    if( !!results.user.thumbnail) {
+      results['thumbnail'] = results.user.thumbnail;
+
+    }
 
     return results
   }
@@ -233,7 +237,6 @@ export default function CadastrarColaborador() {
 
   function beforeSave(form) {
     let data = structuredClone(form);
-    data.thumbnail = ''
     data.cpf = data.cpf.replace(/\D/g, '')
     data = formatForm(data).rebaseIds(['setor']).getResult();
     data.vinculo = formatForm(data.vinculo).rebaseIds(['empresa', 'funcao']).trimTextInputs().getResult();
@@ -280,7 +283,7 @@ export default function CadastrarColaborador() {
             <Col md={'auto'}>
               <ThumbnailUploader
                 size={60}
-                url={formData.thumbnail}
+                file={formData.thumbnail}
                 placeholder={formData.nome}
                 onImageChange={(file) => handleForm('thumbnail', file)} />
               <FeedbackError error={errors.thumbnail} />
@@ -296,7 +299,7 @@ export default function CadastrarColaborador() {
             <Col md={3} className="m-auto">
               <SelectAsync
                 placeholder="Selecione um setor"
-                loadOptions={listSetores}
+                loadOptions={(search) => listSetores('?search='+search)}
                 getOptionLabel={(option) => option.sigla+' - '+option.nome}
                 value={formData.setor}
                 onChange={(setor) => handleForm('setor', setor)}
@@ -386,7 +389,7 @@ export default function CadastrarColaborador() {
             <Form.Label>Empresa</Form.Label>
               <SelectAsync
                 placeholder="Empresa contratante"
-                loadOptions={listEmpresas}
+                loadOptions={(search) => listEmpresas('?search='+search)}
                 value={formData.vinculo?.empresa}
                 onChange={(empresa) => handleVinculoForm('empresa', empresa)}
                 isInvalid={!!errors?.['vinculo.empresa']} />
@@ -396,7 +399,7 @@ export default function CadastrarColaborador() {
             <Form.Label>Função</Form.Label>
               <SelectAsync
                 placeholder="Função / Cargo"
-                loadOptions={listFuncao}
+                loadOptions={(search) => listFuncao('?search='+search)}
                 value={formData.vinculo?.funcao}
                 onChange={(funcao) => handleVinculoForm('funcao', funcao)}
                 isInvalid={!!errors?.['vinculo.funcao']} />
@@ -553,7 +556,7 @@ export default function CadastrarColaborador() {
 
         </Row>
       </Form>
-      <CanvasConhecimento ref={canvasConhecimentoRef} onSave={saveConhecimento} />
+      <CanvasConhecimento ref={canvasConhecimentoRef} colaborador={formData} onSave={saveConhecimento} />
     </Background >
   );
 }

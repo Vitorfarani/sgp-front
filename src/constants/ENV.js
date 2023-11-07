@@ -1,5 +1,5 @@
 //DEV
-export const MODE = 'HML';
+export const MODE = 'DEV';
 
 const ENVORIMENTS = {
   DEV: {
@@ -8,15 +8,13 @@ const ENVORIMENTS = {
     API_VERSION: "api/v1/",
     REACT_APP_CLIENT_ID: "sgtp",
     REACT_APP_API_SSO: "https://dev.login.rj.gov.br/auth/realms/rj/protocol/openid-connect",
-    REACT_APP_API_SSO_KEY: "Api-Key 7nAQ4uv8.JTLoeV2Y5moaVEe3wx8PBwROBidxdmkx",
     HOST: "https://127.0.0.1:5173",
   },
   HML: {
     API_URL: "https://www.sgp2.proderj.rj.gov.br/",
     API_VERSION: "api/v1/",
     REACT_APP_CLIENT_ID: "sgtp",
-    REACT_APP_API_SSO: "https://dev.login.rj.gov.br/auth/realms/rj/protocol/openid-connect",
-    REACT_APP_API_SSO_KEY: "Api-Key 7nAQ4uv8.JTLoeV2Y5moaVEe3wx8PBwROBidxdmkx",
+    REACT_APP_API_SSO: "https://login.rj.gov.br/auth/realms/rj/protocol/openid-connect",
     // HOST: "http://127.0.0.1:5173",
 
     HOST: "https://www.sgp.proderj.rj.gov.br",

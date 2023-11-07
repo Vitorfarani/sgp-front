@@ -9,22 +9,24 @@ import { dot } from '@/components/Selectables/theme';
 
 const CardConhecimento = ({ title, titleColor, nivel, nivelColor, onEdit, onRemove, size = '13rem' }) => {
   return (
-    <Card  className='card-conhecimento' style={{ }}>
+    <Card className='card-conhecimento' style={{}}>
       <Card.Header>
         <Row className='px-2'>
           <Col className='px-0' xs={1} sm={1} onClick={onEdit}>
-            <PuzzleIcon color={nivelColor}/>
+            <PuzzleIcon color={nivelColor} />
           </Col>
-          <Col onClick={onEdit} style={{marginLeft: 5}}>
+          <Col onClick={onEdit} style={{ marginLeft: 5 }}>
             <BadgeColor color={titleColor}>
-            {title}
+              {title}
             </BadgeColor>
           </Col>
-          <Col xs={1} sm={1}>
-            <a onClick={onRemove}>
-              <FiTrash color='var(--bs-danger)'/>
-            </a>
-          </Col>
+          {!!onRemove && (
+            <Col xs={1} sm={1}>
+              <a onClick={onRemove}>
+                <FiTrash color='var(--bs-danger)' />
+              </a>
+            </Col>
+          )}
         </Row>
       </Card.Header>
     </Card>

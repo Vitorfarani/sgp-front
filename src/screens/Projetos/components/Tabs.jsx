@@ -22,7 +22,7 @@ const Tabs = () => {
 
   function loadObervacoes() {
     setObsIsLoading(true)
-    listProjetoObservacoes('?projeto_id=' + projeto.id)
+    listProjetoObservacoes('?projeto=' + projeto.id)
       .then((observacoes) => {
         setObservacoes(observacoes)
       })

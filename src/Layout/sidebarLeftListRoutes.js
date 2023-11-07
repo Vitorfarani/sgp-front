@@ -1,5 +1,5 @@
 import { FiBarChart, FiBookmark, FiGrid, FiPieChart, FiUsers, FiBriefcase, FiBookOpen } from "react-icons/fi";
-import { FaArchive, FaBalanceScale, FaBity, FaBrain, FaBuilding, FaClock, FaFlag, FaLevelUpAlt, FaListAlt, FaMarkdown, FaPeopleCarry, FaStopCircle, FaStopwatch, FaTasks } from "react-icons/fa";
+import { FaArchive, FaBalanceScale, FaBity, FaBrain, FaBuilding, FaClock, FaFlag, FaIdCard, FaLevelUpAlt, FaListAlt, FaMarkdown, FaPeopleCarry, FaStopCircle, FaStopwatch, FaTasks } from "react-icons/fa";
 
 export default [
   {
@@ -115,7 +115,14 @@ export default [
     nome: 'Clientes',
     icon: FiUsers,
     path: 'clientes',
-    childrens: []
+    childrens: [
+      {
+        nome: 'Contatos',
+        icon: FaIdCard,
+        path: 'clientes/contatos',
+        childrens: []
+      },
+    ]
   },
   {
     nome: 'Setores',

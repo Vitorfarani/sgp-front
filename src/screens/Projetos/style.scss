@@ -1,8 +1,16 @@
+@import '@/scss/theme.scss';
 
 .card-responsavel {
   flex: 0 0 240px;
   height: 200px;
   margin-right: 10px;
+  .main-can-change:hover {
+    // border: 3px dashed var(--bs-warning);
+    // transform: 3px scale();
+    border: 4px dashed var(--bs-warning);
+    transform: scale(1.2); /* Aumenta o tamanho e faz a borda girar */
+    transition: all 0.2s ease-in-out; 
+  }
   strong {
     font-size: 12px;
     font-weight: 800;
@@ -12,5 +20,16 @@
     font-weight: 300;
     margin-bottom: 3px;
   }
+}
+.setor-responsavel{
+  font-size: 14px;
+  color: $secondary;
+}
+@include color-mode(dark) {
+  .setor-responsavel{
+    font-size: 14px;
+    color: $secondary-light;
+  }
+ 
 }
 

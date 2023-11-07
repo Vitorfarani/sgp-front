@@ -11,7 +11,7 @@ const MOCK_conhecimento = {
   conhecimento: null,
   conhecimento_nivel: null,
 }
-const CanvasConhecimento = forwardRef(({ onSave, ...props }, ref) => {
+const CanvasConhecimento = forwardRef(({ onSave, colaborador, ...props }, ref) => {
   const [show, setShow] = useState(false);
   const [formData, setformData] = useState({});
   const [validated, setValidated] = useState(false);
@@ -61,7 +61,6 @@ const CanvasConhecimento = forwardRef(({ onSave, ...props }, ref) => {
     event.stopPropagation();
   }, [formData]);
 
-
   return (
     <CustomOffCanvas title="Conhecimento" show={show} onHide={close} placement="end" name="conhecimento">
       <Form onSubmit={handleSubmit} noValidate validated={validated}>
@@ -71,6 +70,9 @@ const CanvasConhecimento = forwardRef(({ onSave, ...props }, ref) => {
             <SelectAsync
               placeholder=""
               loadOptions={(search) => listConhecimentos('?search='+search)}
+              filterOption={(option) => {
+                return !colaborador.colaborador_conhecimento?.map(cc => cc.conhecimento.id).includes(option.value)
+              }}
               value={formData.conhecimento}
               isInvalid={!!errors.conhecimento}
               onChange={(conhecimento) => handleForm('conhecimento', conhecimento)} />

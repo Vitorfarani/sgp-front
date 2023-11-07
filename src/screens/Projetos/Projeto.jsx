@@ -142,7 +142,7 @@ function Projeto() {
                 <ThumbnailUploader
                   size={60}
                   readonly
-                  url={projeto.thumbnail}
+                  file={projeto.thumbnail}
                   placeholder={projeto.nome}
                 />
               </Col>
@@ -156,7 +156,9 @@ function Projeto() {
               <Col md={3} className="m-auto">
                 <span>Cliente</span>
                 <h4>{projeto.cliente.nome}</h4>
+                <span>{projeto.cliente.setor}</span>
               </Col>
+             
               <Col md={'auto'} className="m-auto">
                 <Button className={Object.keys(errors) > 0 ? "border border-danger" : ""} type="button" onClick={() => navigate('/projetos/editar/' + projeto.id)}>Editar</Button>
               </Col>
@@ -218,7 +220,7 @@ function Projeto() {
                 </HorizontalScrollView>
               </Section>
               <Section>
-                <h5>Responsáveis</h5>
+                <h5>Envolvidos</h5>
                 <HorizontalScrollView className="mb-3" style={projeto.projeto_responsavel.length <= 1 ? { justifyContent: 'center' } : { justifyContent: 'flex-start' }}>
                   {projeto.projeto_responsavel.map((resp, i) => (
                     <CardResponsavel
@@ -226,9 +228,10 @@ function Projeto() {
                       onOpen={() => window.open('/colaboradores/visualizar/' + resp.responsavel.id, "_blank", "noreferrer noopener")}
                       title={pessoaNomeAbreviadoMask(resp.responsavel.nome)}
                       thumbnail={resp.responsavel.user?.thumbnail}
-                      subtitle={resp.responsavel.setor?.nome}
+                      subtitle={resp.responsavel.setor?.sigla}
                       dataInicio={resp.inicio}
-                      dataFim={resp.fim} />
+                      dataFim={resp.fim} 
+                      isMain={resp.principal}/>
                   ))}
                 </HorizontalScrollView>
               </Section>
@@ -254,16 +257,16 @@ function Projeto() {
                     <Accordion.Header>Contato</Accordion.Header>
                     <Accordion.Body>
                       <Row className="mb-1">
-                        <Col md={3} className=""><strong>Contato Nome</strong></Col>
-                        <Col><span>{projeto.contato_nome}</span></Col>
+                        <Col md={3} className=""><strong>Nome</strong></Col>
+                        <Col><span>{projeto.contato?.nome}</span></Col>
                       </Row>
                       <Row className="mb-1">
-                        <Col md={3} className=""><strong>Contato Email</strong></Col>
-                        <Col><ClipboardContainer>{projeto.contato_email}</ClipboardContainer></Col>
+                        <Col md={3} className=""><strong>Email</strong></Col>
+                        <Col><ClipboardContainer>{projeto.contato?.email}</ClipboardContainer></Col>
                       </Row>
                       <Row className="mb-1">
-                        <Col md={3} className=""><strong>Contato Telefone</strong></Col>
-                        <Col><ClipboardContainer>{projeto.contato_telefone}</ClipboardContainer></Col>
+                        <Col md={3} className=""><strong>Telefone</strong></Col>
+                        <Col><ClipboardContainer>{projeto.contato?.telefone}</ClipboardContainer></Col>
                       </Row>
 
                     </Accordion.Body>

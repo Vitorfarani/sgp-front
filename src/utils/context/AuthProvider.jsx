@@ -65,7 +65,7 @@ export const AuthProvider = ({ children }) => {
 
   async function loadLocal() {
     try {
-      if(localStorage.getItem('toook')) {
+      if(!localStorage.getItem('toook') || !localStorage.getItem('user')) {
         me()
         .then(({data}) => {
           setUser(data)
@@ -79,6 +79,8 @@ export const AuthProvider = ({ children }) => {
           
         })
       } else {
+        setUser(JSON.parse(localStorage.getItem('user')))
+        setIsLogged(true)
         setLoaded(true)
       }
       

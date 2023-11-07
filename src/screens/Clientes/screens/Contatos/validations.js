@@ -2,9 +2,11 @@ import * as Yup from 'yup';
 import { dateValidation, yupOptionStandart, yupRequired } from "@/utils/helpers/yup";
 
 
-export const clienteSchema = Yup.object().shape({
+export const contatoSchema = Yup.object().shape({
   nome: Yup.string().required( yupRequired('Nome')),
-  setor: Yup.string().required( yupRequired('Setor')),
+  email: Yup.string().email('Formato de email inválido').required( yupRequired('Email')),
+  telefone: Yup.string().required( yupRequired('Telefone')),
+  cliente: Yup.object().nonNullable( yupRequired('Cliente')),
 });
 
 // export const projetoSchema = Yup.object().shape({

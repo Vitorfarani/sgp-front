@@ -17,7 +17,7 @@ import { FaPeopleCarry } from "react-icons/fa";
 import { createProjeto, showProjeto, updateProjeto } from "@/services/projeto/projetos";
 import { useTheme } from "@/utils/context/ThemeProvider";
 import { pessoaNomeAbreviadoMask } from "@/utils/helpers/mask";
-import { createProjetoResponsavel, deleteProjetoResponsavel, updateProjetoResponsavel } from "@/services/projeto/projetoResponsavel";
+import { createProjetoResponsavel, deleteProjetoResponsavel, mainProjetoResponsavel, updateProjetoResponsavel } from "@/services/projeto/projetoResponsavel";
 import CanvasSetor from "./components/CanvasSetor";
 import CardSetor from "./components/CardSetor";
 import { createProjetoSetor, deleteProjetoSetor, mainProjetoSetor, updateProjetoSetor } from "@/services/projeto/projetoSetor";
@@ -25,6 +25,7 @@ import { formatForm } from "@/utils/helpers/forms";
 import { listProjetoFases } from "@/services/projeto/projetoFases";
 import { listProjetoStatus } from "@/services/projeto/projetoStatus";
 import { createProjetoConhecimento, deleteProjetoConhecimento } from "@/services/projeto/projetoConhecimento";
+import { listContatos } from "@/services/contato";
 
 const MOCK = {
   id: null,
@@ -35,12 +36,11 @@ const MOCK = {
   projeto_conhecimento: [],
   thumbnail: null,
   cliente: null,
+  contato: null,
   projeto_fase: null,
   projeto_status: null,
   repositorio: '',
-  contato_nome: '',
-  contato_email: '',
-  contato_telefone: '',
+ 
   hml_ip: '',
   hml_banco: '',
   prd_ip: '',
@@ -116,6 +116,8 @@ export default function CadastrarProjeto() {
           deleteProjetoResponsavel(pr.id)
             .then((result) => {
               callGlobalNotify({ message: result.message, variant: 'danger' })
+          load(params.id)
+
             })
             .catch(callGlobalAlert)
             .finally(handleGlobalLoading.hide)
@@ -168,6 +170,7 @@ export default function CadastrarProjeto() {
 
   function saveSetor(data, index) {
     if (!formData.id) {
+      data = {...data, setor_id: data.id}
       let prev = [...formData.projeto_setor]
       if (isNumber(index)) {
         prev = formData['projeto_setor'].map((item, i) => i === index ? data : item)
@@ -262,6 +265,43 @@ export default function CadastrarProjeto() {
         })
     }
   }
+  function handleMainResponsavel(index) {
+    console.log(index)
+    if (!formData.id) {
+      setformData((prevState) => ({
+        ...prevState,
+        ['projeto_responsavel']: prevState['projeto_responsavel'].map((r, i) => {
+          if (i == index) {
+            r.principal = true
+          } else {
+            r.principal = false
+          }
+          return r;
+        })
+      }));
+    } else {
+      let pr = formData['projeto_responsavel'][index];
+      callGlobalDialog({
+        title: 'Envolvido Responsável ',
+        subTitle: 'Tem certeza que deseja adicionar esse colaborador como envolvido responsável do projeto?',
+        color: 'var(--bs-warning)',
+        labelSuccess: 'Sim',
+        labelCancel: 'Não',
+      })
+        .then(() => {
+          handleGlobalLoading.show()
+          mainProjetoResponsavel(pr.id)
+            .then((result) => {
+              callGlobalNotify({ message: result.message, variant: 'success' })
+              load(params.id)
+            })
+            .catch((error) => {
+              callGlobalAlert(error)
+              handleGlobalLoading.hide()
+            })
+        })
+    }
+  }
 
   function handleForm(propertyName, newValue, subPropertyName = null, index = null) {
     if (subPropertyName) {
@@ -298,7 +338,7 @@ export default function CadastrarProjeto() {
     try {
       
       let data = structuredClone(form);
-      data = formatForm(data).rebaseIds(['projeto_status', 'projeto_fase', 'cliente']).trimTextInputs().getResult()
+      data = formatForm(data).rebaseIds(['projeto_status', 'projeto_fase', 'cliente','contato']).trimTextInputs().getResult()
       data.projeto_conhecimento = data.projeto_conhecimento.map(c => {
         return {
           ...c,
@@ -374,7 +414,7 @@ export default function CadastrarProjeto() {
             <Col md={'auto'}>
               <ThumbnailUploader
                 size={60}
-                url={formData.thumbnail}
+                file={formData.thumbnail}
                 placeholder={formData.nome}
                 onImageChange={(file) => handleForm('thumbnail', file)} />
               <FeedbackError error={errors.thumbnail} />
@@ -387,14 +427,25 @@ export default function CadastrarProjeto() {
                 isInvalid={!!errors.nome} />
               <FeedbackError error={errors.nome} />
             </Col>
-            <Col md={3} className="m-auto">
+            <Col md={2} className="m-auto">
               <SelectAsync
                 placeholder="Selecione um cliente *"
-                loadOptions={listClientes}
+                loadOptions={(search) => listClientes(`?search=${search}`)}
                 value={formData.cliente}
                 onChange={(cliente) => handleForm('cliente', cliente)}
                 isInvalid={!!errors.cliente} />
               <FeedbackError error={errors.cliente} />
+            </Col>
+            <Col md={2} className="m-auto">
+              <SelectAsync
+                key={JSON.stringify(formData.cliente?.id ?? '1c')}
+                placeholder="Contato *"
+                isDisabled={!formData.cliente}
+                loadOptions={(search) => listContatos(`?search=${search}&cliente=${formData.cliente?.id}`)}
+                value={formData.contato}
+                onChange={(contato) => handleForm('contato', contato)}
+                isInvalid={!!errors.contato} />
+              <FeedbackError error={errors.contato} />
             </Col>
             <Col md={'auto'} className="m-auto">
               <Button className={Object.keys(errors) > 0 ? "border border-danger" : ""} type="submit">Salvar</Button>
@@ -450,7 +501,7 @@ export default function CadastrarProjeto() {
               required
               onRemove
               placeholder="Selecione os Conhecimentos necessários para esse projeto"
-              loadOptions={listConhecimentos}
+              loadOptions={(search) => listConhecimentos('?search='+search)}
               value={formData.projeto_conhecimento}
               onChange={(projeto_conhecimento, action) => {
                 console.log(action)
@@ -466,13 +517,13 @@ export default function CadastrarProjeto() {
         </Section>
         <Row className="mb-3 px-4">
           <Col xs={12} md={2}>
-            <h4>Responsáveis</h4>
+            <h4>Envolvidos</h4>
           </Col>
           <Col xs={'auto'} md={8} className='d-flex justify-content-center align-items-center'>
             <span></span>
           </Col>
           <Col xs={12} md={2} className='d-flex flex-row-reverse'>
-            <BtnSimple Icon={FaPeopleCarry} onClick={() => handleResponsavel()}>Adicionar Responsável</BtnSimple>
+            <BtnSimple Icon={FaPeopleCarry} onClick={() => handleResponsavel()}>Adicionar Envolvido</BtnSimple>
 
           </Col>
         </Row>
@@ -482,9 +533,11 @@ export default function CadastrarProjeto() {
               key={i}
               title={pessoaNomeAbreviadoMask(resp.responsavel.nome)}
               thumbnail={resp.responsavel.user?.thumbnail}
-              subtitle={resp.responsavel.setor?.nome}
+              subtitle={resp.responsavel.setor?.sigla}
               dataInicio={resp.inicio}
               dataFim={resp.fim}
+              isMain={resp.principal}
+              onMainChange={() => handleMainResponsavel(i)}
               onEdit={() => handleResponsavel(resp, i)}
               onRemove={() => removeResponsavel(i)} />
           ))}
@@ -553,7 +606,7 @@ export default function CadastrarProjeto() {
                 <Form.Label column sm="4" >Fase <sup>*</sup></Form.Label>
                 <Col sm="8">
                   <SelectAsync
-                    loadOptions={listProjetoFases}
+                    loadOptions={(search) => listProjetoFases('?search='+search)}
                     value={formData.projeto_fase}
                     onChange={(projeto_fase) => handleForm('projeto_fase', projeto_fase)}
                     isInvalid={!!errors.projeto_fase} />
@@ -564,7 +617,7 @@ export default function CadastrarProjeto() {
                 <Form.Label column sm="4" >Status <sup>*</sup></Form.Label>
                 <Col sm="8">
                   <SelectAsync
-                    loadOptions={listProjetoStatus}
+                    loadOptions={(search) => listProjetoStatus('?search='+search)}
                     value={formData.projeto_status}
                     onChange={(projeto_status) => handleForm('projeto_status', projeto_status)}
                     isInvalid={!!errors.projeto_status} />
@@ -593,7 +646,7 @@ export default function CadastrarProjeto() {
                 </Col>
               </Form.Group>
             </Section>
-            <Section>
+            {/* <Section>
               <h4>Contato</h4>
               <Form.Group as={Row} className="mt-4 mb-4">
                 <Form.Label column sm="4">Nome</Form.Label>
@@ -623,11 +676,11 @@ export default function CadastrarProjeto() {
                   />
                 </Col>
               </Form.Group>
-            </Section>
+            </Section> */}
           </Col>
         </Row>
       </Form>
-      <CanvasResponsavel ref={canvasResponsavelRef} listParams={`?conhecimento=${formData.projeto_conhecimento.join(',')}`} onSave={saveResponsavel} />
+      <CanvasResponsavel ref={canvasResponsavelRef} projeto={formData} onSave={saveResponsavel} />
       <CanvasSetor ref={canvasSetorRef} onSave={saveSetor} />
     </Background>
   );

@@ -1,0 +1,19 @@
+.background {
+  justify-content: center;
+  align-items: center;
+  padding: 0 !important;
+}
+
+.tooltip-conhecimentos {
+  font-size: 12px !important;
+  margin: 10px 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1em;
+  .conhecimento{
+    display: flex;
+    align-items: center;
+    margin-bottom: 2px;
+    gap: 1em;
+  }
+}

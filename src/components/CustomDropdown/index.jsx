@@ -8,7 +8,7 @@ const CustomDropdown = ({ items, size, param }) => {
     if(visibled === false) return null
     return (
       <Button variant="primary" onClick={() => onClick(param)}>
-        {Icon && React.createElement(Icon, {className:'me-2'})}
+        {Icon && React.createElement(Icon, {className:!!label ? 'me-2' : null})}
         {label}
       </Button>
     );

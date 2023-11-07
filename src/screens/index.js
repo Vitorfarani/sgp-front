@@ -28,6 +28,7 @@ export { default as ConhecimentoClasse } from './Conhecimentos/screens/Classe/in
 export { default as ConhecimentoNivel } from './Conhecimentos/screens/Nivel/index.jsx';
 
 export { default as Clientes } from './Clientes/index.jsx';
+export { default as Contatos } from './Clientes/screens/Contatos';
 export { default as Funcoes } from './Funcoes/index.jsx';
 export { default as Setor } from './Setor/index.jsx';
 export { default as Empresas } from './Empresas/index.jsx';

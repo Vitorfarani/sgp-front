@@ -6,16 +6,16 @@ import { Stack } from 'react-bootstrap';
 import { FiTrash } from 'react-icons/fi';
 import { dateEnToPt } from '@/utils/helpers/date';
 
-const CardResponsavel = ({ onOpen, title,thumbnail, subtitle, dataInicio, dataFim, onEdit, onRemove, size = '13rem' }) => {
+const CardResponsavel = ({ onOpen, title,thumbnail, subtitle, dataInicio, dataFim, onEdit, onRemove, isMain, onMainChange, size = '13rem' }) => {
   return (
     <Card  className='card-responsavel' style={{ }}>
       <Card.Header>
         <Stack 
-          onClick={onOpen} 
+          
           direction='horizontal' className="my-auto" gap={2}>
-          <ThumbnailUploader size={36} placeholder={title} readonly url={thumbnail}/>
-          <Card.Title style={{ fontSize: 16, marginBottom: 0}}>{title}
-          {!!subtitle && <span style={{ fontSize: 12, color: 'var(--bs-warning)'}}><br />{"\n"}{subtitle}</span>}
+          <ThumbnailUploader size={36} placeholder={title} readonly file={thumbnail} onPress={onMainChange} className={(!!onMainChange ? 'main-can-change ' : '')+(isMain ? 'yellow-dashed' :  '')}/>
+          <Card.Title onClick={onOpen}  style={{ fontSize: 16, marginBottom: 0}}>{title}
+          {!!subtitle && <span className='setor-responsavel'><br />{"\n"}{subtitle}</span>}
           </Card.Title>
         </Stack>
       {!!onRemove && (
@@ -28,7 +28,7 @@ const CardResponsavel = ({ onOpen, title,thumbnail, subtitle, dataInicio, dataFi
         <Card.Text>Início: {dateEnToPt(dataInicio)}</Card.Text>
         <Card.Text>Fim: {dataFim ? dateEnToPt(dataFim) : 'Até o momento'}</Card.Text>
       </Card.Body> */}
-      <Card.Body>
+      <Card.Body onClick={onOpen}>
         <strong>Desde</strong>
         <p>{dateEnToPt(dataInicio)}</p>
         <strong>Até</strong>

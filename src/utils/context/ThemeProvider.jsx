@@ -35,7 +35,7 @@ export const ThemeProvider = memo(({ children }) => {
   const callGlobalNotify = useCallback((body) => {
     if (isString(body.message)) {
       console.log(body)
-      notify.current.add(body)
+      notify.current.add({...body, position: 'top-right'})
     } else {
       console.error('message is required');
     }

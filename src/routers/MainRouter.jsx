@@ -28,7 +28,8 @@ import {
   TarefaClasse,
   AfastamentoTipos,
   Afastamentos,
-  Funcoes
+  Funcoes,
+  Contatos
 } from '@/screens/index';
 import { useTheme } from '@/utils/context/ThemeProvider';
 import CadastrarProjeto from '@/screens/Projetos/CadastrarProjeto';
@@ -102,6 +103,7 @@ const MainRouter = () => {
         <Route path="setores" Component={Setor}/>
 
         <Route path="clientes" Component={Clientes}/>
+        <Route path="clientes/contatos" Component={Contatos}/>
         
         <Route path="*" Component={NotFound} />
       </Route>

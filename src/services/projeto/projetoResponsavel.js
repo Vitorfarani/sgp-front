@@ -1,5 +1,5 @@
 import axios from "axios";
-import { _delete, _get, _post, _put, fakeFetch } from "..";
+import { _delete, _get, _patch, _post, _put, fakeFetch } from "..";
 
 
 export const listProjetoResponsavel = async (params = "") => {
@@ -23,4 +23,8 @@ export const updateProjetoResponsavel = async (data) => {
 export const deleteProjetoResponsavel = async (id) => {
   let url = `projetoresponsavel/delete/${id}`;
   return _delete(url);
+}
+export const mainProjetoResponsavel = async (id) => {
+  let url = `projetoresponsavel/principal/${id}`;
+  return _patch(url);
 }

@@ -46,6 +46,7 @@ export function getSelectStyles(multi, size, isInvalid = false) {
       color: `var(--bs-body-color)`,
       backgroundColor: `var(--bs-body-bg)`,
       borderColor: `var(--bs-body-bg)`,
+     
       // margin: `calc(var(--bs-select-padding-y${suffix})/2) calc(var(--bs-select-padding-x${suffix})/2)`,
     }),
     menu: ({ marginTop, ...provided }, state) => ({
@@ -112,7 +113,6 @@ export const dot = (data) => {
   return {
     alignItems: 'center',
     display: 'flex',
-
     ':before': {
       backgroundColor: !!data.color ? data.color : 'var(--bs-primary)',
       borderRadius: 10,

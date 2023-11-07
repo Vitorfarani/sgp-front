@@ -1,8 +1,18 @@
+
+.yellow-dashed{
+  border: 3px dashed var(--bs-warning);
+}
+
 .rounded-circle {
   padding: 2px;
   border: 2px solid grey;
   justify-content: center;
   align-items: center;
+  position: relative;
+  
+}
+.rounded-circle:is(.no-border) {
+  border: 0px !important;
 }
 .thumbnail-rounded {
     object-fit: cover;

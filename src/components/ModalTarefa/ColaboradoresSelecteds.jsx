@@ -22,7 +22,7 @@ const ColaboradoresSelecteds = ({ tarefa, onRemove, title, size = 39, alingEnd }
         <ThumbnailUploader
           size={size}
           readonly
-          url={data.colaborador?.user?.thumbnail}
+          file={data.colaborador?.user?.thumbnail}
           placeholder={data.colaborador?.nome}
         />
       </div>

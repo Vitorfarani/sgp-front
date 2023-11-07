@@ -20,6 +20,7 @@ const basefilters = {
 
 const columnsFields = [
   { field: 'nome', label: 'Projeto', enabledOrder: true },
+  { field: 'cliente', label: 'Cliente', enabledOrder: true, piper: (field) => field ? field.nome : '' },
   { field: 'projeto_setor', label: 'Setor Responsável', enabledOrder: true, piper: (field) => field.find(s => !!s.principal)?.setor.sigla || field[0]?.setor.sigla || '' },
   { field: 'projeto_fase', label: 'Fase',  enabledOrder: true, piper: (field) =>  field.nome   },
   { field: 'projeto_status', label: 'Status', enabledOrder: true, piper: (field) => field.nome  }

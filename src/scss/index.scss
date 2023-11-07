@@ -30,7 +30,12 @@ body {
   max-height: 100vh !important;
   overflow-y: auto;
 }
-
+hr {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  border: 0;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
 ::-webkit-scrollbar {
   width: 10px;
 }
@@ -70,7 +75,20 @@ body {
     background-color: $secondary-light !important;
   }
 }
-
+.alert{
+  font-weight: 600 !important;
+  color: white !important;
+}
+.alert-success{
+  --bs-alert-bg: #2cff43 !important;
+  background-color: var(--bs-success) !important;
+}
+.alert-warning{
+  background-color: var(--bs-warning)!important;
+}
+.alert-danger{
+  background-color: var(--bs-danger)!important;
+}
 .form-label {
   font-weight: 500;
 }

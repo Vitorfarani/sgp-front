@@ -27,7 +27,7 @@ export { default as GlobalAlert } from './GlobalAlert';
 export { default as HeaderTitle } from './HeaderTitle';
 export { default as LoadingOverLay } from './LoadingOverLay';
 export { default as KanbanBoard } from './KanbanBoard/KanbanBoard';
-export { default as PieChartCard } from './PieChartCard';
+export { default as PieChartCard } from './Charts/PieChartCard';
 export { default as PuzzleIcon } from './PuzzleIcon';
 export { default as HorizontalScrollview } from './HorizontalScrollview';
 export { default as ToggleDarkMode } from './ToggleDarkMode';
@@ -40,4 +40,5 @@ export { default as SelectAsync } from './Selectables/SelectAsync';
 export { default as SimpleSelect } from './Selectables/SimpleSelect';
 export { default as SelectAsyncCreatable } from './Selectables/SelectAsyncCreatable';
 export { default as Table } from './Table';
+export { default as TooltipConhecimentos } from './TooltipConhecimentos';
 

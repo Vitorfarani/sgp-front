@@ -4,7 +4,7 @@ import { Link, useLocation } from "react-router-dom";
 import { CustomDropdown } from "..";
 import './style.scss'
   
-export default function HeaderTitle({title,  optionsButtons, breadcrumbBlockeds = [] }) {
+export default function HeaderTitle({title,  optionsButtons, breadcrumbBlockeds = [], enabledBreadcrumb  = true}) {
   const location = useLocation();
   const [pathnames, setpathnames] = useState(location.pathname.split('/').filter((x) => x));
   return (
@@ -14,23 +14,25 @@ export default function HeaderTitle({title,  optionsButtons, breadcrumbBlockeds 
           <h2>{title}</h2>
         </Row>
         <Row>
-          <Breadcrumb>
-            <Breadcrumb.Item active>SGP</Breadcrumb.Item>
-            {pathnames.map((name, index) => {
-              const routeTo = `/${pathnames.slice(0, index + 1).join('/')}`;
-              const isLast = index === pathnames.length - 1;
+          {enabledBreadcrumb && (
+            <Breadcrumb>
+              <Breadcrumb.Item active>SGP</Breadcrumb.Item>
+              {pathnames.map((name, index) => {
+                const routeTo = `/${pathnames.slice(0, index + 1).join('/')}`;
+                const isLast = index === pathnames.length - 1;
 
-              return isLast ? (
-                <Breadcrumb.Item key={name} active>
-                  {name}
-                </Breadcrumb.Item>
-              ) : (
-                <Breadcrumb.Item key={name} active={breadcrumbBlockeds.includes(name)} linkAs={Link} linkProps={{ to: routeTo }} className={'breadcrumb-item-custom'}>
-                  {name}
-                </Breadcrumb.Item>
-              );
-            })}
-          </Breadcrumb>
+                return isLast ? (
+                  <Breadcrumb.Item key={name} active>
+                    {name}
+                  </Breadcrumb.Item>
+                ) : (
+                  <Breadcrumb.Item key={name} active={breadcrumbBlockeds.includes(name)} linkAs={Link} linkProps={{ to: routeTo }} className={'breadcrumb-item-custom'}>
+                    {name}
+                  </Breadcrumb.Item>
+                );
+              })}
+            </Breadcrumb>
+          )}
         </Row>
       </Col>
         {optionsButtons && <CustomDropdown items={optionsButtons}/>}

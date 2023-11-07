@@ -36,7 +36,7 @@ const SideButtons = ({ tarefa, addTarefaColaborador, onStart, onEnd, onCreateChe
             <ThumbnailUploader
               size={39}
               readonly
-              url={c.responsavel.user?.thumbnail}
+              file={c.responsavel.user?.thumbnail}
               placeholder={c.responsavel.nome}
             />
           </Col>

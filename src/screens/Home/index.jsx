@@ -12,8 +12,15 @@ export default function Home() {
         if(isLogged) {
           const savedPath = localStorage.getItem('savedPath');
           if (savedPath) {
-            console.log(savedPath)
-            navigate(savedPath)
+            if(
+              window.location.pathname == '/' || 
+              window.location.pathname == '/login' || 
+              window.location.pathname == '/dashboard'
+            ) {
+              navigate(savedPath)
+            } else {
+              navigate(window.location.pathname)
+            }
           } else {
             navigate('/dashboard')
           }

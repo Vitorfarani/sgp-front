@@ -81,6 +81,7 @@ const ModalTarefa = forwardRef(({
   function show(data) {
     setIsShow(true)
     if (!data.id) {
+      console.log(data)
       setFormData(data)
     } else {
       load(data.id)
@@ -120,13 +121,11 @@ const ModalTarefa = forwardRef(({
 
 
   function addTarefaColaborador(colaborador) {
+    console.log(colaborador)
     if (!formData.id) {
-      let tc = [...formData.tarefa_colaborador]
-      tc.push({ colaborador_id: colaborador.id, colaborador })
-      console.log(tc)
       setFormData((prevState) => ({
         ...prevState,
-        ['tarefa_colaborador']: tc
+        ['tarefa_colaborador']: [...prevState['tarefa_colaborador'], { colaborador_id: colaborador.id, colaborador }]
       }));
 
     } else {
@@ -138,11 +137,9 @@ const ModalTarefa = forwardRef(({
       createTarefaColaborador(data)
         .then((result) => {
           callGlobalNotify({ message: result.message, variant: 'success' })
-          let tc = [...formData.tarefa_colaborador]
-          tc.push(result.tarefa_colaborador);
           setFormData((prevState) => ({
             ...prevState,
-            ['tarefa_colaborador']: tc
+            ['tarefa_colaborador']: [...prevState.tarefa_colaborador, result.tarefa_colaborador]
           }));
           sethaveUpdate(true)
 
@@ -280,7 +277,7 @@ const ModalTarefa = forwardRef(({
     if (!formData.id) {
       handleForm('tarefa_conhecimento', data)
     } else {
-      option.tarafa_id = formData.id;
+      option.tarefa_id = formData.id;
       option.conhecimento_id = option.id;
       handleGlobalLoading.show()
       createTarefaConhecimento(option)
@@ -538,16 +535,7 @@ const ModalTarefa = forwardRef(({
               )}
             </Col>
             <Col xs={12} md={3}>
-              <SideButtons
-                tarefa={formData}
-                onCreateChecklist={() => enabledChecklist()}
-                onInterruption={onInterruption}
-                onRestore={onRestore}
-                onStart={() => handleForm('data_inicio_real', new Date().toISOString().slice(0, 16))}
-                onEnd={() => handleForm('data_fim_real', new Date().toISOString().slice(0, 16))}
-                addTarefaColaborador={addTarefaColaborador} />
-
-              <Form.Group className='mt-4 mb-4'>
+              <Form.Group className='mb-4'>
                 <Form.Label>Base</Form.Label>
                 <SelectAsync
                   placeholder=""
@@ -571,7 +559,15 @@ const ModalTarefa = forwardRef(({
                   value={formData.data_fim_programado}
                   onChangeValid={date => handleForm('data_fim_programado', date)} />
               </Form.Group>
-              <Form.Group className='mb-4'>
+              <SideButtons
+                tarefa={formData}
+                onCreateChecklist={() => enabledChecklist()}
+                onInterruption={onInterruption}
+                onRestore={onRestore}
+                onStart={() => handleForm('data_inicio_real', new Date().toISOString().slice(0, 16))}
+                onEnd={() => handleForm('data_fim_real', new Date().toISOString().slice(0, 16))}
+                addTarefaColaborador={addTarefaColaborador} />
+              <Form.Group className='mb-4 mt-4'>
                 <Form.Label>Iniciado em</Form.Label>
                 <DateInput
                   type={"datetime-local"}
@@ -585,7 +581,9 @@ const ModalTarefa = forwardRef(({
                   value={formData.data_fim_real}
                   onChangeValid={date => handleForm('data_fim_real', date)} />
               </Form.Group>
+             
             </Col>
+
           </Container>
           <Button style={{ display: 'none' }} type='submit' id="btn-submit-hided" />
         </Form>

@@ -1,3 +1,5 @@
+import imageCompression from 'browser-image-compression';
+
 const units = ['B', 'kB', 'MB', 'GB', 'TB', 'PB']
 
 export function humanStorageSize (bytes) {
@@ -44,7 +46,7 @@ export function pad (v, length = 2, char = '0') {
     : new Array(length - val.length + 1).join(char) + val
 }
 
-export const buildQueryString = (paramsObj) => {
+export const buildQueryString = (paramsObj, prefix = '?') => {
   const queryParams = Object.keys(paramsObj)
     .map((key) => {
       if(key === "selectedRows") return`${encodeURIComponent(key)}=${encodeURIComponent(paramsObj[key].join(','))}` 
@@ -52,13 +54,52 @@ export const buildQueryString = (paramsObj) => {
     })
     .join('&');
 
-  return queryParams ? `?${queryParams}` : '';
+  return queryParams ? `${prefix}${queryParams}` : '';
 };
-export const toBase64 = file => new Promise((resolve, reject) => {
-  const reader = new FileReader();
-  reader.readAsDataURL(file);
-  reader.onload = () => resolve(reader.result);
-  reader.onerror = reject;
+
+export const toBase64 = (file, onProgressExtract = () => { }, maxSizeMB = 0.5) => new Promise(async (resolve, reject) => {
+  const dataQueue = [];  // Fila para armazenar os dados
+  const processingInterval = 10;  // Intervalo de processamento em milissegundos (0,5 segundos)
+  function addToQueue(data) {
+    dataQueue.push(data);
+    if (!processing) {
+      processQueue();
+    }
+  }
+
+  let processing = false;  // Indica se há processamento em andamento
+  function processQueue() {
+    if (dataQueue.length === 0) {
+      processing = false;  // Não há mais processamento em andamento
+
+      return;
+    }
+
+    const dataToProcess = dataQueue.shift();  // Remove o primeiro dado da fila
+    onProgressExtract(dataToProcess)
+    console.log({lazyValue: dataToProcess})
+    setTimeout(processQueue, processingInterval);
+    processing = true;  // Indica que há processamento em andamento
+  }
+
+  const options = {
+    maxSizeMB,
+    maxWidthOrHeight: 1920,
+    useWebWorker: true,
+    fileType: 'image/jpeg',
+    onProgress: (value) => {
+      addToQueue(value)
+      // onProgressExtract(value)
+    }
+  }
+  try {
+    const compressedFile = await imageCompression(file, options);
+    let base64 = await imageCompression.getDataUrlFromFile(compressedFile)
+
+    resolve(base64)
+  } catch (error) {
+    reject(error);
+  }
 });
 
 
