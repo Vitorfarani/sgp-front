@@ -14,6 +14,7 @@ import { deleteTarefa, listTarefas, updateTarefaPositionFromKanban, updateTarefa
 import { buildQueryString } from "@/utils/helpers/format";
 import { useDebounce } from "use-debounce";
 import { listProjetoResponsavel } from "@/services/projeto/projetoResponsavel";
+import useQueryParams from "@/utils/hooks/useQueryParams";
 
 
 const MOCK_tarefa = {
@@ -57,6 +58,7 @@ function Projeto() {
   const projetoRef = useRef(projeto);
   const [filtersState, setFiltersState] = useState({ projeto: params.id, ...baseTarefafilters });
   const [debouncedFilters] = useDebounce(filtersState, 200);
+  const queryParams = useQueryParams();
   const handleChangeFilters = useCallback((name, value) => {
     setFiltersState((prevFiltersState) => {
       return {
@@ -67,13 +69,24 @@ function Projeto() {
   }, []);
 
   useEffect(() => {
+   
     if (params.id) {
       load(params.id)
         .then(({ tarefaStatusResult, tarefasResult }) => {
           kanban.current.handleColumns(tarefaStatusResult)
           kanban.current.handleTasks(tarefasResult)
+          if(queryParams.has('tarefa')) {
+            let finded = tarefasResult.find(e => e.id == queryParams.get('tarefa'))
+            if(finded) {
+              modalTarefa.current.show(finded)
+            } else {
+            callGlobalNotify({ message: 'Tarefa não encontrada', variant: 'danger' })
+
+            }
+          }
         })
     }
+    
   }, []);
 
   function removeTarefa(tarefa) {

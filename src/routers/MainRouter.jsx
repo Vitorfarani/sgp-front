@@ -35,7 +35,7 @@ import { useTheme } from '@/utils/context/ThemeProvider';
 import CadastrarProjeto from '@/screens/Projetos/CadastrarProjeto';
 
 const MainRouter = () => {
-  const { isLogged } = useAuth();
+  const { isLogged, isLoaded } = useAuth();
   const location = useLocation();
 
   const saveCurrentPath = () => {
@@ -50,9 +50,11 @@ const MainRouter = () => {
   }, [location]);
 
   const RequireAuth = ({ children }) => {
-    if (!isLogged) {
-      return <Navigate to="/" state={{ from: location }} replace />
-    } 
+    if (isLoaded && !isLogged) {
+      return <Navigate to="/login" state={{ from: location }} replace />
+    } else if (!isLoaded && !isLogged){
+      return null;
+    }
     return children;
   }
 

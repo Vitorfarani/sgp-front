@@ -5,4 +5,8 @@ export const listProjetosByStatus = async (params = "") => {
   let url = `dashboard/projetosByStatus${params}`;
   return _get(url);
 }
+export const listTarefasByStatus = async (params = "") => {
+  let url = `dashboard/tarefasByStatus${params}`;
+  return _get(url);
+}
 

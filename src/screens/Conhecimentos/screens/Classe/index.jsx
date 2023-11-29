@@ -11,7 +11,7 @@ import { conhecimentoClasseSchema } from "./validations";
 
 const basefilters = {
   search: '',
-  // perPage: 20,
+  perPage: 20,
   // selectedRows: [],
   page: 1,
   sortedColumn: 'id',

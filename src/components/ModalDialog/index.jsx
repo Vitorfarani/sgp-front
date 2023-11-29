@@ -128,6 +128,7 @@ const ModalDialog = forwardRef(({
                     <Form.Control
                       value={formData[form.name]}
                       type={form.type ?? "text"}
+                      {...form}
                       onChange={({ target: { value } }) => {
                         setFormData((prev) => ({
                           ...prev,
@@ -137,7 +138,6 @@ const ModalDialog = forwardRef(({
                       placeholder={form.placeholder ?? ""}
                       autoFocus={i == 0}
                       isInvalid={!!errors[form.name]}
-                      {...form}
                     />
                     <FeedbackError error={errors[form.name]} />
                   </Form.Group>
@@ -147,7 +147,7 @@ const ModalDialog = forwardRef(({
                     <Form.Label><strong> {form.label} </strong></Form.Label>
                     <Form.Select
                       value={formData[form.name]}
-
+                      {...form}
                       onChange={({ target: { value } }) => {
                         setFormData((prev) => ({
                           ...prev,
@@ -157,7 +157,6 @@ const ModalDialog = forwardRef(({
                       placeholder={form.placeholder ?? ""}
                       autoFocus={i == 0}
                       isInvalid={!!errors[form.name]}
-                      {...form}
                     >
                       {form.options.map(({ value, label }, key) => (
                         <option key={key} value={value}>{label}</option>
@@ -171,7 +170,8 @@ const ModalDialog = forwardRef(({
                     <Form.Label><strong> {form.label} </strong></Form.Label>
                     <SelectAsync
                       value={formData[form.name]}
-                      loadOptions={(search) => form.loadOptions('?search='+search)}
+                      {...form}
+                      loadOptions={(search) => form.loadOptions('?search=' + search)}
                       isInvalid={!!errors[form.name]}
                       onChange={value => {
                         setFormData((prev) => ({
@@ -179,7 +179,7 @@ const ModalDialog = forwardRef(({
                           [form.name]: value
                         }));
                       }}
-                      {...form} />
+                    />
                     <FeedbackError error={errors[form.name]} />
                   </Form.Group>
                 )}
@@ -187,6 +187,7 @@ const ModalDialog = forwardRef(({
                   <Form.Group key={form.id} className="mb-4">
                     <Form.Label><strong> {form.label} </strong></Form.Label>
                     <DateInput
+                      {...form}
                       value={formData[form.name]}
                       onChangeValid={value => {
                         setFormData((prev) => ({

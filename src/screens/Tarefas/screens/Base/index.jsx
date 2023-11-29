@@ -13,7 +13,7 @@ import { formatForm } from "@/utils/helpers/forms";
 
 const basefilters = {
   search: '',
-  // perPage: 20,
+  perPage: 20,
   // selectedRows: [],
   page: 1,
   sortedColumn: 'id',
