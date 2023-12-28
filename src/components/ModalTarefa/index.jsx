@@ -102,6 +102,7 @@ const ModalTarefa = forwardRef(({
     showTarefa(id)
       .then((results) => {
         setFormData(beforeEdit(results))
+        setObservacao()
       })
       .catch(callGlobalAlert)
       .finally(handleGlobalLoading.hide)
@@ -211,6 +212,7 @@ const ModalTarefa = forwardRef(({
           let updatedObs = [...formData.tarefa_observacao]
           updatedObs.push(result.tarefa_observacao)
           handleForm('tarefa_observacao', updatedObs)
+          setObservacao()
           handleGlobalLoading.hide()
         })
         .catch((error) => {
@@ -236,7 +238,7 @@ const ModalTarefa = forwardRef(({
       })
         .then(() => {
           handleGlobalLoading.show()
-          deleteTarefaObservacao(formData.id, id)
+          deleteTarefaObservacao(id)
             .then((result) => {
               callGlobalNotify({ message: result.message, variant: 'danger' })
               setFormData((prevState) => ({

@@ -9,4 +9,8 @@ export const listTarefasByStatus = async (params = "") => {
   let url = `dashboard/tarefasByStatus${params}`;
   return _get(url);
 }
+export const listTarefasByTime = async (params = "") => {
+  let url = `dashboard/tarefasByTime${params}`;
+  return _get(url);
+}
 

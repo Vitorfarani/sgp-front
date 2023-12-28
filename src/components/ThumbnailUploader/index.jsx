@@ -11,7 +11,7 @@ import { FiInfo } from 'react-icons/fi';
 import { isString } from '@/utils/helpers/is';
 import { ENV } from '@/constants/ENV';
 
-const ThumbnailUploader = ({ file, size = 40, readonly, noBorder, onImageChange, roundedCircle = true, placeholder = "/assets/standart-icon-user.png" }) => {
+const ThumbnailUploader = ({ file, size = 40, readonly, noBorder, onImageChange, className, roundedCircle = true, onPress, placeholder = "/assets/standart-icon-user.png" }) => {
   const {callGlobalAlert} = useTheme();
   const input = useRef()
   const [progress, setProgress] = useState(0);
@@ -44,17 +44,18 @@ const ThumbnailUploader = ({ file, size = 40, readonly, noBorder, onImageChange,
     }
   };
   return (
-    <div className={"rounded-circle"} style={{ borderRadius: roundedCircle ? '50%' : null, border: noBorder ? 0 : null }}  
+    <div className={"rounded-circle "+className} style={{ borderRadius: roundedCircle ? '50%' : null, border: noBorder ? 0 : null }}  
       onClick={() => {
         if(!readonly){
           console.log('click')
           input.current.click()
-
-        } 
+        } else if(!!onPress) {
+          onPress()
+        }
       }}>
       {!!file ? (
         <Image
-        style={{width: size + 3, height: size + 3}}
+        style={{width: size + 3, height: size + 3, marginBottom: 0}}
           src={isString(file) ? file : file.path}
           title={file.filename}
           alt="Thumbnail"
@@ -62,9 +63,9 @@ const ThumbnailUploader = ({ file, size = 40, readonly, noBorder, onImageChange,
          
         />
       ) : (
-        <div style={{width: size + 3, height: size + 3}}>
+        <pre className='circle-avatar-rounded' style={{width: size + 3, height: size + 3, marginBottom: 0}}>
           <CircleAvatar name={placeholder} size={'100%'} sm={size < 40}/>
-        </div>
+        </pre>
       )}
       {!readonly && (
         <>

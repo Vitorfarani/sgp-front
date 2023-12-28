@@ -2,6 +2,8 @@ import moment from 'moment';
 import 'moment/dist/locale/pt-br';
 import { FaCalendarAlt, FaCalendarCheck, FaCalendarMinus } from 'react-icons/fa';
 
+moment.locale('pt-br');
+
 export const dateEnToPt = function (d) {
   d = String(d).split('-')
   if (d.length < 3) {

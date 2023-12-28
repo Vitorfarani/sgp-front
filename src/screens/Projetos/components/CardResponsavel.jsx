@@ -13,7 +13,7 @@ const CardResponsavel = ({ onOpen, title,thumbnail, subtitle, dataInicio, dataFi
         <Stack 
           
           direction='horizontal' className="my-auto" gap={2}>
-          <ThumbnailUploader size={36} placeholder={title} readonly file={thumbnail} onPress={onMainChange} className={(!!onMainChange ? 'main-can-change ' : '')+(isMain ? 'yellow-dashed' :  '')}/>
+          <ThumbnailUploader size={36} placeholder={title} readonly file={thumbnail} onPress={onMainChange} className={`${!!onMainChange ? 'main-can-change ' : ''} ${isMain ? 'yellow-dashed' :  ''}`}/>
           <Card.Title onClick={onOpen}  style={{ fontSize: 16, marginBottom: 0}}>{title}
           {!!subtitle && <span className='setor-responsavel'><br />{"\n"}{subtitle}</span>}
           </Card.Title>

@@ -7,9 +7,15 @@
   .main-can-change:hover {
     // border: 3px dashed var(--bs-warning);
     // transform: 3px scale();
-    border: 4px dashed var(--bs-warning);
+    border: 3px dashed var(--bs-warning);
     transform: scale(1.2); /* Aumenta o tamanho e faz a borda girar */
-    transition: all 0.2s ease-in-out; 
+    transition: all 0.1s ease-in-out; 
+  }
+  .yellow-dashed {
+    // border: 3px dashed var(--bs-warning);
+    // transform: 3px scale();
+    border: 2px dashed var(--bs-warning);
+    transform: scale(1.2); /* Aumenta o tamanho e faz a borda girar */
   }
   strong {
     font-size: 12px;

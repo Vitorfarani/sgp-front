@@ -35,6 +35,7 @@ export { default as TextareaHided } from './TextareaHided';
 export { default as TextareaEditor } from './TextareaEditor';
 export { default as ThumbnailUploader } from './ThumbnailUploader';
 export { default as InfoDropdown } from './InfoDropdown';
+export { default as InfoTip } from './InfoTip';
 export { default as Section } from './Section';
 export { default as SelectAsync } from './Selectables/SelectAsync';
 export { default as SimpleSelect } from './Selectables/SimpleSelect';
