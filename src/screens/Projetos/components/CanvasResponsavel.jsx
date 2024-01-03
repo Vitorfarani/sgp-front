@@ -74,7 +74,7 @@ const CanvasResponsavel = forwardRef(({ listParams, onSave, projeto, ...props },
     return buildQueryString(params, '&');
   }, [filterByConhecimento, filterBySetor, filterNivelConhecimento, show, projeto]);
   return (
-    <CustomOffCanvas title={(!formData.id ? "Adicionar " : "Editar ")+"Envolvido"} show={show} onHide={close} placement="end" name="envolvido">
+    <CustomOffCanvas title={(!formData.id ? "Adicionar " : "Editar ") + "Envolvido"} show={show} onHide={close} placement="end" name="envolvido">
       <Form onSubmit={handleSubmit} noValidate validated={validated}>
         <Form.Label>Filtrar por:</Form.Label>
         <Form.Group className='mb-1'>
@@ -142,7 +142,9 @@ const CanvasResponsavel = forwardRef(({ listParams, onSave, projeto, ...props },
         {isSet(formData.fim) && (
           <Form.Group className='mb-4'>
             <Form.Label>Data de Fim</Form.Label>
-            <DateInput value={formData.fim} onChangeValid={date => handleForm('fim', date)} />
+            <DateInput value={formData.fim} onChangeValid={date => handleForm('fim', date)}
+             isInvalid={!!errors.fim}
+            />
             <FeedbackError error={errors.fim} />
           </Form.Group>
         )}

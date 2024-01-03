@@ -559,7 +559,9 @@ const ModalTarefa = forwardRef(({
                 <DateInput
                   type={"datetime-local"}
                   value={formData.data_fim_programado}
+                  isInvalid={!!errors.data_fim_programado}
                   onChangeValid={date => handleForm('data_fim_programado', date)} />
+                <FeedbackError error={errors.data_fim_programado} />
               </Form.Group>
               <SideButtons
                 tarefa={formData}
@@ -581,7 +583,9 @@ const ModalTarefa = forwardRef(({
                 <DateInput
                   type={"datetime-local"}
                   value={formData.data_fim_real}
+                  isInvalid={!!errors.data_fim_real}
                   onChangeValid={date => handleForm('data_fim_real', date)} />
+                <FeedbackError error={errors.data_fim_real} />
               </Form.Group>
              
             </Col>

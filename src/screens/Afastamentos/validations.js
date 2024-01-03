@@ -6,7 +6,18 @@ export const afastamentoSchema = Yup.object().shape({
   colaborador: Yup.object().nonNullable( yupRequired('Colaborador')),
   tipo_afastamento : Yup.object().nonNullable( yupRequired('Tipo')),
   inicio: Yup.string().test('validDate', 'Data inválida', dateValidation).required(yupRequired('Data de Inicio')),
-  fim: Yup.string().test('validDate', 'Data inválida', dateValidation).nullable(),
+  // fim: Yup.string().test('validDate', 'Data inválida', dateValidation).nullable(),
+
+  fim: Yup.date().test('validDate', 'Data inválida', dateValidation)
+  .nullable()
+  .when('inicio', (data_inicio, schema) => {
+    if (data_inicio[0] !== null) {
+      return schema.min(
+        data_inicio[0],
+        'Fim não pode ser anterior a inicio'
+      );
+    }
+  }),
 
 });
 

@@ -4,12 +4,31 @@ import { dateValidation, yupOptionStandart, yupRequired } from "@/utils/helpers/
 export const responsavelSchema = Yup.object().shape({
   responsavel: Yup.object().nonNullable(yupRequired('Responsável')),
   inicio: Yup.string().test('validDate', 'Data inválida', dateValidation).required('Data de início é obrigatória'),
-  fim: Yup.string().test('validDate', 'Data inválida', dateValidation).nullable(),
+  fim: Yup.date().test('validDate', 'Data inválida', dateValidation)
+    .nullable()
+    .when('inicio', (data_inicio, schema) => {
+      if (data_inicio[0] !== null) {
+        return schema.min(
+          data_inicio[0],
+          'Fim não pode ser anterior a inicio'
+        );
+      }
+    }),
 });
 export const setorSchema = Yup.object().shape({
   setor: Yup.object().nonNullable(yupRequired('Setor')),
   inicio: Yup.string().test('validDate', 'Data inválida', dateValidation).required('Data de início é obrigatória'),
-  fim: Yup.string().test('validDate', 'Data inválida', dateValidation).nullable(),
+  // fim: Yup.string().test('validDate', 'Data inválida', dateValidation).nullable(),
+  fim: Yup.date().test('validDate', 'Data inválida', dateValidation)
+    .nullable()
+    .when('inicio', (data_inicio, schema) => {
+      if (data_inicio[0] !== null) {
+        return schema.min(
+          data_inicio[0],
+          'Fim não pode ser anterior a inicio'
+        );
+      }
+    }),
 });
 
 export const projetoSchema = Yup.object().shape({
@@ -26,7 +45,7 @@ export const projetoSchema = Yup.object().shape({
   projeto_status: Yup.object().nonNullable(yupRequired('Status')),
   repositorio: Yup.string().nullable(),
   sei: Yup.string().required(yupRequired('SEI')),
- 
+
   hml_ip: Yup.string().nullable(),
   hml_banco: Yup.string().nullable(),
   prod_ip: Yup.string().nullable(),
