@@ -1,5 +1,5 @@
 import { FiBarChart, FiBookmark, FiGrid, FiPieChart, FiUsers, FiBriefcase, FiBookOpen } from "react-icons/fi";
-import { FaArchive, FaBalanceScale, FaBity, FaBrain, FaBuilding, FaClock, FaFlag, FaIdCard, FaLevelUpAlt, FaListAlt, FaMarkdown, FaPeopleCarry, FaStopCircle, FaStopwatch, FaTasks } from "react-icons/fa";
+import { FaSearch, FaArchive, FaBalanceScale, FaBity, FaBrain, FaBuilding, FaClock, FaFlag, FaIdCard, FaLevelUpAlt, FaListAlt, FaMarkdown, FaPeopleCarry, FaStopCircle, FaStopwatch, FaTasks } from "react-icons/fa";
 
 export default [
   {
@@ -8,6 +8,28 @@ export default [
     path: 'dashboard',
     rolesPermited: [],
     childrens: []
+  },
+  {
+    nome: 'Consultas',
+    icon: FaSearch,
+    path: 'consultas',
+    rolesPermited: [],
+    childrens: [
+      {
+        nome: 'Projetos',
+        icon: FiGrid,
+        path: 'consultas/projeto',
+        rolesPermited: [],
+        childrens: []
+      },
+      {
+        nome: 'Colaboradores',
+        icon: FaPeopleCarry,
+        path: 'consultas/colaborador',
+        rolesPermited: [],
+        childrens: []
+      },
+    ]
   },
   {
     nome: 'Colaboradores',

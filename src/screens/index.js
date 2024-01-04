@@ -4,6 +4,7 @@ export { default as Login } from './Login/index';
 export { default as Home } from './Home/index';
 export { default as Dashboard } from './Dashboard/index';
 
+export {default as ConsultaColaborador} from './Consultas/colaborador.jsx'
 
 export { default as Colaboradores } from './Colaboradores/index.jsx';
 export { default as CadastrarColaborador } from './Colaboradores/CadastrarColaborador.jsx';

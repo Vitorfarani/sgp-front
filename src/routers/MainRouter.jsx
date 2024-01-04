@@ -9,6 +9,7 @@ import {
   Home,
   Login,
   Dashboard,
+  ConsultaColaborador,
   NotFound,
   Projeto,
   Projetos,
@@ -73,6 +74,8 @@ const MainRouter = () => {
           </RequireAuth>
         }>
         <Route index path="dashboard" Component={Dashboard} />
+
+        <Route path="consultas/colaborador" Component={ConsultaColaborador}/>
 
         <Route path="colaboradores" Component={Colaboradores}/>
         <Route path="colaboradores/cadastrar" Component={CadastrarColaborador}/>
