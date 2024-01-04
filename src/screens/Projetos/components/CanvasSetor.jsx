@@ -19,7 +19,7 @@ const CanvasSetor = forwardRef(({ listParams, onSave, ...props }, ref) => {
   const [validated, setValidated] = useState(false);
   const [errors, setErrors] = useState(true);
   const [index, setIndex] = useState();
-  
+
   function handleForm(propertyName, newValue) {
     console.log(newValue)
     setformData((prevState) => ({
@@ -75,7 +75,7 @@ const CanvasSetor = forwardRef(({ listParams, onSave, ...props }, ref) => {
               placeholder=""
               loadOptions={(search) => listSetores(`?search=${search}`)}
               value={formData.setor}
-              getOptionLabel={(option) => option.sigla+' - '+option.nome}
+              getOptionLabel={(option) => option.sigla + ' - ' + option.nome}
               isInvalid={!!errors.setor}
               onChange={(setor) => handleForm('setor', setor)} />
             <FeedbackError error={errors.setor} />
@@ -94,7 +94,9 @@ const CanvasSetor = forwardRef(({ listParams, onSave, ...props }, ref) => {
         {isSet(formData.fim) && (
           <Form.Group className='mb-4'>
             <Form.Label>Data de Fim</Form.Label>
-            <DateInput value={formData.fim} onChangeValid={date => handleForm('fim', date)} />
+            <DateInput value={formData.fim} onChangeValid={date => handleForm('fim', date)}
+              isInvalid={!!errors.fim}
+            />
             <FeedbackError error={errors.fim} />
           </Form.Group>
         )}
