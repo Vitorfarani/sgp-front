@@ -2,6 +2,14 @@
 export const MODE = 'DEV';
 
 const ENVORIMENTS = {
+
+  LOCAL: {//local usando xampp
+    API_URL: "http://localhost/sgp-api/",
+    API_VERSION: "api/v1/",
+    REACT_APP_CLIENT_ID: "sgtp",
+    REACT_APP_API_SSO: "https://login.rj.gov.br/auth/realms/rj/protocol/openid-connect",
+    HOST: "https://localhost:5173/",
+  },
   DEV: {
     // API_URL_AUTH: "http://www.carteirafuncional.rj.gov.br/",
     API_URL: "https://127.0.0.1:8000/",

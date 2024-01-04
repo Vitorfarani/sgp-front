@@ -14,9 +14,27 @@ export const tarefaSchema = Yup.object().shape({
   checklist: Yup.array().nullable(),
   // coeficiente: Yup.number().nullable().positive().max(999999.99),
   data_inicio_programado: Yup.date().nullable(),
-  data_fim_programado: Yup.date().nullable(),
+  data_fim_programado: Yup.date()
+  .nullable()
+  .when('data_inicio_programado', (data_inicio, schema) => {
+    if (data_inicio[0] !== null) {
+      return schema.min(
+        data_inicio[0],
+        'Fim não pode ser anterior a inicio'
+      );
+    }
+  }),
   data_inicio_real: Yup.date().nullable(),
-  data_fim_real: Yup.date().nullable(),
+  data_fim_real: Yup.date()
+    .nullable()
+    .when('data_inicio_real', (data_inicio, schema) => {
+      if (data_inicio[0] !== null) {
+        return schema.min(
+          data_inicio[0],
+          'Fim não pode ser anterior a inicio'
+        );
+      }
+    }),
   interrompido_at: Yup.date().nullable(),
   interrompido_motivo: Yup.date().nullable(),
   // order: Yup.number().required().integer(),
