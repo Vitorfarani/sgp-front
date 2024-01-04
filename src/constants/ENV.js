@@ -1,9 +1,9 @@
 //DEV
-export const MODE = 'DEV';
+export const MODE = 'HML';
 
 const ENVORIMENTS = {
 
-  LOCAL: {//local usando xampp
+  LOCAL: {
     API_URL: "http://localhost/sgp-api/",
     API_VERSION: "api/v1/",
     REACT_APP_CLIENT_ID: "sgtp",
