@@ -101,10 +101,10 @@ export default function TarefaDashboard() {
           label: 'Data de referência',
           type: 'select',
           options: [
-            { value: 'data_fim_programado', label: 'Final Programado' },
-            { value: 'data_inicio_programado', label: 'Inicio Programado' },
-            { value: 'data_inicio_real', label: 'Inicio Real' },
-            { value: 'data_fim_real', label: 'Final Real' },
+            { value: 'data_fim_programado', label: 'Fim Estimado' },
+            { value: 'data_inicio_programado', label: 'Inicio Estimado' },
+            { value: 'data_inicio_real', label: 'Inicio Em' },
+            { value: 'data_fim_real', label: 'Finalizado Em' },
             // { value: 'created_at', label: 'Data de criação' },
           ]
         },
@@ -144,10 +144,24 @@ export default function TarefaDashboard() {
   // }, []);
   const renderTooltip = (event) => (
     <Tooltip id={`tooltip-${event.id}`}>
-      <strong>{event.extendedProps.projectName}</strong><br/>
-      <hr/>
+      <strong>{event.extendedProps.projectName}</strong><br />
+      <hr />
       <strong>{event.title}</strong><br />
-      {event.start.toLocaleDateString()} - {event.end.toLocaleDateString()}
+      {event.start && event.end && (
+        <>
+          {event.start.toLocaleDateString()} - {event.end.toLocaleDateString()}
+        </>
+      )}
+      {!event.start && event.end && (
+        <>
+          {event.end.toLocaleDateString()}
+        </>
+      )}
+      {event.start && !event.end && (
+        <>
+          {event.start.toLocaleDateString()}
+        </>
+      )}
       <p>{event.extendedProps.andamento.label}</p>
       <p>Executores</p>
       <ul style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
