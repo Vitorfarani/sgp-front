@@ -145,6 +145,7 @@ export default function TarefaDashboard() {
   const renderTooltip = (event) => (
     <Tooltip id={`tooltip-${event.id}`}>
       <strong>{event.title}</strong><br />
+      {event.extendedProps.projectName}<br/>
       {event.start.toLocaleDateString()} - {event.end.toLocaleDateString()}
       <p>{event.extendedProps.andamento.label}</p>
       <p>Executores</p>
