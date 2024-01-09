@@ -197,7 +197,7 @@ export default function TarefaDashboard() {
                     : capitalize(filters[key].replace(/_/g, ' ')); // Replace all underscores globally
 
                 return (
-                  <Col key={key} style={{ maxWidth: "200px" }}>
+                  <Col key={key} className="filter" style={{ maxWidth: "350px" }}>
                     <b>{capitalize(key.replace('_', ' '))}</b><br />
                     {displayText}
                   </Col>
