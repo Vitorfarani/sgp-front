@@ -116,3 +116,10 @@ hr {
 
 // Import Bootstrap and its default variables
 @import "../../node_modules/bootstrap/scss/bootstrap";
+
+
+.filter.col  {
+  margin-left: 12px;
+  padding-left: 12px;
+  border-left: 3px solid #ffff;
+}
