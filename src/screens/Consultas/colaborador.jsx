@@ -94,6 +94,7 @@ export default function ConsultarColaborador() {
   const handleResetFilters = () => {
     handleChangeFilters('conhecimento_nivel_id', '');
     handleChangeFilters('conhecimento_id', '');
+    handleChangeFilters('setor_id', '');
     setSelectedConhecimento(null);
     setSelectedNivel(null);
     setSelectedSetor(null);
