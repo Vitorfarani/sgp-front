@@ -10,6 +10,7 @@ import {
   Login,
   Dashboard,
   ConsultaColaborador,
+  // ConsultaProjeto,
   NotFound,
   Projeto,
   Projetos,
@@ -76,6 +77,8 @@ const MainRouter = () => {
         <Route index path="dashboard" Component={Dashboard} />
 
         <Route path="consultas/colaborador" Component={ConsultaColaborador}/>
+        {/* <Route path="consultas/projeto" Component={ConsultaProjeto}/> */}
+
 
         <Route path="colaboradores" Component={Colaboradores}/>
         <Route path="colaboradores/cadastrar" Component={CadastrarColaborador}/>
