@@ -1,115 +1,168 @@
-// import { Background, HeaderTitle, Section, SelectAsync, Table } from "@/components/index";
-// import { createContato, deleteContato, listContatos, updateContato } from "@/services/contato";
-// import { useAuth } from "@/utils/context/AuthProvider";
-// import { useTheme } from "@/utils/context/ThemeProvider";
-// import useTable from "@/utils/hooks/useTable";
-// import { useEffect, useState } from "react";
-// import { FiCheckCircle, FiEdit, FiPlus, FiTrash } from "react-icons/fi";
-// import { useNavigate } from "react-router-dom";
-// //import { contatoSchema } from "./validations";
-// import { listClientes } from "@/services/clientes";
-// import { listProjetoFases } from "@/services/projeto/projetoFases";
-// import { listSetores } from "@/services/setores";
+import { Background, HeaderTitle, Section, SelectAsync, Table } from "@/components/index";
+import useTable from "@/utils/hooks/useTable";
+import { useEffect, useState } from "react";
+import { listSetores } from "@/services/setores";
+import { listClientes } from "@/services/clientes";
+import { listProjetoBySetorCliente } from "@/services/consultas/consultas";
+import { Col } from "react-bootstrap";
+import { FcClearFilters } from "react-icons/fc";
 
-// import { Col } from "react-bootstrap";
+const basefilters = {
+  search: '',
+  perPage: 20,
+  selectedRows: [],
+  page: 1,
+  sortedColumn: 'id',
+  cliente: null,
+  sortOrder: 'asc',
+};
 
-// const basefilters = {
-//   search: '',
-//   perPage: 20,
-//   selectedRows: [],
-//   page: 1,
-//   sortedColumn: 'id',
-//   cliente: null,
-//   sortOrder: 'asc',
-// };
+const columnsFields = [
+  { field: 'projeto', label: 'Projeto', enabledOrder: true },
+  { field: 'cliente', label: 'Cliente', enabledOrder: true },
+  { field: 'cliente_setor', label: 'Setor do Cliente', enabledOrder: true },
+  { field: 'setor', label: 'Setor Responsável', enabledOrder: true }
+];
 
-// // const columnsFields = [
-// //   { field: 'nome', label: 'Projeto', enabledOrder: true },
-// //   { field: 'cliente', label: 'Cliente', enabledOrder: true, piper: (field) => field ? field.nome : '' },
-// //   { field: 'projeto_setor', label: 'Setor Responsável', enabledOrder: true, piper: (field) => field.find(s => !!s.principal)?.setor.sigla || field[0]?.setor.sigla || '' },
-// //   { field: 'projeto_fase', label: 'Fase',  enabledOrder: true, piper: (field) => field.nome },
-// //   { field: 'projeto_status', label: 'Status', enabledOrder: true, piper: (field) => field.nome }
-// // ];
+export default function ConsultaProjeto() {
+  const [selectedSetor, setSelectedSetor] = useState(null);
+  const [selectedCliente, setSelectedCliente] = useState(null);
 
-// const columnsFields = [
-//     { field: 'nome', label: 'Projeto', enabledOrder: true},
-//     { field: 'cliente', label: 'Cliente', enabledOrder: true},
-//     { field: 'projeto_setor', label: 'Setor Responsável', enabledOrder: true },
-//     { field: 'projeto_fase', label: 'Fase',  enabledOrder: true },
-//     { field: 'projeto_status', label: 'Status', enabledOrder: true }
+  const {
+    rows,
+    columns,
+    load,
+    filtersState,
+    isTableLoading,
+    handleChangeFilters,
+    resetFilters,
+    isEmpty,
+  } = useTable(columnsFields, listProjetoBySetorCliente, basefilters, (results) => {
+    if (!results || Object.keys(results).length === 0) {
+      return [];
+    }
   
-//   ];
+    const mappedData = [];
+  
+    for (const [key, projeto] of Object.entries(results)) {
+      const { projeto: nomeProjeto, cliente, cliente_setor, setores } = projeto || {};
+  
+      if (setores && setores.length > 0) {
+        setores.forEach((setor) => {
+          mappedData.push({
+            projeto: nomeProjeto || '',
+            cliente: cliente || '',
+            cliente_setor: cliente_setor || '',
+            setor: setor[0] || '',
+          });
+        });
+      }
+    }
+  
+    let filteredData = [...mappedData];
+  
+    if (filtersState.setor || filtersState.cliente) {
+      filteredData = filteredData.filter((data) => {
+        return (
+          (filtersState.setor ? data.setor.includes(filtersState.setor) : true) &&
+          (filtersState.cliente ? data.cliente.includes(filtersState.cliente) : true)
+        );
+      });
+    }
+  
+    let sortedData = [...filteredData];
+  
+    if (
+      filtersState.sortedColumn &&
+      filtersState.sortOrder &&
+      sortedData.length > 0 &&
+      sortedData[0][filtersState.sortedColumn]
+    ) {
+      sortedData = sortedData.sort((a, b) => {
+        const fieldA = a[filtersState.sortedColumn];
+        const fieldB = b[filtersState.sortedColumn];
+  
+        if (filtersState.sortOrder === 'asc') {
+          return fieldA.localeCompare(fieldB);
+        } else {
+          return fieldB.localeCompare(fieldA);
+        }
+      });
+    }
+  
+    // Aplicando a filtragem da pesquisa diretamente no sortedData
+    sortedData = sortedData.filter((item) =>
+      item.projeto.toLowerCase().includes(filtersState.search.toLowerCase())
+    );
+  
+    return sortedData;
+  });
+  
+  useEffect(() => {
+    handleChangeFilters('search', basefilters.search);
+    load();
+  }, [basefilters.search]);
+  
+  const handleResetFilters = () => {
+    
+    handleChangeFilters('cliente_id', '');
+    handleChangeFilters('setor_id', '');
+    handleChangeFilters('search', basefilters.search);
+    setSelectedCliente(null);
+    setSelectedSetor(null);
+  };
+  
 
-// export default function ConsultaProjeto() {
-//   const navigate = useNavigate();
-//   const { user } = useAuth();
-//   const { callGlobalDialog, handleGlobalLoading, callGlobalAlert, callGlobalNotify } = useTheme();
-
-//   const {
-//     rows,
-//     columns,
-//     load,
-//     filtersState,
-//     isTableLoading,
-//     handleChangeFilters,
-//     resetFilters,
-//     isEmpty,
-//   } = useTable(columnsFields, listClientes, basefilters, (results) => {
-//     return results.data
-//   }
-//   );
-
-//   useEffect(() => {
-//     load();
-//   }, []);
-
-//   return (
-//     <Background>
-//       <HeaderTitle title="Consultar Projetos"/>
-//       <Section>
-//         <Table
-//           columns={columns}
-//           rows={rows}
-//           isLoading={isTableLoading}
-//           filtersState={filtersState}
-//           searchPlaceholder="Consultar Projetos"
-//           filtersComponentes={
-//             <>
-//             <Col md={3}>
-//             <SelectAsync
-//               placeholder="Filtrar por Setor"
-//               loadOptions={(search) => listSetores('?search='+search)}
-//               getOptionLabel={(option) => option.sigla+' - '+option.nome}
-
-//               onChange={(setor) => handleChangeFilters('setor', setor.id)} />
-//             </Col>
-//             <Col md={3}>
-//             <SelectAsync
-//               placeholder="Filtrar por Cliente"
-//               loadOptions={(search) => listClientes('?search='+search)}
-//               getOptionLabel={(option) => option.nome}
-
-//               onChange={(cliente) => handleChangeFilters('cliente', cliente.id)} />
-//             </Col>
-            
-//             {/* <Col md={3}>
-//             <SelectAsync
-//               placeholder="Filtrar por Fase"
-//               loadOptions={(search) => listProjetoFases('?search='+search)}
-//               // getOptionLabel={(option) => option.sigla}
-//               getOptionLabel={(option) => option.nome}
-
-//               onChange={(fase) => handleChangeFilters('fase', fase.id)} />
-//             </Col> */}
-//             </>
-            
-//           }
-//           handleFilters={handleChangeFilters}
-//           actions={[
-
-//           ]}>
-//         </Table>
-//       </Section>
-//     </Background>
-//   );
-// }
+  return (
+    <Background>
+      <HeaderTitle
+        title="Consultar Projetos"
+        optionsButtons={[
+          {
+            label: 'Limpar filtro(s)',
+            icon: FcClearFilters,
+            onClick: handleResetFilters,
+          },
+        ]}
+      />
+      <Section>
+        <Table
+          columns={columns}
+          rows={rows}
+          isLoading={isTableLoading}
+          filtersState={filtersState}
+          searchPlaceholder="Consultar Projetos"
+          filtersComponentes={
+            <>
+              <Col md={3}>
+                <SelectAsync
+                  placeholder="Filtrar por Setor"
+                  loadOptions={(search) => listSetores('?search=' + search)}
+                  getOptionLabel={(option) => option.sigla + ' - ' + option.nome}
+                  onChange={(setor) => {
+                    setSelectedSetor(setor);
+                    handleChangeFilters('setor_id', setor.id);
+                  }}
+                  value={selectedSetor || ''}
+                />
+              </Col>
+              <Col md={3}>
+                <SelectAsync
+                  placeholder="Filtrar por Cliente"
+                  loadOptions={(search) => listClientes('?search=' + search)}
+                  getOptionLabel={(option) => option.nome}
+                  onChange={(cliente) => {
+                    setSelectedCliente(cliente);
+                    handleChangeFilters('cliente_id', cliente.id);
+                  }}
+                  value={selectedCliente || ''}
+                />
+              </Col>
+            </>
+          }
+          handleFilters={handleChangeFilters}
+        />
+      </Section>
+    </Background>
+  );
+}

@@ -5,3 +5,9 @@ export const listConhecimentoByColaborador = async (params = "") => {
   let url = `dashboard/conhecimentoByColaborador${params}`;
   return _get(url);
 }
+
+
+export const listProjetoBySetorCliente = async (params = "") => {
+  let url = `dashboard/projetoBySetorCliente${params}`;
+  return _get(url);
+}
