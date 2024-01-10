@@ -78,9 +78,14 @@ export default function ConsultarColaborador() {
           return fieldB.localeCompare(fieldA);
         }
       });
+
     }
 
-    return sortedData;
+    sortedData = sortedData.filter((item) =>
+      item.colaborador.toLowerCase().includes(filtersState.search.toLowerCase())
+    );
+
+    return sortedData
   });
 
 
@@ -95,6 +100,7 @@ export default function ConsultarColaborador() {
     handleChangeFilters('conhecimento_nivel_id', '');
     handleChangeFilters('conhecimento_id', '');
     handleChangeFilters('setor_id', '');
+    handleChangeFilters('search', basefilters.search);
     setSelectedConhecimento(null);
     setSelectedNivel(null);
     setSelectedSetor(null);
