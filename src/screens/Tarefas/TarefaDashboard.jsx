@@ -62,7 +62,7 @@ export default function TarefaDashboard() {
 
 
 
-      start: tarefa.data_inicio_real || tarefa.data_inicio_programado,
+      start: tarefa.data_inicio_real || tarefa.data_inicio_programado|| tarefa.data_fim_programado,
       extendedProps: {
         ...tarefa,
         projectName: tarefa.projeto.nome,
@@ -129,7 +129,7 @@ export default function TarefaDashboard() {
   }
   const filtersIsEmpty = useMemo(() => !Object.keys(filters).find(e => !!filters[e]), [filters]);
 
-  function load(params = {}, resetData = false) {
+  function load(params = {}, resetData = true) {
     listTarefasByTime(buildQueryString(params))
       .then((resultsList) => {
         if (resetData) return setData(resultsList)
