@@ -107,6 +107,7 @@ export default function ConsultaProjeto() {
     
     handleChangeFilters('cliente_id', '');
     handleChangeFilters('setor_id', '');
+    handleChangeFilters('search', basefilters.search);
     setSelectedCliente(null);
     setSelectedSetor(null);
   };
