@@ -51,15 +51,16 @@ export default function ConsultarColaborador() {
 
     for (const [id, colaborador] of Object.entries(results)) {
       for (const conhecimento of colaborador.conhecimento) {
+        const setorSigla = colaborador.setor ? colaborador.setor.sigla : '';
+    
         mappedData.push({
           colaborador: colaborador.colaborador,
           nome: conhecimento.nome,
           grau: conhecimento.grau,
-          sigla: colaborador.setor?.sigla || '',
+          sigla: setorSigla,
         });
       }
     }
-
     let sortedData = [...mappedData];
 
     if (

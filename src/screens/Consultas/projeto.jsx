@@ -43,21 +43,22 @@ export default function ConsultaProjeto() {
     }
   
     const mappedData = [];
-  
+
     for (const [key, projeto] of Object.entries(results)) {
       const { projeto: nomeProjeto, cliente, cliente_setor, setores } = projeto || {};
-  
+    
       if (setores && setores.length > 0) {
-        setores.forEach((setor) => {
-          mappedData.push({
-            projeto: nomeProjeto || '',
-            cliente: cliente || '',
-            cliente_setor: cliente_setor || '',
-            setor: setor[0] || '',
-          });
+        const setoresSiglas = setores.map(setor => setor.sigla).join(', ');
+    
+        mappedData.push({
+          projeto: nomeProjeto || '',
+          cliente: cliente || '',
+          cliente_setor: cliente_setor || '',
+          setor: setoresSiglas || '',
         });
       }
     }
+    
   
     let filteredData = [...mappedData];
   
