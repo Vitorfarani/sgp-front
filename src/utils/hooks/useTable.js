@@ -16,18 +16,30 @@ const useTable = (columnsFields, methodlister = (new Promise), initialFiltersVal
   const [debouncedFilters] = useDebounce(filtersState, 500);
 
   const handleChangeFilters = useCallback((name, value) => {
+
     setFiltersState((prevFiltersState) => {
-      return {
+      let res = {
         ...prevFiltersState,
         [name]: value,
       };
+
+      if (![
+        'page',
+        'sortedColumn',
+        'sortOrder',
+        'selectedRows',
+        'perPage',
+      ].includes(name)) {
+         res.page = 1 
+      }
+      return res;
     });
-  },[]);
+  }, []);
   const isEmpty = useMemo(() => !isTableLoading && !rows.length, [isTableLoading, rows]);
   // const isEmpty = () => !isTableLoading && !rows.length;
 
   useEffect(() => {
-    if(isLoaded) {
+    if (isLoaded) {
       load()
     }
   }, [debouncedFilters]);
@@ -43,7 +55,7 @@ const useTable = (columnsFields, methodlister = (new Promise), initialFiltersVal
     methodlister(buildQueryString(debouncedFilters))
       .then((results) => {
         let tratedResuts = [];
-        if(!isObject(results)) throw standartResponseApiError('Erro de carregamento de dados da API')
+        if (!isObject(results)) throw standartResponseApiError('Erro de carregamento de dados da API')
         if (!!callBackTrater) {
           tratedResuts = callBackTrater(results)
         } else {
