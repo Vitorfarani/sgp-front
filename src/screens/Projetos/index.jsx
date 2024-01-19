@@ -1,5 +1,7 @@
-import { Background, HeaderTitle, Section, Table } from "@/components/index";
+import { Background, HeaderTitle, Section, SelectAsync, Table } from "@/components/index";
+import { listClientes } from "@/services/clientes";
 import { deleteProjeto, listProjetos } from "@/services/projeto/projetos";
+import { listSetores } from "@/services/setores";
 import { useAuth } from "@/utils/context/AuthProvider";
 import { useTheme } from "@/utils/context/ThemeProvider";
 import useTable from "@/utils/hooks/useTable";
@@ -16,14 +18,18 @@ const basefilters = {
   page: 1,
   sortedColumn: '',
   sortOrder: 'asc',
+  cliente: null,
+  setor: null,
 };
 
 const columnsFields = [
   { field: 'nome', label: 'Projeto', enabledOrder: true },
   { field: 'cliente', label: 'Cliente', enabledOrder: true, piper: (field) => field ? field.nome : '' },
   { field: 'projeto_setor', label: 'Setor Responsável', enabledOrder: true, piper: (field) => field.find(s => !!s.principal)?.setor.sigla || field[0]?.setor.sigla || '' },
+  //{ field: 'cliente_setor', label: 'Setor do Cliente', enabledOrder: true, piper: (field) =>  field.nome},
   { field: 'projeto_fase', label: 'Fase',  enabledOrder: true, piper: (field) =>  field.nome   },
   { field: 'projeto_status', label: 'Status', enabledOrder: true, piper: (field) => field.nome  }
+
 ];
 
 export default function Projetos() {
@@ -100,6 +106,32 @@ export default function Projetos() {
           filtersState={filtersState}
           searchPlaceholder="Pesquisar Projeto"
           searchOffiline
+          filtersComponentes={
+            <>
+              <Col md={3}>
+                <SelectAsync
+                  placeholder="Filtrar por Setor"
+                  loadOptions={(search) => listSetores('?search=' + search)}
+                  getOptionLabel={(option) => option.sigla + ' - ' + option.nome}
+                  onChange={(setor) => {
+                    handleChangeFilters('setor_id', setor.id);
+                  }}
+                  isClearable
+                />
+              </Col>
+              <Col md={3}>
+                <SelectAsync
+                  placeholder="Filtrar por Cliente"
+                  loadOptions={(search) => listClientes('?search=' + search)}
+                  getOptionLabel={(option) => option.nome}
+                  onChange={(cliente) => {
+                    handleChangeFilters('cliente_id', cliente ? cliente.id : null);
+                  }}
+                  isClearable
+                />
+              </Col>
+            </>
+          }
           handleFilters={handleChangeFilters}
           actions={[
             {
