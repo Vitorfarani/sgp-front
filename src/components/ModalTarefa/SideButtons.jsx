@@ -139,7 +139,7 @@ const SideButtons = ({ tarefa, addTarefaColaborador, onStart, onEnd, onCreateChe
           {!!!tarefa.data_fim_real && (
             <Button variant="success" onClick={onEnd}>
               <FiDroplet />
-              Entegrar
+              Entregar
             </Button>
           )}
           {!!!tarefa.checklist && (

@@ -24,6 +24,7 @@ const Table = ({
 
   const handleSearchChange = (e) => {
     handleFilters('search', e.target.value);
+    handleFilters('page', 1);
   };
 
   const handleSort = (column) => {
