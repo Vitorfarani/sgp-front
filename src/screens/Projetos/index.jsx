@@ -114,7 +114,7 @@ export default function Projetos() {
                   loadOptions={(search) => listSetores('?search=' + search)}
                   getOptionLabel={(option) => option.sigla + ' - ' + option.nome}
                   onChange={(setor) => {
-                    handleChangeFilters('setor_id', setor.id);
+                    handleChangeFilters('setor_id', setor ? setor.id : null);
                   }}
                   isClearable
                 />
