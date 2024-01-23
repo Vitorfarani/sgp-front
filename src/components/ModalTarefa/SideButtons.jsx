@@ -51,7 +51,7 @@ const SideButtons = ({ tarefa, addTarefaColaborador, onStart, onEnd, onCreateChe
   const Interromper = () => {
     const [data, setData] = useState({
       interrompido_motivo: '',
-      interrompido_at: ''
+      interrompido_at: null
     });
     return (
       <ButtonWithPopover
@@ -113,7 +113,7 @@ const SideButtons = ({ tarefa, addTarefaColaborador, onStart, onEnd, onCreateChe
           <DateInput
             type={"datetime-local"}
             readOnly
-            
+
             value={tarefa.interrompido_at} />
         </Form.Group>
         <Button variant="success" onClick={() => onRestore()}>
@@ -157,7 +157,7 @@ const SideButtons = ({ tarefa, addTarefaColaborador, onStart, onEnd, onCreateChe
         //       <FaStopCircle />
         //       Restaurar
         //     </Button>
-        <Restaurar/>
+        <Restaurar />
       )}
     </ButtonGroup>
   );

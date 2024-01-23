@@ -6,6 +6,7 @@ import PropTypes from 'prop-types';
 import { BadgeColor, BtnSimple, DateInput, FeedbackError, HorizontalScrollview, InfoDropdown, Observacoes, Section, SelectAsync, TextareaEditor, TextareaHided } from '..';
 import { validateSchema } from '@/utils/helpers/yup';
 import { tarefaSchema } from './validation';
+import { interrupcaoSchema } from './validation';
 import { FiPlus } from 'react-icons/fi';
 import { FaAlignLeft, FaBrain, FaCheckSquare, FaComment, FaTasks, FaTextWidth, FaTicketAlt } from 'react-icons/fa';
 import SideButtons from './SideButtons';
@@ -318,22 +319,35 @@ const ModalTarefa = forwardRef(({
   }
 
   function onInterruption(data) {
-    callGlobalDialog({
-      title: 'Interomper tarefa',
-      subTitle: 'Tem certeza que deseja interromper esse tarefa?',
-      color: 'red',
-      labelSuccess: 'Sim',
-    })
-      .then(() => {
-        handleGlobalLoading.show()
-        interromperTarefa({id: formData.id, deleted_at: data.interrompido_at,  ...data})
-          .then((result) => {
-            sethaveUpdate(true)
-            hide()
-          })
-          .catch(callGlobalAlert)
-          .finally(handleGlobalLoading.hide)
+
+    validateSchema(interrupcaoSchema, data).then(() => {
+
+      callGlobalDialog({
+        title: 'Interomper tarefa',
+        subTitle: 'Tem certeza que deseja interromper esse tarefa?',
+        color: 'red',
+        labelSuccess: 'Sim',
       })
+        .then(() => {
+          handleGlobalLoading.show()
+          interromperTarefa({ id: formData.id, deleted_at: data.interrompido_at, ...data })
+            .then((result) => {
+              sethaveUpdate(true)
+              hide()
+            })
+            .catch(callGlobalAlert)
+            .finally(handleGlobalLoading.hide)
+        })
+    })
+      .catch((errors) => {
+        callGlobalDialog({
+          title: 'Erro ao interromper',
+          subTitle: errors.interrompido_at,
+          color: 'orange',
+          labelSuccess: 'Ok',
+        })
+      })
+
   }
   function onRestore(data) {
     callGlobalDialog({
@@ -401,6 +415,19 @@ const ModalTarefa = forwardRef(({
       })
   }
   function onSubmited(event) {
+    console.table(formData)
+    if (formData.data_fim_programado == '') {
+      formData.data_fim_programado = null
+    }
+    if (formData.data_fim_real == '') {
+      formData.data_fim_real = null
+    }
+    if (formData.data_inicio_real == '') {
+      formData.data_inicio_real = null
+    }
+    if (formData.data_inicio_programado == '') {
+      formData.data_inicio_programado = null
+    }
     validateSchema(tarefaSchema, formData)
       .then(() => {
         setErrors(true)
@@ -587,7 +614,7 @@ const ModalTarefa = forwardRef(({
                   onChangeValid={date => handleForm('data_fim_real', date)} />
                 <FeedbackError error={errors.data_fim_real} />
               </Form.Group>
-             
+
             </Col>
 
           </Container>
