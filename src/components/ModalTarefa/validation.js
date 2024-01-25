@@ -15,18 +15,19 @@ export const tarefaSchema = Yup.object().shape({
   // coeficiente: Yup.number().nullable().positive().max(999999.99),
   data_inicio_programado: Yup.date().nullable(),
   data_fim_programado: Yup.date()
-  .nullable()
-  .when('data_inicio_programado', (data_inicio, schema) => {
-    if (data_inicio[0] !== null) {
-      return schema.min(
-        data_inicio[0],
-        'Fim não pode ser anterior a inicio'
-      );
-    }
-  }),
+    .nullable()
+    .when('data_inicio_programado', (data_inicio, schema) => {
+      if (data_inicio[0] !== null) {
+        return schema.min(
+          data_inicio[0],
+          'Fim não pode ser anterior a inicio'
+        );
+      }
+    }),
   data_inicio_real: Yup.date().nullable(),
   data_fim_real: Yup.date()
     .nullable()
+    .max(new Date(), 'A data de Fim Real não pode ser posterior à data atual')
     .when('data_inicio_real', (data_inicio, schema) => {
       if (data_inicio[0] !== null) {
         return schema.min(
@@ -41,3 +42,8 @@ export const tarefaSchema = Yup.object().shape({
   // tempo_determinado: Yup.number().required().integer(),
 });
 
+export const interrupcaoSchema = Yup.object().shape({
+  interrompido_at: Yup.date()
+    .max(new Date(), 'A data de interrupção não pode ser posterior à data atual')
+    .required('A data não pode ficar em branco'),
+});
