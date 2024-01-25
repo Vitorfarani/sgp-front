@@ -11,3 +11,14 @@ export const listProjetoBySetorCliente = async (params = "") => {
   let url = `dashboard/projetoBySetorCliente${params}`;
   return _get(url);
 }
+
+
+export const listColaboradorProjetosTarefa = async (params = "") => {
+  let url = `dashboard/colaboradorProjetosTarefa${params}`;
+  return _get(url);
+}
+
+export const listProjetoColaboradoresTarefa = async (params = "") => {
+  let url = `dashboard/projetoColaboradoresTarefa${params}`;
+  return _get(url);
+}
