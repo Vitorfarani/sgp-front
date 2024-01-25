@@ -1,6 +1,6 @@
 import { FiBarChart, FiBookmark, FiGrid, FiPieChart, FiUsers, FiBriefcase, FiBookOpen } from "react-icons/fi";
 import { FaSearch, FaArchive, FaBalanceScale, FaBity, FaBrain, FaBuilding, FaClock, FaFlag, FaIdCard, FaLevelUpAlt, FaListAlt, FaMarkdown, FaPeopleCarry, FaStopCircle, FaStopwatch, FaTasks } from "react-icons/fa";
-
+import { PiUserList } from "react-icons/pi";
 export default [
   {
     nome: 'Dashboard',
@@ -26,6 +26,20 @@ export default [
         nome: 'Colaboradores',
         icon: FaPeopleCarry,
         path: 'consultas/colaborador',
+        rolesPermited: [],
+        childrens: []
+      },
+      {
+        nome: 'Tarefas/Colaborador',
+        icon: FaTasks,
+        path: 'consultas/tarefasPorColaborador',
+        rolesPermited: [],
+        childrens: []
+      },
+      {
+        nome: 'Colaboradores/Tarefa',
+        icon: PiUserList,
+        path: 'consultas/colaboradoresPorTarefa',
         rolesPermited: [],
         childrens: []
       },

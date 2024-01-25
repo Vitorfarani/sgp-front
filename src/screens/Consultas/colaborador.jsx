@@ -25,7 +25,6 @@ const columnsFields = [
   { field: 'nome', label: 'Conhecimento', enabledOrder: true },
   { field: 'grau', label: 'Nivel', enabledOrder: true },
   { field: 'sigla', label: 'Setor', enabledOrder: true },
-
 ];
 
 export default function ConsultarColaborador() {

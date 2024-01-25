@@ -1,9 +1,9 @@
-import { Background, HeaderTitle, Section, SelectAsync, Table } from "@/components/index";
+import { Background, HeaderTitle, Section, SelectAsync, Table, TooltipConhecimentos } from "@/components/index";
 import { useAuth } from "@/utils/context/AuthProvider";
 import { useTheme } from "@/utils/context/ThemeProvider";
 import useTable from "@/utils/hooks/useTable";
 import { useEffect, useState } from "react";
-import { FiCheckCircle, FiEdit, FiPlus, FiTrash } from "react-icons/fi";
+import { FiCheckCircle, FiEdit, FiPlus, FiTrash, FiUser } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import { standartResponseApiError } from "@/services/index";
 import { deleteColaborador, listColaboradores } from "@/services/colaborador/colaboradores";
@@ -11,6 +11,8 @@ import { celularMask } from "@/utils/helpers/mask";
 import { dateEnToPt, getIdade } from "@/utils/helpers/date";
 import { listSetores } from "@/services/setores";
 import { Col } from "react-bootstrap";
+import { listConhecimentos } from "@/services/conhecimento/conhecimentos";
+import { listConhecimentoNivels } from "@/services/conhecimento/conhecimentoNivel";
 
 const basefilters = {
   search: '',
@@ -21,15 +23,18 @@ const basefilters = {
   active: true,
   sortedColumn: 'id',
   sortOrder: 'asc',
+  conhecimento: null,
+  conhecimento_nivel: null,
 };
 
 const columnsFields = [
-  { field: 'nome', label: 'Nome', enabledOrder: true, style: { width: 100 }, piper: (field, row) => !!row.afastamento.length ?   `${field} - afastado` : field},
-  { field: 'pr', label: 'PR', enabledOrder: false},
+  { field: 'nome', label: 'Nome', enabledOrder: true, style: { width: 100 }, piper: (field, row) => !!row.afastamento?.length ? `${field} - afastado` : field },
+  { field: 'pr', label: 'PR', enabledOrder: false },
   { field: 'email', label: 'Email', enabledOrder: false },
-  { field: 'telefone', label: 'Telefone', enabledOrder: false, piper: (field) => field && celularMask(field)},
+  { field: 'telefone', label: 'Telefone', enabledOrder: false, piper: (field) => field && celularMask(field) },
   { field: 'nascimento', label: 'Idade', enabledOrder: false, piper: (field) => field && getIdade(field) + ' anos' },
   { field: 'setor', label: 'Setor', enabledOrder: false, piper: (field) => !!field ? field.sigla : '' },
+  { field: 'colaborador_conhecimento', label: 'Conhecimentos', enabledOrder: false, piper: (field, colaborador) => <TooltipConhecimentos colaborador={colaborador} style={{ maxWidth: 300 }} /> },
 ];
 
 export default function Conhecimentos() {
@@ -50,6 +55,8 @@ export default function Conhecimentos() {
     return results.data
   });
 
+
+
   function handleDelete(data) {
     callGlobalDialog({
       title: 'Excluir Colaborador',
@@ -66,22 +73,22 @@ export default function Conhecimentos() {
       labelCancel: 'Cancelar',
     })
       .then((result) => {
-        if(result.confirm !== "excluir colaborador") return callGlobalNotify({message: 'Confirmação inválida', variant: 'warning'})
+        if (result.confirm !== "excluir colaborador") return callGlobalNotify({ message: 'Confirmação inválida', variant: 'warning' })
         handleGlobalLoading.show()
-         deleteColaborador(data.id)
-           .then((result) => {
-            callGlobalNotify({message: result.message, variant: 'danger'})
+        deleteColaborador(data.id)
+          .then((result) => {
+            callGlobalNotify({ message: result.message, variant: 'danger' })
             load()
-           })
-           .catch(callGlobalAlert)
-           .finally(handleGlobalLoading.hide)
+          })
+          .catch(callGlobalAlert)
+          .finally(handleGlobalLoading.hide)
       })
 
   }
   useEffect(() => {
     load();
   }, []);
-
+  
   return (
     <Background>
       <HeaderTitle title="Colaboradores" optionsButtons={[
@@ -101,15 +108,42 @@ export default function Conhecimentos() {
           searchOffiline
           filtersComponentes={
             <>
-            <Col md={3}>
-            <SelectAsync
-              placeholder="Filtrar por Setor"
-              loadOptions={(search) => listSetores('?search='+search)}
-              // getOptionLabel={(option) => option.sigla}
-              getOptionLabel={(option) => option.sigla+' - '+option.nome}
+              <Col md={2} style={{ opacity: filtersState.conhecimento == null ? 0.5 : 1 }}>
+                <SelectAsync
+                  placeholder="Filtrar por Nivel"
+                  loadOptions={(search) => listConhecimentoNivels('?search=' + search)}
+                  getOptionLabel={(option) => option.grau}
+                  onChange={(nivel) => {
+                    handleChangeFilters('conhecimento_nivel', nivel ? nivel.id : null);
 
-              onChange={(setor) => handleChangeFilters('setor', setor.id)} />
-            </Col>
+                  }}
+                  isDisabled={filtersState.conhecimento == null}
+                  isClearable
+
+                />
+              </Col>
+              <Col md={2} >
+                <SelectAsync
+                  placeholder="Filtrar por Conhecimento"
+                  loadOptions={(search) => listConhecimentos('?search=' + search)}
+                  getOptionLabel={(option) => option.nome}
+                  onChange={(conhecimento) => {
+                    handleChangeFilters('conhecimento', conhecimento ? conhecimento.id : null);
+                  }}
+                  isClearable
+                />
+              </Col>
+              <Col md={2}>
+                <SelectAsync
+                  placeholder="Filtrar por Setor"
+                  loadOptions={(search) => listSetores('?search=' + search)}
+                  // getOptionLabel={(option) => option.sigla}
+                  getOptionLabel={(option) => option.sigla + ' - ' + option.nome}
+
+                  onChange={(setor) => handleChangeFilters('setor', setor ? setor.id : null)}
+                  isClearable
+                />
+              </Col>
             </>
           }
           handleFilters={handleChangeFilters}
@@ -117,7 +151,7 @@ export default function Conhecimentos() {
             {
               label: 'Editar',
               onClick: (row) => {
-                navigate('/colaboradores/editar/'+row.id)
+                navigate('/colaboradores/editar/' + row.id)
               },
               icon: FiEdit,
             },
