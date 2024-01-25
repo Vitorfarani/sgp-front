@@ -4,13 +4,15 @@ import './style.scss';
 import { BadgeColor, HorizontalScrollview, PuzzleIcon } from '..';
 import CardConhecimento from '@/screens/Colaboradores/components/CardConhecimento';
 import { useDebounce } from 'use-debounce';
+import { FaBrain } from "react-icons/fa6";
 
-const TooltipConhecimentos = ({ colaborador }) => {
+const TooltipConhecimentos = ({ colaborador, style, onFiltersChange}) => {
   const [focused, setFocused] = useState(false);
   const [debouncedValue] = useDebounce(focused, 400);
   return (
-    <div  onMouseEnter={() => setFocused(true)} onMouseLeave={() => setFocused(false)}>
-      <span>{colaborador.nome}</span>
+    <div  style={style} onMouseEnter={() => setFocused(true)} onMouseLeave={() => setFocused(false)}>
+      {/* <span>{colaborador.nome}</span> */}
+      <FaBrain></FaBrain>
       {debouncedValue && (
         <div className='tooltip-conhecimentos' style={{  position: 'relative',
         }}>
