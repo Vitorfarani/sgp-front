@@ -167,7 +167,7 @@ const Table = ({
                 </td>
               )}
                 {columns.map((column) => (
-                  <td key={column.field}>{column.piper ? renderCellValue(column.piper(row[column.field], row)) : renderCellValue(row[column.field])}</td>
+                  <td key={column.field}>{column.piper ? renderCellValue(column.piper(row[column.field], row, filters)) : renderCellValue(row[column.field])}</td>
                 ))}
                 {actions && (
                   <td>

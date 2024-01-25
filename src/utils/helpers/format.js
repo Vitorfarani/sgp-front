@@ -50,8 +50,9 @@ export const buildQueryString = (paramsObj, prefix = '?') => {
   const queryParams = Object.keys(paramsObj)
     .map((key) => {
       if(key === "selectedRows") return`${encodeURIComponent(key)}=${encodeURIComponent(paramsObj[key].join(','))}` 
-      if(typeof paramsObj[key] !== "undefined") return`${encodeURIComponent(key)}=${encodeURIComponent(paramsObj[key])}`
+      if(typeof paramsObj[key] !== "undefined" && !!paramsObj[key] ) return`${encodeURIComponent(key)}=${encodeURIComponent(paramsObj[key])}`
     })
+    .filter(e => e)
     .join('&');
 
   return queryParams ? `${prefix}${queryParams}` : '';
