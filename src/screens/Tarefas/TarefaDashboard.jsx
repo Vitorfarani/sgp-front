@@ -17,6 +17,7 @@ import { listProjetos } from "@/services/projeto/projetos";
 import { useDebouncedCallback } from "use-debounce";
 import moment from "moment/moment";
 
+var resetData = true;
 const filtersInitialValue = {
   cliente: null,
   projeto: null,
@@ -24,7 +25,8 @@ const filtersInitialValue = {
   tipo: 'data_fim_programado',
   data1: null,
   data2: null,
-  intervalType: null
+  intervalType: null,
+  apresentado: 'somente_selecionado'
 };
 export default function TarefaDashboard() {
   const { isLoaded, isLogged, user } = useAuth();
@@ -48,8 +50,9 @@ export default function TarefaDashboard() {
       'cliente',
       'projeto',
       'colaborador',
+      'apresentado'
     ]).getResult()
-    load(formatedFilters)
+    load(formatedFilters, resetData)
   }, 500);
 
 
@@ -62,7 +65,7 @@ export default function TarefaDashboard() {
 
 
 
-      start: tarefa.data_inicio_real || tarefa.data_inicio_programado|| tarefa.data_fim_programado,
+      start: tarefa.data_inicio_real || tarefa.data_inicio_programado || tarefa.data_fim_programado,
       extendedProps: {
         ...tarefa,
         projectName: tarefa.projeto.nome,
@@ -108,28 +111,47 @@ export default function TarefaDashboard() {
             // { value: 'created_at', label: 'Data de criação' },
           ]
         },
+        {
+          name: 'apresentado',
+          label: 'Modo de calendário',
+          type: 'select',
+          options: [
+            { value: 'Somente_selecionado', label: 'Somente selecionado' },
+            { value: 'completo', label: 'Período Completo' }
+
+          ]
+        },
 
       ],
       labelSucessColor: 'primary',
       labelSuccess: 'Filtrar',
       labelCancel: 'Cancelar',
     })
-      .then((result) => {
-        setFilters({ ...result })
-        return formatForm(result).rebaseIds([
+      .then(async (result) => {
+
+        if (result.apresentado == 'completo') {
+          resetData = false
+        }
+        else {
+          resetData = true
+        }
+
+        setFilters({ ...result });
+        const formattedResult = await formatForm(result).rebaseIds([
           'cliente',
           'projeto',
           'colaborador',
-        ]).getResult()
-      })
-      .then(async (result) => {
-        load(result, true)
+          'apresentado'
+        ]).getResult();
+
+        load(formattedResult, resetData);
       })
 
   }
   const filtersIsEmpty = useMemo(() => !Object.keys(filters).find(e => !!filters[e]), [filters]);
 
-  function load(params = {}, resetData = true) {
+  function load(params = {}, resetData) {
+
     listTarefasByTime(buildQueryString(params))
       .then((resultsList) => {
         if (resetData) return setData(resultsList)
@@ -188,13 +210,12 @@ export default function TarefaDashboard() {
         }}>
           <h5>Filtros</h5>
           <Row>
-            {(['colaborador', 'tipo', 'projeto']).map((key) => {
+            {(['colaborador', 'tipo', 'projeto', 'apresentado']).map((key) => {
               if (filters[key]) {
-                console.log(filters[key]);
                 const displayText =
                   typeof filters[key] === 'object' && filters[key].nome
                     ? filters[key].nome
-                    : capitalize(filters[key].replace(/_/g, ' ')); // Replace all underscores globally
+                    : capitalize(filters[key].replace(/_/g, ' ')); 
 
                 return (
                   <Col key={key} className="filter" style={{ maxWidth: "350px" }}>
