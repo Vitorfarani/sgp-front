@@ -13,6 +13,7 @@ import { listSetores } from "@/services/setores";
 import { Col } from "react-bootstrap";
 import { listConhecimentos } from "@/services/conhecimento/conhecimentos";
 import { listConhecimentoNivels } from "@/services/conhecimento/conhecimentoNivel";
+import { FaBrain } from "react-icons/fa6";
 
 const basefilters = {
   search: '',
@@ -34,7 +35,7 @@ const columnsFields = [
   { field: 'telefone', label: 'Telefone', enabledOrder: false, piper: (field) => field && celularMask(field) },
   { field: 'nascimento', label: 'Idade', enabledOrder: false, piper: (field) => field && getIdade(field) + ' anos' },
   { field: 'setor', label: 'Setor', enabledOrder: false, piper: (field) => !!field ? field.sigla : '' },
-  { field: 'colaborador_conhecimento', label: 'Conhecimentos', enabledOrder: false, piper: (field, colaborador) => <TooltipConhecimentos colaborador={colaborador} style={{ maxWidth: 300 }} /> },
+  { field: 'colaborador_conhecimento', label: 'Conhecimentos', enabledOrder: false, piper: (field, colaborador, filters) => <TooltipConhecimentos colaborador={colaborador} style={{ maxWidth: 300 }} title={<FaBrain></FaBrain>} showOnlyId={filters.conhecimento} /> },
 ];
 
 export default function Conhecimentos() {
@@ -52,6 +53,7 @@ export default function Conhecimentos() {
     resetFilters,
     isEmpty,
   } = useTable(columnsFields, listColaboradores, basefilters, (results) => {
+    console.log(results)
     return results.data
   });
 
@@ -114,7 +116,7 @@ export default function Conhecimentos() {
                   loadOptions={(search) => listConhecimentoNivels('?search=' + search)}
                   getOptionLabel={(option) => option.grau}
                   onChange={(nivel) => {
-                    handleChangeFilters('conhecimento_nivel', nivel ? nivel.id : null);
+                    handleChangeFilters('conhecimento_nivel', nivel ? nivel.id : "");
 
                   }}
                   isDisabled={filtersState.conhecimento == null}
@@ -128,7 +130,7 @@ export default function Conhecimentos() {
                   loadOptions={(search) => listConhecimentos('?search=' + search)}
                   getOptionLabel={(option) => option.nome}
                   onChange={(conhecimento) => {
-                    handleChangeFilters('conhecimento', conhecimento ? conhecimento.id : null);
+                    handleChangeFilters('conhecimento', conhecimento ? conhecimento.id : "");
                   }}
                   isClearable
                 />
@@ -140,7 +142,7 @@ export default function Conhecimentos() {
                   // getOptionLabel={(option) => option.sigla}
                   getOptionLabel={(option) => option.sigla + ' - ' + option.nome}
 
-                  onChange={(setor) => handleChangeFilters('setor', setor ? setor.id : null)}
+                  onChange={(setor) => handleChangeFilters('setor', setor ? setor.id : "")}
                   isClearable
                 />
               </Col>

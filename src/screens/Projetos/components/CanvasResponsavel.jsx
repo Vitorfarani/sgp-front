@@ -124,7 +124,7 @@ const CanvasResponsavel = forwardRef(({ listParams, onSave, projeto, ...props },
               //   let conhecimentos = option.colaborador_conhecimento.map(e => e.conhecimento.nome + '_' + e.conhecimento_nivel.color).join(',')
               //   return <span title={conhecimentos}>{option.nome}</span>
               // }}
-              getOptionLabel={(option) => <TooltipConhecimentos colaborador={option} />}
+              getOptionLabel={(option) => <TooltipConhecimentos colaborador={option} title={option.nome}/>}
               onChange={(responsavel) => handleForm('responsavel', responsavel)} />
             <FeedbackError error={errors.responsavel} />
           </Form.Group>
