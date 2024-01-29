@@ -1,10 +1,13 @@
 import { Background, HeaderTitle, Section, SelectAsync, Table } from "@/components/index";
 import useTable from "@/utils/hooks/useTable";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { listColaboradores } from "@/services/colaborador/colaboradores";
 import { listColaboradorProjetosTarefa } from "@/services/consultas/consultas";
 import { Col } from "react-bootstrap";
 import { FcClearFilters } from "react-icons/fc";
+import { dateDiffWithLabels, dateEnToPtWithHour } from '@/utils/helpers/date';
+import { TooltipPrazo } from "@/components/index";
+
 
 const basefilters = {
     search: '',
@@ -26,11 +29,41 @@ const columnsFields = [
     { field: 'fim_programado', label: 'Fim Programado' },
     { field: 'inicio_real', label: 'Início Real' },
     { field: 'fim_real', label: 'Fim Real' },
-
+    {
+        field: 'prazo', label: 'Situação', enabledOrder: false, piper: (value, row) => {
+            const { prazo_label } = row;
+            return <TooltipPrazo prazoLabels={prazo_label} />;
+        },
+    },
 ];
-
 export default function ConsultaTarefasPorColaborador() {
 
+
+    const abreviarStatus = (status, tipo) => {
+        const mapeamentoStatus = {
+            projeto: {
+                'Em Desenvolvimento': 'ED',
+                'Em Homologação': 'EH',
+                'Em Produção': 'PR',
+                'Em Negociação': 'EN',
+                'Suspensa': 'SP',
+                'Sustentação': 'ST',
+                'Cancelado': 'CC'
+            },
+            tarefa: {
+                'Em Desenvolvimento': 'ED',
+                'Em Homologação': 'EH',
+                'Em Produção': 'PR',
+                'Em Negociação': 'EN',
+                'Suspensa': 'SP',
+                'Sustentação': 'ST',
+                'Cancelada': 'CC'
+            },
+        };
+
+
+        return mapeamentoStatus[tipo][status] || status;
+    };
     const {
         rows,
         columns,
@@ -58,6 +91,7 @@ export default function ConsultaTarefasPorColaborador() {
                 } = projeto || {};
 
 
+
                 for (const tarefa of tarefas) {
                     const {
                         tarefa_nome,
@@ -68,21 +102,31 @@ export default function ConsultaTarefasPorColaborador() {
                         tarefa_status,
                     } = tarefa || {};
 
-                    const fimTarefa = fim_real !== "N/D" ? fim_real : fim_programado;
+                    const prazoLabels = dateDiffWithLabels(fim_programado, fim_real);
+                    const inicio_programado_pt = inicio_programado !== "N/D" ? dateEnToPtWithHour(inicio_programado) : inicio_programado;
+                    const fim_programado_pt = fim_programado !== "N/D" ? dateEnToPtWithHour(fim_programado) : fim_programado;
+                    const inicio_real_pt = inicio_real !== "N/D" ? dateEnToPtWithHour(inicio_real) : inicio_real;
+                    const fim_real_pt = fim_real !== "N/D" ? dateEnToPtWithHour(fim_real) : fim_real;
+
+
+                    const projeto_status_abreviado = abreviarStatus(projeto_status, "projeto")
+                    const tarefa_status_abreviado = abreviarStatus(tarefa_status, "projeto")
 
                     mappedData.push({
                         colaborador_nome: colaborador_nome || "",
                         projeto_nome: projeto_nome || "",
-                        projeto_status: projeto_status || "",
+                        projeto_status: projeto_status_abreviado || "",
                         projeto_fase: projeto_fase || "",
                         tarefa_nome: tarefa_nome || "",
-                        inicio_programado: inicio_programado || "",
-                        fim_programado: fim_programado || "",
-                        inicio_real: inicio_real || "",
-                        fim_real: fimTarefa,
-                        tarefa_status: tarefa_status || "",
-                        fim_tarefa: fimTarefa,
+                        inicio_programado: inicio_programado_pt || "",
+                        fim_programado: fim_programado_pt || "",
+                        inicio_real: inicio_real_pt || "",
+                        fim_real: fim_real_pt,
+                        tarefa_status: tarefa_status_abreviado || "",
+                        prazo_label: prazoLabels,
                     });
+
+
                 }
             }
         }
@@ -129,12 +173,12 @@ export default function ConsultaTarefasPorColaborador() {
         load();
     }, [basefilters.search]);
 
-    
+
 
     return (
         <Background>
             <HeaderTitle
-                title="Consultar Tarefas Por Colaborador"/>
+                title="Consultar Tarefas Por Colaborador" />
             <Section>
                 <Table
                     columns={columns}
@@ -159,6 +203,7 @@ export default function ConsultaTarefasPorColaborador() {
                         </>
                     }
                     handleFilters={handleChangeFilters}
+
                 />
             </Section>
         </Background>

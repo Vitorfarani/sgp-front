@@ -42,4 +42,5 @@ export { default as SimpleSelect } from './Selectables/SimpleSelect';
 export { default as SelectAsyncCreatable } from './Selectables/SelectAsyncCreatable';
 export { default as Table } from './Table';
 export { default as TooltipConhecimentos } from './TooltipConhecimentos';
+export { default as TooltipPrazo} from './TooltipPrazo'
 
