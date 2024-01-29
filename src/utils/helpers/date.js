@@ -123,3 +123,16 @@ export const dateDiffWithLabels = (dataFimEstimado, dataFimReal = null) => {
     return { label: moment.duration(dataFimEstimado.diff(dataAtual)).humanize()+' até o fim do prazo', diff: '', Icon: FaCalendarAlt, color: 'var(--bs-info)' };
   }
 };
+
+export const dateEnToPtWithHour = function (d) {
+  const dateParts = d.split(' ');
+  const dateOnly = dateParts[0].split('-');
+
+  if (dateOnly.length < 3) {
+      return;
+  }
+
+  const timePart = dateParts[1] || ''; // Pode não haver parte de tempo
+  const formattedDate = `${dateOnly[2]}/${dateOnly[1]}/${dateOnly[0]}`;
+  return `${formattedDate} ${timePart}`;
+};
