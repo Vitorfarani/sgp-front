@@ -47,7 +47,8 @@ export default function ConsultaTarefasPorColaborador() {
                 'Em Produção': 'PR',
                 'Em Negociação': 'EN',
                 'Suspensa': 'SP',
-                'Sustentação': 'ST'
+                'Sustentação': 'ST',
+                'Cancelado': 'CC'
             },
             tarefa: {
                 'Em Desenvolvimento': 'ED',
@@ -55,7 +56,8 @@ export default function ConsultaTarefasPorColaborador() {
                 'Em Produção': 'PR',
                 'Em Negociação': 'EN',
                 'Suspensa': 'SP',
-                'Sustentação': 'ST'
+                'Sustentação': 'ST',
+                'Cancelada': 'CC'
             },
         };
 

@@ -47,7 +47,8 @@ export default function ConsultaColaboradoresPorTarefa() {
                 'Em Homologação': 'EH',
                 'Em Produção': 'PR',
                 'Em Negociação': 'EN',
-                'Suspenso': 'SP'
+                'Suspenso': 'SP',
+                'Cancelado': 'CC'
             },
             tarefa: {
                 'Em Desenvolvimento': 'ED',
@@ -55,7 +56,8 @@ export default function ConsultaColaboradoresPorTarefa() {
                 'Em Produção': 'PR',
                 'Em Negociação': 'EN',
                 'Suspensa': 'SP',
-                'Sustentação': 'ST'
+                'Sustentação': 'ST',
+                'Cancelada': 'CC'
             },
         };
         return mapeamentoStatus[tipo][status] || status;
