@@ -203,7 +203,7 @@ export default function TarefaDashboard() {
       ]} />
       {!filtersIsEmpty && (
         <Row style={{
-          backgroundColor: 'rgba(35, 38, 43, 0.29)',
+          backgroundColor: 'rgb(242 242 242)',
           padding: ' 12px 6px',
           marginBottom: 10,
           animation: "ease-in-out"
