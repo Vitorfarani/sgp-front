@@ -2,6 +2,8 @@ import { HeaderTitle, Section } from "@/components/index";
 import { listColaboradores } from "@/services/colaborador/colaboradores";
 import { listTarefasByTime } from "@/services/dashboard";
 import { listEmpresas } from "@/services/empresas";
+import { listProjetos } from "@/services/projeto/projetos";
+import { listSetores } from "@/services/setores";
 import { useAuth } from "@/utils/context/AuthProvider";
 import { useTheme } from "@/utils/context/ThemeProvider";
 import { buildQueryString, capitalize } from "@/utils/helpers/format";
@@ -13,7 +15,6 @@ import { useNavigate } from "react-router-dom";
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
-import { listProjetos } from "@/services/projeto/projetos";
 import { useDebouncedCallback } from "use-debounce";
 import moment from "moment/moment";
 
@@ -86,6 +87,13 @@ export default function TarefaDashboard() {
       forms: [
 
         {
+          name: 'setor',
+          label: 'Setor',
+          type: 'selectAsync',
+          isClearable: true,
+          loadOptions: listSetores,
+        },
+        {
           name: 'projeto',
           label: 'Projeto',
           type: 'selectAsync',
@@ -138,6 +146,7 @@ export default function TarefaDashboard() {
 
         setFilters({ ...result });
         const formattedResult = await formatForm(result).rebaseIds([
+          'setor',
           'cliente',
           'projeto',
           'colaborador',
@@ -204,18 +213,19 @@ export default function TarefaDashboard() {
       {!filtersIsEmpty && (
         <Row style={{
           backgroundColor: 'rgba(35, 38, 43, 0.29)',
+          // backgroundColor: 'rgb(242 242 242)',
           padding: ' 12px 6px',
           marginBottom: 10,
           animation: "ease-in-out"
         }}>
           <h5>Filtros</h5>
           <Row>
-            {(['colaborador', 'tipo', 'projeto', 'apresentado']).map((key) => {
+            {(['setor', 'colaborador', 'tipo', 'projeto', 'apresentado']).map((key) => {
               if (filters[key]) {
                 const displayText =
                   typeof filters[key] === 'object' && filters[key].nome
                     ? filters[key].nome
-                    : capitalize(filters[key].replace(/_/g, ' ')); 
+                    : capitalize(filters[key].replace(/_/g, ' '));
 
                 return (
                   <Col key={key} className="filter" style={{ maxWidth: "350px" }}>
@@ -245,7 +255,6 @@ export default function TarefaDashboard() {
           events={eventos}
 
           eventClick={(info) => {
-            // navigate(`/projetos/visualizar/${info.event.extendedProps.projeto_id}?tarefa=${info.event.id}`)
             window.open(`/projetos/visualizar/${info.event.extendedProps.projeto_id}?tarefa=${info.event.id}`, "_blank", "noreferrer noopener")
           }}
           onActiveStartDateChange={handleMudancaVisualizacao}
