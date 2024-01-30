@@ -4,7 +4,7 @@ import './style.scss';
 
 const BadgeColor = ({color, children}) => {
   return (
-    <div className='badge-color shadow bg-primary' 
+    <div className='badge bg-primary' 
       ref={(node) => {
         if (node && color) {
           node.style.setProperty("background-color", color, "important");

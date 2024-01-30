@@ -46,7 +46,7 @@ export default function ConsultaTarefasPorColaborador() {
                 'Em Homologação': 'EH',
                 'Em Produção': 'PR',
                 'Em Negociação': 'EN',
-                'Suspensa': 'SP',
+                'Suspenso': 'SP',
                 'Sustentação': 'ST',
                 'Cancelado': 'CC'
             },

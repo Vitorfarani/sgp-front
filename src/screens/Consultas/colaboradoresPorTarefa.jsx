@@ -64,7 +64,7 @@ export default function ConsultaColaboradoresPorTarefa() {
     };
 
     const abreviarSetor = (setorArray) => {
-        const palavrasSignificativas = ['de', 'e', 'do', 'da', 'dos', 'das']; // Adicione mais palavras se necessário
+        const palavrasSignificativas = ['de', 'e', 'do', 'da', 'dos', 'das']; 
       
         return setorArray.map((setor) => {
           const palavras = setor.split(' ');
@@ -108,13 +108,12 @@ export default function ConsultaColaboradoresPorTarefa() {
                             } = tarefa;
 
                             const prazoLabels = dateDiffWithLabels(fim_programado, fim_real);
-
+                            
                             const inicio_programado_pt = inicio_programado !== "N/D" ? dateEnToPtWithHour(inicio_programado) : inicio_programado;
                             const fim_programado_pt = fim_programado !== "N/D" ? dateEnToPtWithHour(fim_programado) : fim_programado;
                             const inicio_real_pt = inicio_real !== "N/D" ? dateEnToPtWithHour(inicio_real) : inicio_real;
                             const fim_real_pt = fim_real !== "N/D" ? dateEnToPtWithHour(fim_real) : fim_real;
 
-                            // Abrevia os status usando a função
                             const projeto_status_abreviado = abreviarStatus(projeto_status, 'projeto');
                             const tarefa_status_abreviado = abreviarStatus(tarefa_status, 'tarefa');
 
