@@ -6,6 +6,7 @@ import { HC_BR } from '@/utils/helpers/HighChartLangPt';
 import CoreChart from '../CoreChart';
 import { useTheme } from '@/utils/context/ThemeProvider';
 import { listTarefasByStatus } from '@/services/dashboard';
+// import { listtarefasByAndamento } from '@/services/dashboard';
 import { buildQueryString } from '@/utils/helpers/format';
 import { isSet } from '@/utils/helpers/is';
 import { useNavigate } from 'react-router-dom';
@@ -49,6 +50,8 @@ const TarefasByStatusChart = forwardRef(({ title }, ref) => {
   });
 
   function load(params) {
+    // listtarefasByAndamento(buildQueryString(params))
+    //   .then(resultado => console.log(resultado))
     listTarefasByStatus(buildQueryString(params))
       .then((resultsList) => {
         const { status, tarefas } = createTarefaData(resultsList);
