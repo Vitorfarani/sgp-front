@@ -1,6 +1,7 @@
 import PieChartCard from "@/components/Charts/PieChartCard";
 import ProjetosByStatusChart from "@/components/Charts/ProjetosByStatusChart";
 import TarefasByStatusChart from "@/components/Charts/TarefasByStatusChart";
+import TarefasByAndamentoChart from "@/components/Charts/TarefasByAndamentoChart";
 import { HeaderTitle, Section } from "@/components/index";
 import { listClientes } from "@/services/clientes";
 import { listColaboradores } from "@/services/colaborador/colaboradores";
@@ -35,6 +36,7 @@ export default function Dashboard() {
   const [filters, setFilters] = useState(filtersInitialValue);
   const ProjetosByStatusChartRef = useRef(null);
   const TarefasByStatusChartRef = useRef(null);
+  const TarefasByAndamentoChartRef = useRef(null);
 
   function callModalFilter(data) {
     callGlobalDialog({
@@ -115,6 +117,7 @@ export default function Dashboard() {
   function load(params = {}) {
     ProjetosByStatusChartRef.current.load(params)
     TarefasByStatusChartRef.current.load(params)
+    TarefasByAndamentoChartRef.current.load(params)
   }
 
   const filtersIsEmpty = useMemo(() => !Object.keys(filters).find(e => !!filters[e]), [filters]);
@@ -170,6 +173,9 @@ export default function Dashboard() {
         {/* Adicione mais PieChartCard aqui para formar a grade 2x3 */}
         <Col>
           <TarefasByStatusChart ref={TarefasByStatusChartRef} />
+        </Col>
+        <Col>
+          <TarefasByAndamentoChart ref={TarefasByAndamentoChartRef} />
         </Col>
       </Row>
       <Row>
