@@ -43,7 +43,7 @@ const TarefasByAndamentoChart = forwardRef(({ title }, ref) => {
             align: 'left',
           },
           xAxis: {
-            categories: ['Categoria'],
+            categories: ['Andamento'],
             title: {
               text: null
             }
