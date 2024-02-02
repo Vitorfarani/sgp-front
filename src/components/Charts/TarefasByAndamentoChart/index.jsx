@@ -43,7 +43,7 @@ const TarefasByAndamentoChart = forwardRef(({ title }, ref) => {
             align: 'left',
           },
           xAxis: {
-            categories: categories,
+            categories: ['Categoria'],
             title: {
               text: null
             }
@@ -53,6 +53,15 @@ const TarefasByAndamentoChart = forwardRef(({ title }, ref) => {
               text: 'Contagem de tarefas'
             }
           },
+          plotOptions: {
+            bar: {
+                borderRadius: '18%',
+                dataLabels: {
+                    enabled: false
+                },
+                groupPadding: 0.1
+            }
+        },
           series: series
         });
       })
