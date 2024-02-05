@@ -13,16 +13,17 @@ import { useNavigate } from 'react-router-dom';
 function createChartData(data) {
   let categories = Object.keys(data);
   let series = [];
-  categories.forEach(category => {
+  let customColors = ['#7ABC96', '#8D94F4', '#E77A92', '#80B7EA', '#F19E53'];
+  categories.forEach((category, index) => {
     let taskCount = data[category].length;
     series.push({
-      name: category,
-      data: [taskCount]
+      name: category.replace(/_/g, " "),
+      data: [taskCount],
+      color: customColors[index]
     });
   });
   return { categories, series };
 }
-
 
 const TarefasByAndamentoChart = forwardRef(({ title }, ref) => {
   const { callGlobalAlert } = useTheme();
