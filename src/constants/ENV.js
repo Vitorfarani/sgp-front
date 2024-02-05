@@ -1,5 +1,5 @@
 //DEV
-export const MODE = 'LOCAL';
+export const MODE = 'HML';
 
 const ENVORIMENTS = {
 

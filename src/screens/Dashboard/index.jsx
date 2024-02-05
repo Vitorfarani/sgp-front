@@ -174,11 +174,11 @@ export default function Dashboard() {
         <Col>
           <TarefasByStatusChart ref={TarefasByStatusChartRef} />
         </Col>
+      </Row>
+      <Row>
         <Col>
           <TarefasByAndamentoChart ref={TarefasByAndamentoChartRef} />
         </Col>
-      </Row>
-      <Row>
       </Row>
     </Container>
   );
