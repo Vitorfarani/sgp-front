@@ -19,6 +19,7 @@ import { useDebouncedCallback } from "use-debounce";
 import moment from "moment/moment";
 
 var resetData = true;
+var ultimoColaborador = null;
 const filtersInitialValue = {
   cliente: null,
   projeto: null,
@@ -36,7 +37,7 @@ export default function TarefaDashboard() {
   const [visualizacao, setVisualizacao] = useState('dayGridMonth');
   const { callGlobalDialog, handleGlobalLoading, callGlobalAlert, callGlobalNotify } = useTheme();
   const [filters, setFilters] = useState({ ...filtersInitialValue, colaborador: user.colaborador });
-
+  ultimoColaborador = user.id
   const handleMudancaVisualizacao = useDebouncedCallback((novaVisualizacao, callback) => {
     const startOriginal = moment(novaVisualizacao.startStr);
     const startFormatada = startOriginal.format('YYYY-MM-DD HH:mm:ss');
@@ -136,9 +137,13 @@ export default function TarefaDashboard() {
       labelCancel: 'Cancelar',
     })
       .then(async (result) => {
-
+        let colaboradorAlterado = false;
         if (result.apresentado == 'completo') {
           resetData = false
+          if (ultimoColaborador !== result.colaborador.id) {
+            colaboradorAlterado = true;
+            ultimoColaborador = result.colaborador.id
+          }
         }
         else {
           resetData = true
@@ -153,22 +158,25 @@ export default function TarefaDashboard() {
           'apresentado'
         ]).getResult();
 
-        load(formattedResult, resetData);
+        load(formattedResult, resetData, colaboradorAlterado);
       })
 
   }
   const filtersIsEmpty = useMemo(() => !Object.keys(filters).find(e => !!filters[e]), [filters]);
 
-  function load(params = {}, resetData) {
-
+  function load(params = {}, resetData, colaboradorAlterado) {
     listTarefasByTime(buildQueryString(params))
       .then((resultsList) => {
-        if (resetData) return setData(resultsList)
-        let copy = [...data, ...resultsList];
-        setData([...new Map(copy.map(item =>
-          [item['id'], item])).values()]);
-      })
+        let updatedData;
+        if (resetData) {
+          setData(resultsList);
+        } else {
+          updatedData = colaboradorAlterado ? [...resultsList] : [...data, ...resultsList];
+          setData([...new Map(updatedData.map(item => [item['id'], item])).values()]);
+        }
+      });
   }
+
 
   // useEffect(() => {
   //   load()
