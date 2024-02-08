@@ -75,7 +75,7 @@ const ModalTarefa = forwardRef(({
     setTimeout(() => {
       setFormData({})
       sethaveUpdate(false)
-    }, 400);
+    }, 200);
     onHide(haveUpdate)
   }
 
