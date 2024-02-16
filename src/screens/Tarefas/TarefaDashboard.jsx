@@ -263,7 +263,7 @@ export default function TarefaDashboard() {
           events={eventos}
 
           eventClick={(info) => {
-            window.open(`/projetos/visualizar/${info.event.extendedProps.projeto_id}?tarefa=${info.event.id}`, "_blank", "noreferrer noopener")
+            window.open(`/projetos/visualizar/${info.event.extendedProps.projeto_id}?tarefa=${info.event.id}`, "_blank", "noreferrer noopener");
           }}
           onActiveStartDateChange={handleMudancaVisualizacao}
           eventDisplay="block"
