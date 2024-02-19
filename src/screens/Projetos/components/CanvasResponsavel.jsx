@@ -49,6 +49,13 @@ const CanvasResponsavel = forwardRef(({ listParams, onSave, projeto, ...props },
   }
 
   const handleSubmit = useCallback((event) => {
+    if (formData.inicio == '') {
+      formData.inicio = null
+    }
+    if (formData.fim == '') {
+      formData.fim = null
+    }
+
     validateSchema(responsavelSchema, formData)
       .then(() => {
         setErrors(true)
