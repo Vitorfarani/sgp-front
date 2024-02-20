@@ -47,6 +47,13 @@ const CanvasSetor = forwardRef(({ listParams, onSave, ...props }, ref) => {
   }
 
   const handleSubmit = useCallback((event) => {
+      if (formData.inicio == '') {
+        formData.inicio = null
+      }
+      if (formData.fim == '') {
+        formData.fim = null
+      }
+
     validateSchema(setorSchema, formData)
       .then(() => {
         setErrors(true)

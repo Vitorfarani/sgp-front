@@ -537,6 +537,8 @@ export default function CadastrarProjeto() {
               dataInicio={resp.inicio}
               dataFim={resp.fim}
               isMain={resp.principal}
+              inicioResponsavel={resp.inicio_responsavel} 
+              fimResponsavel={resp.fim_responsavel} 
               onMainChange={() => handleMainResponsavel(i)}
               onEdit={() => handleResponsavel(resp, i)}
               onRemove={() => removeResponsavel(i)} />
