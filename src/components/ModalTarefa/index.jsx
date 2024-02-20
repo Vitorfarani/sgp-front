@@ -72,10 +72,12 @@ const ModalTarefa = forwardRef(({
     setErrors(false)
     setValidated(false);
     setshowtextareaObs(false)
-    setTimeout(() => {
-      setFormData({})
-      sethaveUpdate(false)
-    }, 200);
+    // setTimeout(() => {
+    //   setFormData({})
+    //   sethaveUpdate(false)
+    // }, 200);
+    setFormData({})
+    sethaveUpdate(false)
     onHide(haveUpdate)
   }
 
@@ -415,7 +417,7 @@ const ModalTarefa = forwardRef(({
       })
   }
   function onSubmited(event) {
-    console.table(formData)
+    
     if (formData.data_fim_programado == '') {
       formData.data_fim_programado = null
     }
