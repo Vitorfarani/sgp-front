@@ -131,7 +131,7 @@ const CanvasResponsavel = forwardRef(({ listParams, onSave, projeto, ...props },
               //   let conhecimentos = option.colaborador_conhecimento.map(e => e.conhecimento.nome + '_' + e.conhecimento_nivel.color).join(',')
               //   return <span title={conhecimentos}>{option.nome}</span>
               // }}
-              getOptionLabel={(option) => <TooltipConhecimentos colaborador={option} title={option.nome}/>}
+              getOptionLabel={(option) => <TooltipConhecimentos colaborador={option} title={option.nome} />}
               onChange={(responsavel) => handleForm('responsavel', responsavel)} />
             <FeedbackError error={errors.responsavel} />
           </Form.Group>
@@ -150,9 +150,22 @@ const CanvasResponsavel = forwardRef(({ listParams, onSave, projeto, ...props },
           <Form.Group className='mb-4'>
             <Form.Label>Data de Fim</Form.Label>
             <DateInput value={formData.fim} onChangeValid={date => handleForm('fim', date)}
-             isInvalid={!!errors.fim}
+              isInvalid={!!errors.fim}
             />
             <FeedbackError error={errors.fim} />
+          </Form.Group>
+        )}
+        {formData.inicio_responsavel && (
+          <Form.Group className='mb-4'>
+            <Form.Label>Início Como Responsável</Form.Label>
+            <DateInput
+              value={formData.inicio_responsavel} disabled />
+          </Form.Group>
+        )}
+        {formData.fim_responsavel && (
+          <Form.Group className='mb-4'>
+            <Form.Label>Fim Como Responsável</Form.Label>
+            <DateInput value={formData.fim_responsavel} disabled />
           </Form.Group>
         )}
         <Col md={'auto'} className='mx-auto'>
