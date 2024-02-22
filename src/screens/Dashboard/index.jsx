@@ -28,6 +28,8 @@ const filtersInitialValue = {
   empresa: null,
   projeto_status: null,
   tarefa_status: null,
+  data_inicio: null,
+  data_fim: null,
 };
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -92,6 +94,16 @@ export default function Dashboard() {
           isClearable: true,
           loadOptions: listTarefaStatus,
         },
+        {
+          name: 'data_inicio',
+          label: 'Início',
+          type: 'date',
+        },
+        {
+          name: 'data_fim',
+          label: 'Fim ',
+          type: 'date',
+        }
       ],
       labelSucessColor: 'primary',
       labelSuccess: 'Filtrar',
