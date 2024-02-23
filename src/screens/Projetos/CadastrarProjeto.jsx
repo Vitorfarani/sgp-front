@@ -40,7 +40,7 @@ const MOCK = {
   projeto_fase: null,
   projeto_status: null,
   repositorio: '',
- 
+
   hml_ip: '',
   hml_banco: '',
   prd_ip: '',
@@ -116,7 +116,7 @@ export default function CadastrarProjeto() {
           deleteProjetoResponsavel(pr.id)
             .then((result) => {
               callGlobalNotify({ message: result.message, variant: 'danger' })
-          load(params.id)
+              load(params.id)
 
             })
             .catch(callGlobalAlert)
@@ -170,7 +170,7 @@ export default function CadastrarProjeto() {
 
   function saveSetor(data, index) {
     if (!formData.id) {
-      data = {...data, setor_id: data.id}
+      data = { ...data, setor_id: data.id }
       let prev = [...formData.projeto_setor]
       if (isNumber(index)) {
         prev = formData['projeto_setor'].map((item, i) => i === index ? data : item)
@@ -336,9 +336,9 @@ export default function CadastrarProjeto() {
 
   function beforeSave(form) {
     try {
-      
+
       let data = structuredClone(form);
-      data = formatForm(data).rebaseIds(['projeto_status', 'projeto_fase', 'cliente','contato']).trimTextInputs().getResult()
+      data = formatForm(data).rebaseIds(['projeto_status', 'projeto_fase', 'cliente', 'contato']).trimTextInputs().getResult()
       data.projeto_conhecimento = data.projeto_conhecimento.map(c => {
         return {
           ...c,
@@ -362,21 +362,21 @@ export default function CadastrarProjeto() {
       return data;
 
     } catch (error) {
-      callGlobalAlert({title: 'Houve um erro no processamento do formulário', message: error.message, color: 'var(--bs-danger)'})
+      callGlobalAlert({ title: 'Houve um erro no processamento do formulário', message: error.message, color: 'var(--bs-danger)' })
       return false
     }
 
   }
   function save() {
     let data = beforeSave(formData)
-    if(!data) return
+    if (!data) return
     handleGlobalLoading.show()
     let method = !data.id ? createProjeto : updateProjeto;
     method(data)
       .then((res) => {
         callGlobalNotify({ message: res.message, variant: 'success' })
 
-          navigate('/projetos/visualizar/'+res.projeto.id)
+        navigate('/projetos/visualizar/' + res.projeto.id)
       })
       .catch((error) => {
         callGlobalAlert(error)
@@ -501,13 +501,13 @@ export default function CadastrarProjeto() {
               required
               onRemove
               placeholder="Selecione os Conhecimentos necessários para esse projeto"
-              loadOptions={(search) => listConhecimentos('?search='+search)}
+              loadOptions={(search) => listConhecimentos('?search=' + search)}
               value={formData.projeto_conhecimento}
               onChange={(projeto_conhecimento, action) => {
                 console.log(action)
-                if(action.action === 'select-option') {
+                if (action.action === 'select-option') {
                   handleConhecimento(projeto_conhecimento, action.option)
-                } else if(action.action === 'remove-value') {
+                } else if (action.action === 'remove-value') {
                   removeConhecimento(projeto_conhecimento, action.removedValue)
                 }
               }}
@@ -527,7 +527,7 @@ export default function CadastrarProjeto() {
 
           </Col>
         </Row>
-        <HorizontalScrollView className="mb-3" style={formData.projeto_responsavel.length <= 1 ? { justifyContent: 'center' } : null}>
+        <HorizontalScrollView className="mb-3" style={formData.projeto_responsavel.length <= 1 ? { justifyContent: 'center' } : { alignItems: 'stretch' }}>
           {formData.projeto_responsavel.map((resp, i) => (
             <CardResponsavel
               key={i}
@@ -537,8 +537,9 @@ export default function CadastrarProjeto() {
               dataInicio={resp.inicio}
               dataFim={resp.fim}
               isMain={resp.principal}
-              inicioResponsavel={resp.inicio_responsavel} 
-              fimResponsavel={resp.fim_responsavel} 
+              inicioResponsavel={resp.inicio_responsavel}
+              fimResponsavel={resp.fim_responsavel}
+              historico={resp.historico}
               onMainChange={() => handleMainResponsavel(i)}
               onEdit={() => handleResponsavel(resp, i)}
               onRemove={() => removeResponsavel(i)} />
@@ -608,7 +609,7 @@ export default function CadastrarProjeto() {
                 <Form.Label column sm="4" >Fase <sup>*</sup></Form.Label>
                 <Col sm="8">
                   <SelectAsync
-                    loadOptions={(search) => listProjetoFases('?search='+search)}
+                    loadOptions={(search) => listProjetoFases('?search=' + search)}
                     value={formData.projeto_fase}
                     onChange={(projeto_fase) => handleForm('projeto_fase', projeto_fase)}
                     isInvalid={!!errors.projeto_fase} />
@@ -619,7 +620,7 @@ export default function CadastrarProjeto() {
                 <Form.Label column sm="4" >Status <sup>*</sup></Form.Label>
                 <Col sm="8">
                   <SelectAsync
-                    loadOptions={(search) => listProjetoStatus('?search='+search)}
+                    loadOptions={(search) => listProjetoStatus('?search=' + search)}
                     value={formData.projeto_status}
                     onChange={(projeto_status) => handleForm('projeto_status', projeto_status)}
                     isInvalid={!!errors.projeto_status} />
