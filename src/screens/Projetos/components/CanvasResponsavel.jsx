@@ -155,19 +155,6 @@ const CanvasResponsavel = forwardRef(({ listParams, onSave, projeto, ...props },
             <FeedbackError error={errors.fim} />
           </Form.Group>
         )}
-        {formData.inicio_responsavel && (
-          <Form.Group className='mb-4'>
-            <Form.Label>Início Como Responsável</Form.Label>
-            <DateInput
-              value={formData.inicio_responsavel} disabled />
-          </Form.Group>
-        )}
-        {formData.fim_responsavel && (
-          <Form.Group className='mb-4'>
-            <Form.Label>Fim Como Responsável</Form.Label>
-            <DateInput value={formData.fim_responsavel} disabled />
-          </Form.Group>
-        )}
         <Col md={'auto'} className='mx-auto'>
           <Button type="submit">Salvar</Button>
         </Col>
