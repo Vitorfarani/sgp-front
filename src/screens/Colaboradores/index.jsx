@@ -22,6 +22,7 @@ const basefilters = {
   setor: null,
   page: 1,
   active: true,
+  afastado:false,
   sortedColumn: 'id',
   sortOrder: 'asc',
   conhecimento: null,
@@ -55,6 +56,18 @@ const columnsFields = [
         return <>{field} {icon}</>;
       } else {
         return field;
+      }
+    }
+  },
+  { 
+    field: 'afastado', 
+    label: 'Ativo', 
+    enabledOrder: false, 
+    piper: (field, row) => {
+      if (row.afastamento && row.afastamento.length > 0) {
+        return 'Não (Afastado)';
+      } else {
+        return field ? 'Não' : 'Sim';
       }
     }
   },
