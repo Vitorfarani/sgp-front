@@ -22,7 +22,7 @@ const basefilters = {
   setor: null,
   page: 1,
   active: true,
-  afastado: true,
+  afastado: false,
   sortedColumn: 'id',
   sortOrder: 'asc',
   conhecimento: null,
