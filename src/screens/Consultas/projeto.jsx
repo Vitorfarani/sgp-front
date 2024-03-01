@@ -122,7 +122,7 @@ export default function ConsultaProjeto() {
                   loadOptions={(search) => listSetores('?search=' + search)}
                   getOptionLabel={(option) => option.sigla + ' - ' + option.nome}
                   onChange={(setor) => {
-                    handleChangeFilters('setor_id', setor ? setor.id : null);
+                    handleChangeFilters('setor_id', setor ? setor.id : "");
                   }}
                   isClearable
                 />
@@ -133,7 +133,7 @@ export default function ConsultaProjeto() {
                   loadOptions={(search) => listClientes('?search=' + search)}
                   getOptionLabel={(option) => option.nome}
                   onChange={(cliente) => {
-                    handleChangeFilters('cliente_id', cliente ? cliente.id : null);
+                    handleChangeFilters('cliente_id', cliente ? cliente.id : "");
                   }}
                   isClearable
                 />
