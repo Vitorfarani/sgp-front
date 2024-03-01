@@ -25,8 +25,6 @@ const columnsFields = [
 ];
 
 export default function ConsultaProjeto() {
-  const [selectedSetor, setSelectedSetor] = useState(null);
-  const [selectedCliente, setSelectedCliente] = useState(null);
 
   const {
     rows,
@@ -104,28 +102,11 @@ export default function ConsultaProjeto() {
     load();
   }, [basefilters.search]);
   
-  const handleResetFilters = () => {
-    
-    handleChangeFilters('cliente_id', '');
-    handleChangeFilters('setor_id', '');
-    handleChangeFilters('search', basefilters.search);
-    setSelectedCliente(null);
-    setSelectedSetor(null);
-  };
-  
 
   return (
     <Background>
       <HeaderTitle
-        title="Consultar Projetos"
-        optionsButtons={[
-          {
-            label: 'Limpar filtro(s)',
-            icon: FcClearFilters,
-            onClick: handleResetFilters,
-          },
-        ]}
-      />
+        title="Consultar Projetos"/>
       <Section>
         <Table
           columns={columns}
@@ -141,10 +122,9 @@ export default function ConsultaProjeto() {
                   loadOptions={(search) => listSetores('?search=' + search)}
                   getOptionLabel={(option) => option.sigla + ' - ' + option.nome}
                   onChange={(setor) => {
-                    setSelectedSetor(setor);
-                    handleChangeFilters('setor_id', setor.id);
+                    handleChangeFilters('setor_id', setor ? setor.id : null);
                   }}
-                  value={selectedSetor || ''}
+                  isClearable
                 />
               </Col>
               <Col md={3}>
@@ -153,10 +133,9 @@ export default function ConsultaProjeto() {
                   loadOptions={(search) => listClientes('?search=' + search)}
                   getOptionLabel={(option) => option.nome}
                   onChange={(cliente) => {
-                    setSelectedCliente(cliente);
-                    handleChangeFilters('cliente_id', cliente.id);
+                    handleChangeFilters('cliente_id', cliente ? cliente.id : null);
                   }}
-                  value={selectedCliente || ''}
+                  isClearable
                 />
               </Col>
             </>

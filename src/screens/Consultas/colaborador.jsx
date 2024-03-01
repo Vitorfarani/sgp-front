@@ -28,10 +28,6 @@ const columnsFields = [
 ];
 
 export default function ConsultarColaborador() {
-  const [selectedConhecimento, setSelectedConhecimento] = useState(null);
-  const [selectedNivel, setSelectedNivel] = useState(null);
-  const [selectedSetor, setSelectedSetor] = useState(null);
-
   const {
     rows,
     columns,
@@ -95,29 +91,10 @@ export default function ConsultarColaborador() {
     load();
   }, [basefilters.search]);
 
-
-  const handleResetFilters = () => {
-    handleChangeFilters('conhecimento_nivel_id', '');
-    handleChangeFilters('conhecimento_id', '');
-    handleChangeFilters('setor_id', '');
-    handleChangeFilters('search', basefilters.search);
-    setSelectedConhecimento(null);
-    setSelectedNivel(null);
-    setSelectedSetor(null);
-  };
-
   return (
     <Background>
       <HeaderTitle
-        title="Consultar Colaboradores"
-        optionsButtons={[
-          {
-            label: 'Limpar filtro(s)',
-            icon: FcClearFilters,
-            onClick: handleResetFilters,
-          },
-        ]}
-      />
+        title="Consultar Colaboradores"/>
       <Section>
         <Table
           columns={columns}
@@ -134,10 +111,9 @@ export default function ConsultarColaborador() {
                   loadOptions={(search) => listConhecimentoNivels('?search=' + search)}
                   getOptionLabel={(option) => option.grau}
                   onChange={(nivel) => {
-                    setSelectedNivel(nivel);
-                    handleChangeFilters('conhecimento_nivel_id', nivel.id);
+                    handleChangeFilters('conhecimento_nivel_id', nivel ? nivel.id : "");
                   }}
-                  value={selectedNivel || ''}
+                  isClearable
                 />
               </Col>
               <Col md={3}>
@@ -146,10 +122,9 @@ export default function ConsultarColaborador() {
                   loadOptions={(search) => listConhecimentos('?search=' + search)}
                   getOptionLabel={(option) => option.nome}
                   onChange={(conhecimento) => {
-                    setSelectedConhecimento(conhecimento);
-                    handleChangeFilters('conhecimento_id', conhecimento.id);
+                    handleChangeFilters('conhecimento_id', conhecimento ? conhecimento.id : "");
                   }}
-                  value={selectedConhecimento || ''}
+                  isClearable
                 />
               </Col>
               <Col md={3}>
@@ -158,10 +133,9 @@ export default function ConsultarColaborador() {
                   loadOptions={(search) => listSetores('?search=' + search)}
                   getOptionLabel={(option) => option.sigla}
                   onChange={(setor) => {
-                    setSelectedSetor(setor);
-                    handleChangeFilters('setor_id', setor.id);
+                    handleChangeFilters('setor_id', setor ? setor.id : "");
                   }}
-                  value={selectedSetor || ''}
+                  isClearable
                 />
               </Col>
 
