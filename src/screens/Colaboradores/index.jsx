@@ -13,7 +13,7 @@ import { listSetores } from "@/services/setores";
 import { Col } from "react-bootstrap";
 import { listConhecimentos } from "@/services/conhecimento/conhecimentos";
 import { listConhecimentoNivels } from "@/services/conhecimento/conhecimentoNivel";
-import { FaBrain } from "react-icons/fa6";
+import { FaBrain, FaUserSlash, FaBriefcaseMedical, FaPlaneDeparture } from "react-icons/fa6";
 
 const basefilters = {
   search: '',
@@ -22,6 +22,7 @@ const basefilters = {
   setor: null,
   page: 1,
   active: true,
+  afastado: false,
   sortedColumn: 'id',
   sortOrder: 'asc',
   conhecimento: null,
@@ -29,8 +30,47 @@ const basefilters = {
 };
 
 const columnsFields = [
-  { field: 'nome', label: 'Nome', enabledOrder: true, style: { width: 100 }, piper: (field, row) => !!row.afastamento?.length ? `${field} - afastado` : field },
-  { field: 'pr', label: 'PR', enabledOrder: false },
+  { 
+    field: 'nome', 
+    label: 'Nome', 
+    enabledOrder: true, 
+    style: { width: 100 }, 
+    piper: (field, row) => {
+      if (row.afastamento && row.afastamento.length > 0) {
+        const tipoAfastamento = row.afastamento[0].tipo_afastamento.nome;
+        let icon;
+        switch (tipoAfastamento) {
+          case 'Licença Médica':
+            icon = <FaBriefcaseMedical />;
+            break;
+          case 'Férias Formais':
+            icon = <FaPlaneDeparture />;
+            break;
+          case 'Férias Informais':
+            icon = <FaUserSlash />;
+            break;
+          default:
+            icon = <FaUserSlash />;
+            break;
+        }
+        return <>{field} {icon}</>;
+      } else {
+        return field;
+      }
+    }
+  },
+  { 
+    field: 'afastado', 
+    label: 'Ativo', 
+    enabledOrder: false, 
+    piper: (field, row) => {
+      if (row.afastamento && row.afastamento.length > 0) {
+        return 'Não (Afastado)';
+      } else {
+        return field ? 'Não' : 'Sim';
+      }
+    }
+  },
   { field: 'email', label: 'Email', enabledOrder: false },
   { field: 'telefone', label: 'Telefone', enabledOrder: false, piper: (field) => field && celularMask(field) },
   { field: 'nascimento', label: 'Idade', enabledOrder: false, piper: (field) => field && getIdade(field) + ' anos' },

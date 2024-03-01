@@ -1,5 +1,5 @@
 import { FiBarChart, FiBookmark, FiGrid, FiPieChart, FiUsers, FiBriefcase, FiBookOpen } from "react-icons/fi";
-import { FaSearch, FaArchive, FaBalanceScale, FaBity, FaBrain, FaBuilding, FaClock, FaFlag, FaIdCard, FaLevelUpAlt, FaListAlt, FaMarkdown, FaPeopleCarry, FaStopCircle, FaStopwatch, FaTasks } from "react-icons/fa";
+import { FaSearch, FaArchive, FaBalanceScale, FaBity, FaBrain, FaBuilding, FaClock, FaFlag, FaIdCard, FaLevelUpAlt, FaListAlt, FaMarkdown, FaPeopleCarry, FaStopCircle, FaStopwatch, FaTasks, FaUserSlash} from "react-icons/fa";
 import { PiUserList } from "react-icons/pi";
 export default [
   {
@@ -53,7 +53,7 @@ export default [
   },
   {
     nome: 'Afastamento',
-    icon: FaStopCircle,
+    icon: FaUserSlash,
     path: 'afastamentos',
     rolesPermited: [],
     childrens: [
