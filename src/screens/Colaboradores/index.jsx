@@ -61,13 +61,13 @@ const columnsFields = [
   },
   { 
     field: 'afastado', 
-    label: 'Ativo', 
+    label: 'Situação', 
     enabledOrder: false, 
     piper: (field, row) => {
       if (row.afastamento && row.afastamento.length > 0) {
-        return 'Não (Afastado)';
+        return 'Afastado';
       } else {
-        return field ? 'Não' : 'Sim';
+        return field ? 'Não' : 'Ativo';
       }
     }
   },
