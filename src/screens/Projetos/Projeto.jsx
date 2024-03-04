@@ -227,6 +227,7 @@ function Projeto() {
                       key={i}
                       title={setor.setor.sigla}
                       dataInicio={setor.inicio}
+                      historico={setor.historico}
                       dataFim={setor.fim}
                       isMain={setor.principal} />
                   ))}

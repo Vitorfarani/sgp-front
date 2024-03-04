@@ -474,7 +474,7 @@ export default function CadastrarProjeto() {
             <BtnSimple Icon={FiBriefcase} onClick={() => handleSetor()}>Adicionar Setor</BtnSimple>
           </Col>
         </Row>
-        <HorizontalScrollView className="mb-3" style={formData.projeto_setor.length <= 1 ? { justifyContent: 'center' } : null}>
+        <HorizontalScrollView className="mb-3" style={formData.projeto_setor.length <= 1 ? { justifyContent: 'center' } : { alignItems: 'stretch' }}>
           {formData.projeto_setor.map((setor, i) => (
             <CardSetor
               key={i}
@@ -482,6 +482,7 @@ export default function CadastrarProjeto() {
               dataInicio={setor.inicio}
               dataFim={setor.fim}
               isMain={setor.principal}
+              historico={setor.historico}
               onMainChange={() => handleMainSetor(i)}
               onEdit={() => handleSetor(setor, i)}
               onRemove={() => removeSetor(i)} />
