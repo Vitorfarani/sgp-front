@@ -7,9 +7,9 @@ import { FiStar, FiTrash } from 'react-icons/fi';
 import { dateEnToPt } from '@/utils/helpers/date';
 import { FaStar } from 'react-icons/fa';
 
-const CardSetor = ({ title, dataInicio, dataFim, isMain, onEdit, onRemove, onMainChange, size = '13rem' }) => {
+const CardSetor = ({ title, dataInicio, dataFim, isMain, historico, onEdit, onRemove, onMainChange, size = '13rem' }) => {
   return (
-    <Card className='card-responsavel' style={{ flex: '0 0 178px' }}>
+    <Card className='card-responsavel' style={{}}>
       <Card.Header>
         <Row className="my-auto">
           <Col xs={2} md={2}>
@@ -38,6 +38,16 @@ const CardSetor = ({ title, dataInicio, dataFim, isMain, onEdit, onRemove, onMai
         <p>{dateEnToPt(dataInicio)}</p>
         <strong>Até</strong>
         <p>{dataFim ? dateEnToPt(dataFim) : 'O momento'}</p>
+        {!!historico && historico.length > 0 && (
+          <>
+            <strong>Período Responsável</strong>
+            {historico.toReversed().map((item, index) => (
+              <div key={index}>
+                <p>{dateEnToPt(item.inicio)} ⬌ {item.fim ? dateEnToPt(item.fim) : 'O momento'}</p>
+              </div>
+            ))}
+          </>
+        )}
       </Card.Body>
       {!!onEdit && (
         <Card.Footer>
