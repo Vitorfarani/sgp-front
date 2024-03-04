@@ -20,16 +20,17 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Col, Container, Row, Spinner } from "react-bootstrap";
 import { FiFilter } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
+import { dateEnToPt } from "@/utils/helpers/date";
 const filtersInitialValue = {
-  cliente: null,
-  projeto: null,
-  colaborador: null,
-  setor: null,
-  empresa: null,
-  projeto_status: null,
-  tarefa_status: null,
-  data_inicio: null,
-  data_fim: null,
+  cliente: "",
+  projeto: "",
+  colaborador: "",
+  setor: "",
+  empresa: "",
+  projeto_status: "",
+  tarefa_status: "",
+  data_inicio: "",
+  data_fim: "",
 };
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -171,7 +172,10 @@ export default function Dashboard() {
             {Object.keys(filters).map((key) => !!filters[key] && (
               <Col>
                 <b>{capitalize(key.replace('_', ' '))}</b><br/>
-                <span>{filters[key].nome}</span>
+                <span>
+                  {typeof filters[key] === 'string' ? 
+                      dateEnToPt(filters[key]) : filters[key].nome}
+                </span>
               </Col>
             ))}
           </Row>
