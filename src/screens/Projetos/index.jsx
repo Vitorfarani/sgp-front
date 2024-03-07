@@ -27,15 +27,15 @@ const columnsFields = [
   { field: 'cliente', label: 'Cliente', enabledOrder: true, piper: (field) => field ? field.nome : '' },
   { field: 'projeto_setor', label: 'Setor Responsável', enabledOrder: true, piper: (field) => field.find(s => !!s.principal)?.setor.sigla || field[0]?.setor.sigla || '' },
   //{ field: 'cliente_setor', label: 'Setor do Cliente', enabledOrder: true, piper: (field) =>  field.nome},
-  { field: 'projeto_fase', label: 'Fase',  enabledOrder: true, piper: (field) =>  field.nome   },
-  { field: 'projeto_status', label: 'Status', enabledOrder: true, piper: (field) => field.nome  }
+  { field: 'projeto_fase', label: 'Fase', enabledOrder: true, piper: (field) => field.nome },
+  { field: 'projeto_status', label: 'Status', enabledOrder: true, piper: (field) => field.nome }
 
 ];
 
 export default function Projetos() {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { callGlobalDialog, handleGlobalLoading, callGlobalAlert } = useTheme();
+  const { callGlobalDialog, handleGlobalLoading, callGlobalAlert, callGlobalNotify } = useTheme();
 
   const {
     rows,
@@ -66,20 +66,29 @@ export default function Projetos() {
       labelCancel: 'Cancelar',
     })
       .then(async (result) => {
-        console.log(result)
-        handleGlobalLoading.show()
-        setTimeout(() => {
-          handleGlobalLoading.hide()
-        }, 1000);
-        // deleteProjeto(row.id)
-        //   .catch(() => {
-        //   })
+        if (result.trash === 'excluir projeto') {
+          handleGlobalLoading.show();
+          deleteProjeto(row.id)
+            .then(() => {
+              load();
+              handleGlobalLoading.hide();
+              callGlobalNotify({ message: 'Projeto excluído com sucesso', variant: 'danger' })
+            })
+            .catch((error) => {
+              handleGlobalLoading.hide();
+            });
+          } else {
+          callGlobalNotify({ message: 'Projeto Não excluido', variant: 'danger' })
+          handleGlobalLoading.hide();
+        }
       })
       .catch(() => {
-
-      })
+        // Handle cancel or other errors
+        handleGlobalLoading.hide();
+      });
   }
-  
+
+
   useEffect(() => {
     load();
   }, []);
@@ -99,7 +108,7 @@ export default function Projetos() {
         // }
       ]} />
       <Section>
-      <Table
+        <Table
           columns={columns}
           rows={rows}
           isLoading={isTableLoading}
