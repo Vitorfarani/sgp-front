@@ -36,8 +36,10 @@ const columnsFields = [
     enabledOrder: true, 
     style: { width: 100 }, 
     piper: (field, row) => {
-      if (row.afastamento && row.afastamento.length > 0) {
-        const tipoAfastamento = row.afastamento[0].tipo_afastamento.nome;
+      
+      if (row.afastamento && row.afastamento.length > 0 && row.afastado === 1) {
+        const ultimoAfastamento = row.afastamento[row.afastamento.length -1]
+        const tipoAfastamento = ultimoAfastamento.tipo_afastamento.nome;
         let icon;
         switch (tipoAfastamento) {
           case 'Licença Médica':
@@ -64,10 +66,12 @@ const columnsFields = [
     label: 'Situação', 
     enabledOrder: false, 
     piper: (field, row) => {
-      if (row.afastamento && row.afastamento.length > 0) {
-        return 'Afastado';
+      if (row.afastamento && row.afastamento.length > 0 && row.afastado === 1) {
+        const ultimoAfastamento = row.afastamento[row.afastamento.length - 1];
+        const tipoAfastamento = ultimoAfastamento.tipo_afastamento.nome;
+        return tipoAfastamento;
       } else {
-        return field ? 'Não' : 'Ativo';
+        return field ? 'Afastado' : 'Ativo';
       }
     }
   },
