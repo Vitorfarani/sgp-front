@@ -72,13 +72,13 @@ export default function Projetos() {
             .then(() => {
               load();
               handleGlobalLoading.hide();
-              callGlobalNotify({ message: 'Projeto excluído com sucesso', variant: 'danger' })
+              callGlobalNotify({ message: 'Projeto excluído com sucesso', variant: 'success' })
             })
             .catch((error) => {
               handleGlobalLoading.hide();
             });
-          } else {
-          callGlobalNotify({ message: 'Projeto Não excluido', variant: 'danger' })
+        } else {
+          callGlobalAlert({ title: 'Erro no Preenchimento da Frase', message: 'Projeto Não Excluido', color: 'var(--bs-danger)' })
           handleGlobalLoading.hide();
         }
       })
