@@ -1,5 +1,7 @@
 import { yupRequired } from '@/utils/helpers/yup';
 import * as Yup from 'yup';
+const hoje = new Date();
+const maximo  = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate(), 23, 59, 59);
 
 export const tarefaSchema = Yup.object().shape({
   id: Yup.number().nullable(),
@@ -27,7 +29,7 @@ export const tarefaSchema = Yup.object().shape({
   data_inicio_real: Yup.date().nullable(),
   data_fim_real: Yup.date()
     .nullable()
-    .max(new Date(new Date().getTime() + 60000), 'A data de Fim Real não pode ser posterior à data atual')
+    .max(maximo, 'A data de Fim Real não pode ser posterior à data atual')
     .when('data_inicio_real', (data_inicio, schema) => {
       if (data_inicio[0] !== null) {
         return schema.min(
@@ -42,8 +44,8 @@ export const tarefaSchema = Yup.object().shape({
   // tempo_determinado: Yup.number().required().integer(),
 });
 
-export const interrupcaoSchema = Yup.object().shape({
-  interrompido_at: Yup.date()
-    .max(new Date(new Date().getTime() + 60000), 'A data de interrupção não pode ser posterior à data atual')
-    .required('A data não pode ficar em branco'),
-});
+  export const interrupcaoSchema = Yup.object().shape({
+    interrompido_at: Yup.date()
+      .max(maximo, 'A data de interrupção não pode ser posterior à data atual')
+      .required('A data não pode ficar em branco'),
+  });
