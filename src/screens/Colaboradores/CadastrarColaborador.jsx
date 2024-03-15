@@ -84,32 +84,41 @@ export default function CadastrarColaborador() {
 
     return results
   }
-  function handleToggleHistoryVinculo(total) {
 
-    if (showHistoryVinculo) {
-      setHistoryVinculo([])
-      setShowHistoryVinculo(false)
-    } else {
-      handleGlobalLoading.show()
-      listVinculo('?colaborador_id=' + formData.id)
-        .then((results) => {
-          let resultsFiltered = results.filter(e => e.id !== formData.vinculo.id);
-          if (resultsFiltered.length > 0) {
-            setShowHistoryVinculo(true)
-            if (total) {
-              setHistoryVinculo(results)
-            } else {
-              setHistoryVinculo(resultsFiltered)
-            }
-          } else {
-            callGlobalNotify({ message: 'O vinculo atual é o único desse colaborador', icon: FiInfo })
-          }
 
-        })
-        .catch(callGlobalAlert)
-        .finally(handleGlobalLoading.hide)
+  async function handleToggleHistoryVinculo(total) {
+    try {
+      if (showHistoryVinculo) {
+        setHistoryVinculo([]);
+        setShowHistoryVinculo(false);
+      } else {
+        handleGlobalLoading.show();
+        const results = await listVinculo(`?colaborador_id=${formData.id}`);
+        let resultsFiltered = results.filter(e => e.id !== formData.vinculo.id);
+        if (resultsFiltered.length > 0) {
+          setShowHistoryVinculo(true);
+          setHistoryVinculo(total ? results : resultsFiltered);
+        } else {
+          callGlobalNotify({ message: 'O vínculo atual é o único deste colaborador', icon: FiInfo });
+        }
+      }
+    } catch (error) {
+      callGlobalAlert(error);
+    } finally {
+      handleGlobalLoading.hide();
     }
   }
+
+  function newVinculo() {
+    handleToggleHistoryVinculo(true);
+    const newVinculoData = { ...MOCK_VINCULO, isNew: true };
+    setformData(prevState => ({
+      ...prevState,
+      vinculo: newVinculoData
+    }));
+  }
+
+
   const load = async (id) => {
     setErrors({})
     handleGlobalLoading.show()
@@ -155,20 +164,7 @@ export default function CadastrarColaborador() {
         })
     }
   }
-  function newVinculo() {
-    handleToggleHistoryVinculo(true)
-    let prev = [...historyVinculo];
-    // setShowBtnNewVinculo(false)
-    // setShowHistoryVinculo(true)
-    // if (formData.vinculo.empresa !== null) {
-    //   prev.unshift(formData.vinculo)
-    // }
-    // setHistoryVinculo(prev)
-    setformData((prevState) => ({
-      ...prevState,
-      ['vinculo']: { ...MOCK_VINCULO, isNew: true }
-    }));
-  }
+
   // function saveNewVinculo(params) {
   //   let data = formatForm(form)
   //   handleGlobalLoading.show()
@@ -435,7 +431,7 @@ export default function CadastrarColaborador() {
               </Form.Group>
             </Row>
             {historyVinculo.map((vinculo) => (
-              <Row className="mb-3" style={{ backgroundColor: 'rgba(0, 0, 0, 0.05)'}}>
+              <Row className="mb-3" style={{ backgroundColor: 'rgba(0, 0, 0, 0.05)' }}>
                 <Col md="auto">
                   <FaHistory />
                 </Col>
