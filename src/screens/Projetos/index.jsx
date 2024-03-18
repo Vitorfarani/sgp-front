@@ -6,6 +6,7 @@ import { useAuth } from "@/utils/context/AuthProvider";
 import { useTheme } from "@/utils/context/ThemeProvider";
 import useTable from "@/utils/hooks/useTable";
 import { useEffect, useState } from "react";
+import { listTarefas } from "@/services/tarefa/tarefas";
 import { Breadcrumb, Button, Col, Container, Row, Spinner, Stack } from "react-bootstrap";
 import { FiEdit, FiEye, FiPlus, FiTrash } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
@@ -50,43 +51,45 @@ export default function Projetos() {
     return results.data
   });
 
-  function handleDelete(row) {
+  async function handleDelete(row) {
+    let tarefas = await listTarefas('?projeto=' + row.id)
+    console.log(tarefas);
+    console.log('Size of tarefas:', tarefas.length);
+    let subtitle = tarefas.length > 0 ? 'Tem certeza que deseja excluir o projeto <strong>' + row.nome + '</strong>? O projeto possui <strong>' + tarefas.length + '</strong> tarefas' : 'Tem certeza que deseja excluir o projeto <strong>' + row.nome + '</strong>?';
+
+
     callGlobalDialog({
-      title: 'Excluir Projeto',
-      color: 'red',
-      subTitle: 'Tem certeza que deseja excluir o projeto <strong>' + row.nome + '</strong>?',
-      forms: [
-        {
-          name: 'trash',
-          label: 'Para excluir digite "excluir projeto"',
-          placeholder: '',
-        },
-      ],
-      labelSuccess: 'Excluir',
-      labelCancel: 'Cancelar',
-    })
-      .then(async (result) => {
-        if (result.trash === 'excluir projeto') {
-          handleGlobalLoading.show();
-          deleteProjeto(row.id)
-            .then(() => {
-              load();
-              handleGlobalLoading.hide();
-              callGlobalNotify({ message: 'Projeto excluído com sucesso', variant: 'success' })
-            })
-            .catch((error) => {
-              handleGlobalLoading.hide();
-            });
+        title: 'Excluir Projeto',
+        color: 'red',
+        subTitle: subtitle,
+        forms: [{
+            name: 'projectName', 
+            label: 'Para excluir, digite o nome do projeto:', 
+            placeholder: 'Insira o nome do projeto',
+        }, ],
+        labelSuccess: 'Excluir',
+        labelCancel: 'Cancelar',
+    }).then(async(result) => {
+        if (result.projectName && result.projectName === row.nome) { 
+            handleGlobalLoading.show();
+            deleteProjeto(row.id)
+                .then(() => {
+                    load();
+                    handleGlobalLoading.hide();
+                    callGlobalNotify({ message: 'Projeto excluído com sucesso', variant: 'success' })
+                })
+                .catch((error) => {
+                    handleGlobalLoading.hide();
+                });
         } else {
-          callGlobalAlert({ title: 'Erro no Preenchimento da Frase', message: 'Projeto Não Excluido', color: 'var(--bs-danger)' })
-          handleGlobalLoading.hide();
+            callGlobalAlert({ title: 'Erro no Preenchimento do Nome do Projeto', message: 'Projeto não excluído. O nome do projeto inserido não corresponde.', color: 'var(--bs-danger)' })
+            handleGlobalLoading.hide();
         }
-      })
-      .catch(() => {
+    }).catch(() => {
         // Handle cancel or other errors
         handleGlobalLoading.hide();
-      });
-  }
+    });
+}
 
 
   useEffect(() => {

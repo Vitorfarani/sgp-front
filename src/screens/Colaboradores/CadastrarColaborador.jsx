@@ -26,7 +26,7 @@ const MOCK_VINCULO = {
   empresa: null,
   funcao: null,
   data_inicio: '',
-  data_fim: null,
+  data_fim: '',
   segunda: true,
   terca: true,
   quarta: true,
@@ -77,35 +77,48 @@ export default function CadastrarColaborador() {
     }))
     results['user_active'] = results.user?.active ?? true;
     results['vinculo'] = !results.vinculo ? MOCK_VINCULO : results.vinculo;
-    if( !!results.user.thumbnail) {
+    if (!!results.user.thumbnail) {
       results['thumbnail'] = results.user.thumbnail;
 
     }
 
     return results
   }
-  function handleToggleHistoryVinculo() {
-    
-    if (showHistoryVinculo) {
-      setHistoryVinculo([])
-      setShowHistoryVinculo(false)
-    } else {
-      handleGlobalLoading.show()
-      listVinculo('?colaborador_id=' + formData.id)
-        .then((results) => {
-          let resultsFiltered = results.filter(e => e.id !== formData.vinculo.id);
-          if(resultsFiltered.length > 0) {
-            setShowHistoryVinculo(true)
-            setHistoryVinculo(resultsFiltered)
-          } else {
-            callGlobalNotify({message: 'O vinculo atual é o único desse colaborador', icon: FiInfo})
-          }
 
-        })
-        .catch(callGlobalAlert)
-        .finally(handleGlobalLoading.hide)
+
+  async function handleToggleHistoryVinculo(total) {
+    try {
+      if (showHistoryVinculo) {
+        setHistoryVinculo([]);
+        setShowHistoryVinculo(false);
+      } else {
+        handleGlobalLoading.show();
+        const results = await listVinculo(`?colaborador_id=${formData.id}`);
+        let resultsFiltered = results.filter(e => e.id !== formData.vinculo.id);
+        if (resultsFiltered.length > 0) {
+          setShowHistoryVinculo(true);
+          setHistoryVinculo(total ? results : resultsFiltered);
+        } else {
+          callGlobalNotify({ message: 'O vínculo atual é o único deste colaborador', icon: FiInfo });
+        }
+      }
+    } catch (error) {
+      callGlobalAlert(error);
+    } finally {
+      handleGlobalLoading.hide();
     }
   }
+
+  function newVinculo() {
+    handleToggleHistoryVinculo(true);
+    const newVinculoData = { ...MOCK_VINCULO, isNew: true };
+    setformData(prevState => ({
+      ...prevState,
+      vinculo: newVinculoData
+    }));
+  }
+
+
   const load = async (id) => {
     setErrors({})
     handleGlobalLoading.show()
@@ -151,17 +164,7 @@ export default function CadastrarColaborador() {
         })
     }
   }
-  function newVinculo() {
-    let prev = [...historyVinculo];
-    setShowBtnNewVinculo(false)
-    setShowHistoryVinculo(true)
-    prev.push(formData.vinculo)
-    setHistoryVinculo(prev)
-    setformData((prevState) => ({
-      ...prevState,
-      ['vinculo']: { ...MOCK_VINCULO, isNew: true }
-    }));
-  }
+
   // function saveNewVinculo(params) {
   //   let data = formatForm(form)
   //   handleGlobalLoading.show()
@@ -241,7 +244,7 @@ export default function CadastrarColaborador() {
     data = formatForm(data).rebaseIds(['setor']).getResult();
     data.vinculo = formatForm(data.vinculo).rebaseIds(['empresa', 'funcao']).trimTextInputs().getResult();
     console.log(data.vinculo)
-    if(!data.vinculo.funcao_id && !data.vinculo.empresa_id) {
+    if (!data.vinculo.funcao_id && !data.vinculo.empresa_id) {
       delete data.vinculo;
     }
     if (!data.id) {
@@ -299,8 +302,8 @@ export default function CadastrarColaborador() {
             <Col md={3} className="m-auto">
               <SelectAsync
                 placeholder="Selecione um setor"
-                loadOptions={(search) => listSetores('?search='+search)}
-                getOptionLabel={(option) => option.sigla+' - '+option.nome}
+                loadOptions={(search) => listSetores('?search=' + search)}
+                getOptionLabel={(option) => option.sigla + ' - ' + option.nome}
                 value={formData.setor}
                 onChange={(setor) => handleForm('setor', setor)}
                 isInvalid={!!errors.setor} />
@@ -320,62 +323,8 @@ export default function CadastrarColaborador() {
             </Col>
           </Row>
         </Section>
-        {showHistoryVinculo && (
-          <Section>
-            <h4>Histórico Vínculo</h4>
-            <Row className="mt-3" >
-            <Col md="auto">
-                </Col>
-              <Form.Group as={Col} md={2}>
-                <Form.Label>Empresa</Form.Label>
-              </Form.Group>
-              <Form.Group as={Col} md={2}>
-                <Form.Label>Função</Form.Label>
-              </Form.Group>
-              <Form.Group as={Col} md={2}>
-                <Form.Label>Data de Início</Form.Label>
-              </Form.Group>
-              <Form.Group as={Col} md={2}>
-                <Form.Label>Data de Fim</Form.Label>
-              </Form.Group>
-              <Form.Group as={Col} md={1}>
-                <Form.Label>Carga Horária</Form.Label>
-              </Form.Group>
-              <Form.Group as={Col}>
-                <Form.Label>
-                  Dias da Semana
-                </Form.Label>
-              </Form.Group>
-            </Row>
-            {historyVinculo.map((vinculo) => (
-              <Row className="mb-3" style={{ backgroundColor: 'var(--bs-gray)' }}>
-                <Col md="auto">
-                  <FaHistory />
-                </Col>
-                <Form.Group as={Col} md={2} className="px-1">
-                  <span>{vinculo?.empresa.nome}</span>
-                </Form.Group>
-                <Form.Group as={Col} md={2} className="px-1">
-                  <span>{vinculo?.funcao.nome}</span>
-                </Form.Group>
-                <Form.Group as={Col} md={2} className="px-1">
-                  <span>{dateEnToPt(vinculo?.data_inicio)}</span>
-                </Form.Group>
-                <Form.Group as={Col} md={2} className="px-1">
-                  <span>{dateEnToPt(vinculo?.data_fim)}</span>
-                </Form.Group>
-                <Form.Group as={Col} md={1} className="px-1">
-                  <span>{vinculo?.carga_horaria}</span>
-                </Form.Group>
-                <Form.Group as={Col} className="px-1">
-                  <div className="d-flex">
-                    {Object.keys(weekdays).map((key, index) => vinculo[key] === 1 && (<span>{weekdays[key]},</span>))}
-                  </div>
-                </Form.Group>
-              </Row>
-            ))}
-          </Section>
-        )}
+
+
         <Section>
           <h4>Vínculo
             {formData.id && (
@@ -386,27 +335,27 @@ export default function CadastrarColaborador() {
           </h4>
           <Row className="mt-3">
             <Form.Group as={Col} md={2}>
-            <Form.Label>Empresa</Form.Label>
+              <Form.Label>Empresa</Form.Label>
               <SelectAsync
                 placeholder="Empresa contratante"
-                loadOptions={(search) => listEmpresas('?search='+search)}
+                loadOptions={(search) => listEmpresas('?search=' + search)}
                 value={formData.vinculo?.empresa}
                 onChange={(empresa) => handleVinculoForm('empresa', empresa)}
                 isInvalid={!!errors?.['vinculo.empresa']} />
               <FeedbackError error={errors?.['vinculo.empresa']} />
             </Form.Group>
             <Form.Group as={Col} md={2}>
-            <Form.Label>Função</Form.Label>
+              <Form.Label>Função</Form.Label>
               <SelectAsync
                 placeholder="Função / Cargo"
-                loadOptions={(search) => listFuncao('?search='+search)}
+                loadOptions={(search) => listFuncao('?search=' + search)}
                 value={formData.vinculo?.funcao}
                 onChange={(funcao) => handleVinculoForm('funcao', funcao)}
                 isInvalid={!!errors?.['vinculo.funcao']} />
               <FeedbackError error={errors?.['vinculo.funcao']} />
             </Form.Group>
             <Form.Group as={Col} md={2}>
-            <Form.Label>Data de Início</Form.Label>
+              <Form.Label>Data de Início</Form.Label>
               <DateInput
                 value={formData.vinculo?.data_inicio}
                 onChangeValid={date => handleVinculoForm('data_inicio', date)}
@@ -414,15 +363,15 @@ export default function CadastrarColaborador() {
               <FeedbackError error={errors?.['vinculo.data_inicio']} />
             </Form.Group>
             <Form.Group as={Col} md={2}>
-            <Form.Label>Data de Fim</Form.Label>
-              <DateInput              
+              <Form.Label>Data de Fim</Form.Label>
+              <DateInput
                 value={formData.vinculo?.data_fim}
                 onChangeValid={date => handleVinculoForm('data_fim', date)}
                 isInvalid={!!errors?.['vinculo.data_fim']} />
               <FeedbackError error={errors?.['vinculo.data_fim']} />
             </Form.Group>
             <Form.Group as={Col} md={1}>
-            <Form.Label>Carga Horária</Form.Label>
+              <Form.Label>Carga Horária</Form.Label>
               <Form.Control
                 value={formData.vinculo?.carga_horaria}
                 type="number"
@@ -431,7 +380,7 @@ export default function CadastrarColaborador() {
               <FeedbackError error={errors?.['vinculo.carga_horaria']} />
             </Form.Group>
             <Form.Group as={Col}>
-            <Form.Label>
+              <Form.Label>
                 Dias da Semana
               </Form.Label>
               <Col className="weekdays-checkbox">
@@ -454,11 +403,68 @@ export default function CadastrarColaborador() {
             </Row>
           )}
         </Section>
+        {showHistoryVinculo && (
+          <Section>
+            <h4>Histórico Vínculo</h4>
+            <Row className="mt-3" >
+              <Col md="auto">
+              </Col>
+              <Form.Group as={Col} md={2}>
+                <Form.Label>Empresa</Form.Label>
+              </Form.Group>
+              <Form.Group as={Col} md={2}>
+                <Form.Label>Função</Form.Label>
+              </Form.Group>
+              <Form.Group as={Col} md={2}>
+                <Form.Label>Data de Início</Form.Label>
+              </Form.Group>
+              <Form.Group as={Col} md={2}>
+                <Form.Label>Data de Fim</Form.Label>
+              </Form.Group>
+              <Form.Group as={Col} md={1}>
+                <Form.Label>Carga Horária</Form.Label>
+              </Form.Group>
+              <Form.Group as={Col}>
+                <Form.Label>
+                  Dias da Semana
+                </Form.Label>
+              </Form.Group>
+            </Row>
+            {historyVinculo.map((vinculo) => (
+              <Row className="mb-3" style={{ backgroundColor: 'rgba(0, 0, 0, 0.05)' }}>
+                <Col md="auto">
+                  <FaHistory />
+                </Col>
+                <Form.Group as={Col} md={2} className="px-1">
+                  <span>{vinculo?.empresa.nome}</span>
+                </Form.Group>
+                <Form.Group as={Col} md={2} className="px-1">
+                  <span>{vinculo?.funcao.nome}</span>
+                </Form.Group>
+                <Form.Group as={Col} md={2} className="px-1">
+                  <span>{dateEnToPt(vinculo?.data_inicio)}</span>
+                </Form.Group>
+                <Form.Group as={Col} md={2} className="px-1">
+                  <span>{dateEnToPt(vinculo?.data_fim)}</span>
+                </Form.Group>
+                <Form.Group as={Col} md={1} className="px-1">
+                  <span>{vinculo?.carga_horaria}</span>
+                </Form.Group>
+                <Form.Group as={Col} className="px-1">
+                  <div className="d-flex">
+                    {Object.keys(weekdays).map((key, index) => vinculo[key] === 1 && (<span>{weekdays[key]}, </span>))}
+                  </div>
+                </Form.Group>
+              </Row>
+            ))}
+          </Section>
+        )}
+
         <Row className="justify-content-center mt-4 mb-4">
           <BtnSimple Icon={FaBrain} onClick={() => handleConhecimento()}>Adicionar Conhecimento</BtnSimple>
         </Row>
         {/* <Stack direction="horizontal" className="mx-auto justify-content-center mb-3" gap={formData.colaborador_conhecimento.length}> */}
-        <HorizontalScrollview className="" style={{flexWrap: 'wrap', gap: '0.6em'}}>
+        <HorizontalScrollview className="" style={{ flexWrap: 'wrap', gap: '0.6em' }}>
           <>
             {formData.colaborador_conhecimento.map((resp, i) => (
               <CardConhecimento
