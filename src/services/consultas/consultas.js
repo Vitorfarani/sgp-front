@@ -22,3 +22,8 @@ export const listProjetoColaboradoresTarefa = async (params = "") => {
   let url = `dashboard/projetoColaboradoresTarefa${params}`;
   return _get(url);
 }
+
+export const listTarefasPorAgrupamento = async (params = "") => {
+  let url = `dashboard/tarefasAgrupadasColaboradorPrazos${params}`;
+  return _get(url);
+}

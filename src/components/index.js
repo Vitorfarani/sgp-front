@@ -17,6 +17,7 @@ export { default as CustomCheckbox } from './CustomCheckbox';
 export { default as CustomDropdown } from './CustomDropdown';
 export { default as DatePicker } from './DatePicker';
 export { default as DateInput } from './DateInput';
+export { default as DateTest } from './DateTest'
 export { default as FeedbackError } from './FeedbackError';
 export { default as ModalTarefa } from './ModalTarefa';
 export { default as ModalDialog } from './ModalDialog';
@@ -43,4 +44,6 @@ export { default as SelectAsyncCreatable } from './Selectables/SelectAsyncCreata
 export { default as Table } from './Table';
 export { default as TooltipConhecimentos } from './TooltipConhecimentos';
 export { default as TooltipPrazo} from './TooltipPrazo'
+export { default as TooltipTarefas} from './TooltipTarefas'
+
 
