@@ -81,6 +81,7 @@ const Table = ({
                 placeholder={searchPlaceholder ?? "Pesquisar"}
                 value={filters.search}
                 onChange={handleSearchChange}
+                style={{ display: searchPlaceholder ? 'block' : 'none' }}
               />
             </Col>
           )}

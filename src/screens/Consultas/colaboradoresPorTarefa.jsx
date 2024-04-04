@@ -7,6 +7,7 @@ import { Col } from "react-bootstrap";
 import { FcClearFilters } from "react-icons/fc";
 import { listProjetos } from "@/services/projeto/projetos";
 import { dateDiffWithLabels, dateEnToPtWithHour } from "@/utils/helpers/date";
+import orderBy from 'lodash/orderBy';
 
 const basefilters = {
     search: '',
@@ -24,12 +25,12 @@ const columnsFields = [
     { field: 'projeto_fase', label: 'Fase do Projeto', enabledOrder: true },
     { field: 'projeto_setor', label: 'Setor do Projeto', enabledOrder: true },
     { field: 'tarefa_nome', label: 'Tarefa', enabledOrder: true },
-    { field: 'tarefa_status', label: 'Status da Tarefa' },
-    { field: 'inicio_programado', label: 'Inicio Programado' },
-    { field: 'fim_programado', label: 'Término Programado' },
-    { field: 'inicio_real', label: 'Inicio Real' },
-    { field: 'fim_real', label: 'Término Real' },
-    { field: 'tarefa_colaborador', label: 'Colaborador(es) da Tarefa' },
+    { field: 'tarefa_status', label: 'Status da Tarefa', enabledOrder: true },
+    { field: 'inicio_programado', label: 'Inicio Programado', enabledOrder: true },
+    { field: 'fim_programado', label: 'Término Programado', enabledOrder: true },
+    { field: 'inicio_real', label: 'Inicio Real', enabledOrder: true },
+    { field: 'fim_real', label: 'Término Real', enabledOrder: true },
+    { field: 'tarefa_colaborador', label: 'Colaborador(es) da Tarefa', enabledOrder: true },
     {
         field: 'prazo', label: 'Situação', enabledOrder: false, piper: (value, row) => {
             const { prazo_label } = row;
@@ -143,32 +144,7 @@ export default function ConsultaColaboradoresPorTarefa() {
         });
 
 
-        let filteredData = [...mappedData];
-
-        let sortedData = [...filteredData];
-
-        if (
-            filtersState.sortedColumn &&
-            filtersState.sortOrder &&
-            sortedData.length > 0 &&
-            sortedData[0][filtersState.sortedColumn]
-        ) {
-            sortedData = sortedData.sort((a, b) => {
-                const fieldA = a[filtersState.sortedColumn];
-                const fieldB = b[filtersState.sortedColumn];
-
-                if (filtersState.sortOrder === 'asc') {
-                    return fieldA.localeCompare(fieldB);
-                } else {
-                    return fieldB.localeCompare(fieldA);
-                }
-            });
-        }
-
-
-        sortedData = sortedData.filter((item) =>
-            item.projeto_nome.toLowerCase().includes(filtersState.search.toLowerCase())
-        );
+        const sortedData = orderBy(mappedData, [filtersState.sortedColumn], [filtersState.sortOrder]);
 
         return sortedData;
 
@@ -192,7 +168,7 @@ export default function ConsultaColaboradoresPorTarefa() {
                     //searchPlaceholder="Consultar Projetos"
                     filtersComponentes={
                         <>
-                            <Col md={2} >
+                            <Col md={3} >
                                 <SelectAsync
                                     placeholder="Filtrar por Projeto"
                                     loadOptions={(search) => listProjetos('?search=' + search)}
