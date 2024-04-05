@@ -1,5 +1,5 @@
 import { FiBarChart, FiBookmark, FiGrid, FiPieChart, FiUsers, FiBriefcase, FiBookOpen } from "react-icons/fi";
-import { FaSearch, FaArchive, FaBalanceScale, FaBity, FaBrain, FaBuilding, FaClock, FaFlag, FaIdCard, FaLevelUpAlt, FaListAlt, FaMarkdown, FaPeopleCarry, FaStopCircle, FaStopwatch, FaTasks, FaUserSlash} from "react-icons/fa";
+import { FaSearch, FaLayerGroup, FaArchive, FaBalanceScale, FaBity, FaBrain, FaBuilding, FaClock, FaFlag, FaIdCard, FaLevelUpAlt, FaListAlt, FaMarkdown, FaPeopleCarry, FaStopCircle, FaStopwatch, FaTasks, FaUserSlash} from "react-icons/fa";
 import { PiUserList } from "react-icons/pi";
 export default [
   {
@@ -12,7 +12,7 @@ export default [
   {
     nome: 'Consultas',
     icon: FaSearch,
-    path: 'consultas',
+    path: '',
     rolesPermited: [],
     childrens: [
       {
@@ -30,6 +30,13 @@ export default [
         childrens: []
       },
       {
+        nome: 'Colaboradores/Tarefa',
+        icon: PiUserList,
+        path: 'consultas/colaboradoresPorTarefa',
+        rolesPermited: [],
+        childrens: []
+      },
+      {
         nome: 'Tarefas/Colaborador',
         icon: FaTasks,
         path: 'consultas/tarefasPorColaborador',
@@ -37,9 +44,9 @@ export default [
         childrens: []
       },
       {
-        nome: 'Colaboradores/Tarefa',
-        icon: PiUserList,
-        path: 'consultas/colaboradoresPorTarefa',
+        nome: 'Tarefas/Agrupamento',
+        icon: FaLayerGroup,
+        path: 'consultas/tarefasPorAgrupamento',
         rolesPermited: [],
         childrens: []
       },

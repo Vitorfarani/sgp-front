@@ -8,6 +8,7 @@ export {default as ConsultaColaborador} from './Consultas/colaborador.jsx'
 export {default as ConsultaProjeto} from './Consultas/projeto.jsx'
 export {default as ConsultaTarefasPorColaborador} from './Consultas/tarefasPorColaborador.jsx'
 export {default as ConsultaColaboradoresPorTarefa} from './Consultas/colaboradoresPorTarefa.jsx'
+export {default as ConsultaQuantidadeTarefa} from './Consultas/quantidadeTarefa.jsx'
 
 export { default as Colaboradores } from './Colaboradores/index.jsx';
 export { default as CadastrarColaborador } from './Colaboradores/CadastrarColaborador.jsx';

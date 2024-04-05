@@ -4,10 +4,10 @@ import { useEffect, useState, useMemo } from "react";
 import { listColaboradores } from "@/services/colaborador/colaboradores";
 import { listColaboradorProjetosTarefa } from "@/services/consultas/consultas";
 import { Col } from "react-bootstrap";
-import { FcClearFilters } from "react-icons/fc";
 import { dateDiffWithLabels, dateEnToPtWithHour } from '@/utils/helpers/date';
 import { TooltipPrazo } from "@/components/index";
-
+import { DateTest } from "@/components/index";
+import orderBy from 'lodash/orderBy';
 
 const basefilters = {
     search: '',
@@ -24,11 +24,11 @@ const columnsFields = [
     { field: 'projeto_nome', label: 'Projeto', enabledOrder: true },
     { field: 'projeto_status', label: 'Status do Projeto', enabledOrder: true },
     { field: 'tarefa_nome', label: 'Tarefa', enabledOrder: true },
-    { field: 'tarefa_status', label: 'Status da Tarefa' },
-    { field: 'inicio_programado', label: 'Início Programado' },
-    { field: 'fim_programado', label: 'Fim Programado' },
-    { field: 'inicio_real', label: 'Início Real' },
-    { field: 'fim_real', label: 'Fim Real' },
+    { field: 'tarefa_status', label: 'Status da Tarefa', enabledOrder: true},
+    { field: 'inicio_programado', label: 'Início Programado', enabledOrder: true },
+    { field: 'fim_programado', label: 'Fim Programado', enabledOrder: true },
+    { field: 'inicio_real', label: 'Início Real', enabledOrder: true },
+    { field: 'fim_real', label: 'Fim Real', enabledOrder: true },
     {
         field: 'prazo', label: 'Situação', enabledOrder: false, piper: (value, row) => {
             const { prazo_label } = row;
@@ -37,7 +37,8 @@ const columnsFields = [
     },
 ];
 export default function ConsultaTarefasPorColaborador() {
-
+    const [dataInicio, setDataInicio] = useState('');
+    const [dataFim, setDataFim] = useState('');
 
     const abreviarStatus = (status, tipo) => {
         const mapeamentoStatus = {
@@ -131,49 +132,23 @@ export default function ConsultaTarefasPorColaborador() {
             }
         }
 
-        let filteredData = [...mappedData];
-
-        if (filtersState.colaborador) {
-            filteredData = filteredData.filter((data) => {
-                return (
-                    (filtersState.colaborador ? data.colaborador_nome.includes(filtersState.colaborador_nome) : true)
-                );
-            });
-        }
-
-        let sortedData = [...filteredData];
-
-        if (
-            filtersState.sortedColumn &&
-            filtersState.sortOrder &&
-            sortedData.length > 0 &&
-            sortedData[0][filtersState.sortedColumn]
-        ) {
-            sortedData = sortedData.sort((a, b) => {
-                const fieldA = a[filtersState.sortedColumn];
-                const fieldB = b[filtersState.sortedColumn];
-
-                if (filtersState.sortOrder === 'asc') {
-                    return fieldA.localeCompare(fieldB);
-                } else {
-                    return fieldB.localeCompare(fieldA);
-                }
-            });
-        }
-
-        sortedData = sortedData.filter((item) =>
-            item.projeto_nome.toLowerCase().includes(filtersState.search.toLowerCase())
-        );
+        const sortedData = orderBy(mappedData, [filtersState.sortedColumn], [filtersState.sortOrder]);
 
         return sortedData;
+
     });
 
     useEffect(() => {
         handleChangeFilters('search', basefilters.search);
         load();
-    }, [basefilters.search]);
-
-
+        if (dataInicio && dataFim) {
+            handleChangeFilters('data_inicio', dataInicio);
+            handleChangeFilters('data_fim', dataFim);
+        } else if (!dataInicio && !dataFim) {
+            handleChangeFilters('data_inicio', null);
+            handleChangeFilters('data_fim', null);
+        }
+    }, [basefilters.search, dataInicio, dataFim]);
 
     return (
         <Background>
@@ -188,7 +163,7 @@ export default function ConsultaTarefasPorColaborador() {
                     searchPlaceholder="Consultar Projetos"
                     filtersComponentes={
                         <>
-                            <Col md={3}>
+                            <Col md={2}>
                                 <SelectAsync
                                     placeholder="Filtrar por Colaborador"
                                     loadOptions={(search) => listColaboradores('?search=' + search)}
@@ -199,7 +174,28 @@ export default function ConsultaTarefasPorColaborador() {
                                     isClearable
                                 />
                             </Col>
-
+                            <Col md={2}>
+                                <DateTest
+                                    id="dataFim"
+                                    value={dataFim}
+                                    label="Fim:"
+                                    onChange={(date) => {
+                                        setDataFim(date);
+                                        handleChangeFilters('data_fim', date);
+                                    }}
+                                />
+                            </Col>
+                            <Col md={2}>
+                                <DateTest
+                                    id="dataInicio"
+                                    value={dataInicio}
+                                    label="Início:"
+                                    onChange={(date) => {
+                                        setDataInicio(date);
+                                        handleChangeFilters('data_inicio', date);
+                                    }}
+                                />
+                            </Col>
                         </>
                     }
                     handleFilters={handleChangeFilters}
