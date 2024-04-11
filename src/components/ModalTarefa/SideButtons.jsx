@@ -75,6 +75,7 @@ const SideButtons = ({ tarefa, addTarefaColaborador, onStart, onEnd, onCreateChe
         <Form.Group className='mb-4'>
           <Form.Label>Data Interrupção</Form.Label>
           <DateInput
+            type={"datetime-local"}
             value={data.interrompido_at}
             onChangeValid={date => setData(prev => ({
               ...prev,

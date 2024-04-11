@@ -20,7 +20,9 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Col, Container, Row, Spinner } from "react-bootstrap";
 import { FiFilter } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
+import { dateSchema } from "./validations";
 import { dateEnToPt } from "@/utils/helpers/date";
+
 const filtersInitialValue = {
   cliente: "",
   projeto: "",
@@ -30,8 +32,9 @@ const filtersInitialValue = {
   projeto_status: "",
   tarefa_status: "",
   data_inicio: "",
-  data_fim: "",
+  data_fim: null,
 };
+
 export default function Dashboard() {
   const navigate = useNavigate();
   const { isLoaded, isLogged, user } = useAuth();
@@ -44,6 +47,7 @@ export default function Dashboard() {
   function callModalFilter(data) {
     callGlobalDialog({
       title: 'Filtros',
+      yupSchema: dateSchema,
       data,
       forms: [
         {
