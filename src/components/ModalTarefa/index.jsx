@@ -575,14 +575,16 @@ const ModalTarefa = forwardRef(({
                   isInvalid={!!errors.tarefa_base}
                   onChange={(tarefa_base) => handleForm('tarefa_base', tarefa_base)} />
               </Form.Group>
+              
               <Form.Group className='mb-4'>
                 <Form.Label>Inicio estimado</Form.Label>
                 <DateInput
                   type={"datetime-local"}
                   value={formData.data_inicio_programado}
+                  isInvalid={!!errors.data_inicio_programado}
                   onChangeValid={date => handleForm('data_inicio_programado', date)} />
+                <FeedbackError error={errors.data_inicio_programado} />
               </Form.Group>
-
               <Form.Group className='mb-4'>
                 <Form.Label>Fim Estimado  {diffProgramado && <strong className='diffPrazos'>Prazo de {diffProgramado}</strong>}</Form.Label>
                 <DateInput
@@ -600,12 +602,15 @@ const ModalTarefa = forwardRef(({
                 onStart={() => handleForm('data_inicio_real', new Date().toISOString().slice(0, 16))}
                 onEnd={() => handleForm('data_fim_real', new Date().toISOString().slice(0, 16))}
                 addTarefaColaborador={addTarefaColaborador} />
+             
               <Form.Group className='mb-4 mt-4'>
                 <Form.Label>Iniciado em</Form.Label>
                 <DateInput
                   type={"datetime-local"}
                   value={formData.data_inicio_real}
+                  isInvalid={!!errors.data_inicio_real}
                   onChangeValid={date => handleForm('data_inicio_real', date)} />
+                <FeedbackError error={errors.data_inicio_real} />
               </Form.Group>
               <Form.Group className='mb-4'>
                 <Form.Label>Finalizado em <strong className='diffPrazos'> {diffReal}</strong></Form.Label>
