@@ -9,7 +9,7 @@ function DatePicker(props) {
   return (
       <Form.Control
         type="date"
-        format="dd/MM/yyyy"
+        // format="dd/MM/yyyy"
         placeholder="dd/mm/yyyy"
         onChange={handleDateChange}
         {...props}

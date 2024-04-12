@@ -32,7 +32,7 @@ const filtersInitialValue = {
   projeto_status: "",
   tarefa_status: "",
   data_inicio: "",
-  data_fim: null,
+  data_fim: "",
 };
 
 export default function Dashboard() {
