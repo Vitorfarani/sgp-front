@@ -5,9 +5,8 @@ import { listColaboradores } from "@/services/colaborador/colaboradores";
 import { listProjetos } from "@/services/projeto/projetos";
 import { listTarefasPorAgrupamento } from "@/services/consultas/consultas";
 import { Col } from "react-bootstrap";
-import { DateTest, TooltipTarefas } from "@/components/index";
-import { FaRegEyeSlash, FaEye } from "react-icons/fa";
-import orderBy from 'lodash/orderBy';
+import { DateTest } from "@/components/index";
+import {FiEye, FiEyeOff } from 'react-icons/fi';
 
 const basefilters = {
     search: '',
@@ -20,22 +19,33 @@ const basefilters = {
 };
 
 const columnsFields = [
-    { field: 'colaborador_nome', label: 'Colaborador', enabledOrder: true },
-    { field: 'no_prazo', label: 'Entregues no Prazo', enabledOrder: true },
-    { field: 'inicio_fora_periodo', label: 'Iniciadas Fora do Período', enabledOrder: true },
-    { field: 'nao_finalizada.dentro_do_prazo', label: 'Não Finalizadas e Dentro do Prazo', enabledOrder: true },
-    { field: 'total_prazo', label: 'Total no Prazo', enabledOrder: true },
-    { field: 'nao_finalizada.fora_do_prazo.total', label: 'Não Finalizadas e Atrasadas', enabledOrder: true },
-    { field: 'atrasado.total', label: 'Entregues Atrasadas', enabledOrder: true },
-    { field: 'total_atraso', label: 'Total com Atraso', enabledOrder: true },
-    { field: 'atrasado.tarefa', label: 'Tarefas Entregues Atrasadas'},
-    { field: 'nao_finalizada.fora_do_prazo.tarefa', label: 'Tarefas Não Entregues e Atrasadas'}
+    { field: 'inicio_fim_antes_periodo_no_prazo', label: 'Iní./Fim Antes do Per. (No Prz)'},
+    { field: 'inicio_fim_antes_periodo_em_atraso', label: 'Iní./Fim Antes do Per. (Atrsd)'},
+    { field: 'inicio_antes_fim_no_periodo_no_prazo', label: 'Iní. Antes e Fim no Per. (No Prz)'},
+    { field: 'inicio_antes_fim_no_periodo_em_atraso', label: 'Iní. Antes e Fim no Per. (Atrsd)'},
+    { field: 'inicio_antes_fim_apos_periodo_no_prazo', label: 'Iní. Antes e Fim Após o Per. (No Prz)'},
+    { field: 'inicio_antes_fim_apos_periodo_em_atraso', label: 'Iní. Antes e Fim Após o Per. (Atrsd)'},
+    { field: 'inicio_antes_periodo_nao_finalizada_no_prazo', label: 'Iní. Antes do Per., Ñ Finalizada (No Prz)'},
+    { field: 'inicio_antes_periodo_nao_finalizada_em_atraso', label: 'Iní. Antes do Per., Ñ Finalizada (Atrsd)'},
+    { field: 'inicio_fim_no_periodo_no_prazo', label: 'Iní./Fim no Per. (No Prz)'},
+    { field: 'inicio_fim_no_periodo_em_atraso', label: 'Iní./Fim no Per. (Atrsd)'},
+    { field: 'inicio_fim_apos_periodo_no_prazo', label: 'Iní./Fim Após o Per. (No Prz)'},
+    { field: 'inicio_fim_apos_periodo_em_atraso', label: 'Ini e Fim Após o Per. (Atrsd)'},
+    { field: 'inicio_periodo_nao_finalizada_no_prazo', label: 'Iní. no Per. Ñ Finalizada (No Prz)'},
+    { field: 'inicio_periodo_nao_finalizada_em_atraso', label: 'Iní. no Per. Ñ Finalizada (Atrsd)'},
+    { field: 'nao_iniciada', label: 'Ñ Iniciada'},
+    //{ field: 'total_ini_fim_antes_periodo_prazo', label: 'Tot. Iní./Fim Antes do Per. (no Prz)'},
+    //{ field: 'total_ini_fim_antes_periodo_atraso', label: 'Tot. Iní./Fim Antes do Per. (Atrsd)'},
+    //{ field: 'total_ini_fim_no_periodo_prazo', label: 'Tot. Iní./Fim no Per. (no Prz)'},
+    //{ field: 'total_ini_fim_no_periodo_atraso', label: 'Tot. Iní./Fim no Per. (Atrsd)'},
+    { field: 'total_no_prazo', label: 'Tot. (no Prz)'},
+    { field: 'total_em_atraso', label: 'Tot. (Atrsd)'}
 ];
 
 export default function ConsultaQuantidadeTarefa() {
     const [dataInicio, setDataInicio] = useState('');
     const [dataFim, setDataFim] = useState('');
-
+    const [showHiddenColumns, setShowHiddenColumns] = useState(false);
 
     const {
         rows,
@@ -50,42 +60,57 @@ export default function ConsultaQuantidadeTarefa() {
         if (!results || Object.keys(results).length === 0) {
             return [];
         }
+        const mappedData = {
+            inicio_fim_antes_periodo_no_prazo: results.inicio_fim_antes_periodo ? results.inicio_fim_antes_periodo.no_prazo : 0,
+            inicio_fim_antes_periodo_em_atraso: results.inicio_fim_antes_periodo ? results.inicio_fim_antes_periodo.em_atraso : 0,
+            inicio_antes_fim_no_periodo_no_prazo: results.inicio_antes_fim_no_periodo ? results.inicio_antes_fim_no_periodo.no_prazo : 0,
+            inicio_antes_fim_no_periodo_em_atraso: results.inicio_antes_fim_no_periodo ? results.inicio_antes_fim_no_periodo.em_atraso : 0,
+            inicio_antes_fim_apos_periodo_no_prazo: results.inicio_antes_fim_apos_periodo ? results.inicio_antes_fim_apos_periodo.no_prazo : 0,
+            inicio_antes_fim_apos_periodo_em_atraso: results.inicio_antes_fim_apos_periodo ? results.inicio_antes_fim_apos_periodo.em_atraso : 0,
+            inicio_antes_periodo_nao_finalizada_no_prazo: results.inicio_antes_periodo_nao_finalizada ? results.inicio_antes_periodo_nao_finalizada.no_prazo : 0,
+            inicio_antes_periodo_nao_finalizada_em_atraso: results.inicio_antes_periodo_nao_finalizada ? results.inicio_antes_periodo_nao_finalizada.em_atraso : 0,
+            inicio_fim_no_periodo_no_prazo: results.inicio_fim_no_periodo ? results.inicio_fim_no_periodo.no_prazo : 0,
+            inicio_fim_no_periodo_em_atraso: results.inicio_fim_no_periodo ? results.inicio_fim_no_periodo.em_atraso : 0,
+            inicio_fim_apos_periodo_no_prazo: results.inicio_fim_apos_periodo ? results.inicio_fim_apos_periodo.no_prazo : 0,
+            inicio_fim_apos_periodo_em_atraso: results.inicio_fim_apos_periodo ? results.inicio_fim_apos_periodo.em_atraso : 0,
+            inicio_periodo_nao_finalizada_no_prazo: results.inicio_periodo_nao_finalizada ? results.inicio_periodo_nao_finalizada.no_prazo : 0,
+            inicio_periodo_nao_finalizada_em_atraso: results.inicio_periodo_nao_finalizada ? results.inicio_periodo_nao_finalizada.em_atraso : 0,
+            nao_iniciada: results.nao_iniciada || 0,
+            total_ini_fim_antes_periodo_prazo: results.total_ini_fim_antes_periodo_prazo || 0,
+            total_ini_fim_antes_periodo_atraso: results.total_ini_fim_antes_periodo_atraso || 0,
+            total_ini_fim_no_periodo_prazo: results.total_ini_fim_no_periodo_prazo || 0,
+            total_ini_fim_no_periodo_atraso: results.total_ini_fim_no_periodo_atraso || 0,
+            total_no_prazo: results.total_no_prazo || 0,
+            total_em_atraso: results.total_em_atraso || 0
+        };
 
-        const mappedData = results.map(result => {
-            const atrasadoTarefa = result.atrasado ? result.atrasado.tarefa : [];
-            const naoFinalizadaForaPrazoTarefa = result.nao_finalizada.fora_do_prazo ? result.nao_finalizada.fora_do_prazo.tarefa : [];
-
-            const hasAtrasado = atrasadoTarefa.length > 0;
-            const hasNaoFinalizada = naoFinalizadaForaPrazoTarefa.length > 0;
-
-            const atrasadoTarefaTooltip = (
-                <TooltipTarefas tasks={atrasadoTarefa} icon={hasAtrasado ? FaEye : FaRegEyeSlash} type="atrasadoTarefa" />
-            );
-
-            const naoFinalizadaForaPrazoTarefaTooltip = (
-                <TooltipTarefas tasks={naoFinalizadaForaPrazoTarefa} icon={hasNaoFinalizada ? FaEye : FaRegEyeSlash} type="naoFinalizadaForaPrazoTarefa" />
-            );
-
-            return {
-                colaborador_nome: result.colaborador,
-                no_prazo: result.no_prazo,
-                "atrasado.total": result.atrasado ? result.atrasado.total : 0,
-                inicio_fora_periodo: result.inicio_fora_periodo,
-                "nao_finalizada.dentro_do_prazo": result.nao_finalizada.dentro_do_prazo,
-                "nao_finalizada.fora_do_prazo.total": result.nao_finalizada.fora_do_prazo ? result.nao_finalizada.fora_do_prazo.total : 0,
-                total_prazo: result.no_prazo + result.inicio_fora_periodo + result.nao_finalizada.dentro_do_prazo,
-                total_atraso: (result.atrasado ? result.atrasado.total : 0) + (result.nao_finalizada.fora_do_prazo ? result.nao_finalizada.fora_do_prazo.total : 0),
-                "atrasado.tarefa": atrasadoTarefaTooltip,
-                "nao_finalizada.fora_do_prazo.tarefa": naoFinalizadaForaPrazoTarefaTooltip
-            };
-        });
-        const sortedData = orderBy(mappedData, [filtersState.sortedColumn], [filtersState.sortOrder]);
-
-        // Retorne os dados ordenados
-        return sortedData;
-
-
+        return [mappedData];
     });
+
+    // Filtrar as colunas que têm valores diferentes de zero
+    const filteredColumns = useMemo(() => {
+        if (!rows || rows.length === 0) {
+            return columns;
+        }
+
+        return columns.filter(column => {
+            const columnName = column.field;
+            const columnValue = rows[0][columnName]; 
+
+            return columnValue !== 0;
+        });
+    }, [columns, rows]);
+
+    const getIcon = () => {
+        return showHiddenColumns ? FiEyeOff : FiEye;
+    };
+
+    const getLabel = () => {
+        return showHiddenColumns ? 'Ocultar colunas sem tarefas' : 'Mostrar colunas sem tarefas';
+    };
+
+    const displayedColumns = showHiddenColumns ? columns : filteredColumns;
+
     useEffect(() => {
         handleChangeFilters('search', basefilters.search);
         load();
@@ -98,13 +123,25 @@ export default function ConsultaQuantidadeTarefa() {
         }
     }, [basefilters.search, dataInicio, dataFim]);
 
+    const toggleHiddenColumns = () => {
+        setShowHiddenColumns(!showHiddenColumns);
+    };
+
+
+
     return (
         <Background>
             <HeaderTitle
-                title="Consultar Quantidade de Tarefas por Colaborador e Agrupamento" />
+                title="Consultar Agrupamentos de Tarefas" optionsButtons={[
+                    {
+                        label: getLabel(),
+                        onClick: () => toggleHiddenColumns(),
+                        icon: getIcon(),
+                    },
+                ]} />
             <Section>
                 <Table
-                    columns={columns}
+                    columns={displayedColumns}
                     rows={rows}
                     isLoading={isTableLoading}
                     filtersState={filtersState}
@@ -121,7 +158,7 @@ export default function ConsultaQuantidadeTarefa() {
                                     isClearable
                                 />
                             </Col>
-                            <Col md={3}>
+                            <Col md={2}>
                                 <SelectAsync
                                     placeholder="Filtrar por Projeto"
                                     loadOptions={(search) => listProjetos('?search=' + search)}
