@@ -3,6 +3,7 @@ import { Table as TableBootstrap, Pagination, Form, Button, Row, Col, Stack, Pla
 import { AnimatedProgress, CustomDropdown } from '..';
 import PropTypes from 'prop-types';
 import { FiChevronDown, FiChevronUp } from 'react-icons/fi';
+import { centerImage } from 'highcharts';
 
 
 const Table = ({
@@ -117,10 +118,27 @@ const Table = ({
               <th
                 key={column.field}
                 onClick={() => handleSort(column)}
-                style={{ cursor: column.enabledOrder ? 'pointer' : 'default' }}
+                style={{cursor: column.enabledOrder ? 'pointer' : 'default' }}
+                colSpan={column.colspan ?? 1}
               >
                 {column.label}
-                <SortComponent column={column} />
+                {column.subColumns && column.subColumns.length > 0 && (
+                  <tr>
+                    {column.subColumns.map((subColumn, index) => (
+                      <th
+                        key={subColumn.field}
+                        onClick={() => handleSort(subColumn)}
+                        style={{
+                          cursor: subColumn.enabledOrder ? 'pointer' : 'default',
+                          paddingRight: index === column.subColumns.length - 1 ? '10px' : '30px',
+                        }}
+                      >
+                        {subColumn.label}
+                        <SortComponent column={subColumn} />
+                      </th>
+                    ))}
+                  </tr>
+                )}
               </th>
             ))}
             {actions && <th style={{ width: 70 }}>Ações</th>}
@@ -170,9 +188,21 @@ const Table = ({
                   />
                 </td>
               )}
-              {columns.map((column) => (
-                <td key={column.field}>{column.piper ? renderCellValue(column.piper(row[column.field], row, filters)) : renderCellValue(row[column.field])}</td>
-              ))}
+              {columns.map((column) => {
+                if (column.subColumns && column.subColumns.length > 0) {
+                  return column.subColumns.map((subColumn) => (
+                    <td key={subColumn.field}>
+                      {subColumn.piper ? renderCellValue(subColumn.piper(row[subColumn.field], row, filters)) : renderCellValue(row[subColumn.field])}
+                    </td>
+                  ));
+                } else {
+                  return (
+                    <td key={column.field}>
+                      {column.piper ? renderCellValue(column.piper(row[column.field], row, filters)) : renderCellValue(row[column.field])}
+                    </td>
+                  );
+                }
+              })}
               {actions && (
                 <td>
                   <CustomDropdown size={'sm'} param={row} items={actions} />

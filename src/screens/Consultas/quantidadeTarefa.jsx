@@ -6,7 +6,6 @@ import { listProjetos } from "@/services/projeto/projetos";
 import { listTarefasPorAgrupamento } from "@/services/consultas/consultas";
 import { Col } from "react-bootstrap";
 import { DateTest } from "@/components/index";
-import {FiEye, FiEyeOff } from 'react-icons/fi';
 
 const basefilters = {
     search: '',
@@ -19,33 +18,92 @@ const basefilters = {
 };
 
 const columnsFields = [
-    { field: 'inicio_fim_antes_periodo_no_prazo', label: 'Iní./Fim Antes do Per. (No Prz)'},
-    { field: 'inicio_fim_antes_periodo_em_atraso', label: 'Iní./Fim Antes do Per. (Atrsd)'},
-    { field: 'inicio_antes_fim_no_periodo_no_prazo', label: 'Iní. Antes e Fim no Per. (No Prz)'},
-    { field: 'inicio_antes_fim_no_periodo_em_atraso', label: 'Iní. Antes e Fim no Per. (Atrsd)'},
-    { field: 'inicio_antes_fim_apos_periodo_no_prazo', label: 'Iní. Antes e Fim Após o Per. (No Prz)'},
-    { field: 'inicio_antes_fim_apos_periodo_em_atraso', label: 'Iní. Antes e Fim Após o Per. (Atrsd)'},
-    { field: 'inicio_antes_periodo_nao_finalizada_no_prazo', label: 'Iní. Antes do Per., Ñ Finalizada (No Prz)'},
-    { field: 'inicio_antes_periodo_nao_finalizada_em_atraso', label: 'Iní. Antes do Per., Ñ Finalizada (Atrsd)'},
-    { field: 'inicio_fim_no_periodo_no_prazo', label: 'Iní./Fim no Per. (No Prz)'},
-    { field: 'inicio_fim_no_periodo_em_atraso', label: 'Iní./Fim no Per. (Atrsd)'},
-    { field: 'inicio_fim_apos_periodo_no_prazo', label: 'Iní./Fim Após o Per. (No Prz)'},
-    { field: 'inicio_fim_apos_periodo_em_atraso', label: 'Ini e Fim Após o Per. (Atrsd)'},
-    { field: 'inicio_periodo_nao_finalizada_no_prazo', label: 'Iní. no Per. Ñ Finalizada (No Prz)'},
-    { field: 'inicio_periodo_nao_finalizada_em_atraso', label: 'Iní. no Per. Ñ Finalizada (Atrsd)'},
-    { field: 'nao_iniciada', label: 'Ñ Iniciada'},
-    //{ field: 'total_ini_fim_antes_periodo_prazo', label: 'Tot. Iní./Fim Antes do Per. (no Prz)'},
-    //{ field: 'total_ini_fim_antes_periodo_atraso', label: 'Tot. Iní./Fim Antes do Per. (Atrsd)'},
-    //{ field: 'total_ini_fim_no_periodo_prazo', label: 'Tot. Iní./Fim no Per. (no Prz)'},
-    //{ field: 'total_ini_fim_no_periodo_atraso', label: 'Tot. Iní./Fim no Per. (Atrsd)'},
-    { field: 'total_no_prazo', label: 'Tot. (no Prz)'},
-    { field: 'total_em_atraso', label: 'Tot. (Atrsd)'}
-];
+    {
+      field: 'inicio_fim_antes_periodo',
+      label: 'Início e Fim Antes do Período',
+      colspan: 2,
+      subColumns: [
+        { field: 'inicio_fim_antes_periodo_no_prazo', label: 'No Prazo'},
+        { field: 'inicio_fim_antes_periodo_em_atraso', label: 'Atrasado'}
+      ]
+    },
+    {
+      field: 'inicio_antes_fim_no_periodo',
+      label: 'Início Antes e Fim no Período',
+      colspan: 2,
+      subColumns: [
+        { field: 'inicio_antes_fim_no_periodo_no_prazo', label: 'No Prazo'},
+        { field: 'inicio_antes_fim_no_periodo_em_atraso', label: 'Atrasado'}
+      ]
+    },
+    {
+        field: 'inicio_antes_fim_apos_periodo',
+        label: 'Início e Fim Após o Período',
+        colspan: 2,
+        subColumns: [
+          { field: 'inicio_antes_fim_apos_periodo_no_prazo', label: 'No Prazo'},
+          { field: 'inicio_antes_fim_apos_periodo_em_atraso', label: 'Atrasado'}
+        ]
+      },
+      {
+        field: 'inicio_antes_periodo_nao_finalizada',
+        label: 'Início Antes do Período, Não Finalizada',
+        colspan: 2,
+        subColumns: [
+          { field: 'inicio_antes_periodo_nao_finalizada_no_prazo', label: 'No Prazo'},
+          { field: 'inicio_antes_periodo_nao_finalizada_em_atraso', label: 'Atrasado'}
+        ]
+      },
+      {
+        field: 'inicio_fim_no_periodo',
+        label: 'Início e Fim no Período',
+        colspan: 2,
+        subColumns: [
+          { field: 'inicio_fim_no_periodo_no_prazo', label: 'No Prazo'},
+          { field: 'inicio_fim_no_periodo_em_atraso', label: 'Atrasado'}
+        ]
+      },
+      {
+        field: 'inicio_fim_apos_periodo',
+        label: 'Início no Período e Fim após Período',
+        colspan: 2,
+        subColumns: [
+          { field: 'inicio_fim_apos_periodo_no_prazo', label: 'No Prazo'},
+          { field: 'inicio_fim_apos_periodo_em_atraso', label: 'Atrasado'}
+        ]
+      },
+      {
+        field: 'inicio_fim_apos_periodo',
+        label: 'Início no Período, Não Finalizada',
+        colspan: 2,
+        subColumns: [
+          { field: 'inicio_periodo_nao_finalizada_no_prazo', label: 'No Prazo'},
+          { field: 'inicio_periodo_nao_finalizada_em_atraso', label: 'Atrasado'}
+        ]
+      },
+      {
+        field: 'nao_iniciada',
+        label: 'Não Iniciada',
+        colspan: 2,
+        subColumns: [
+          { field: 'nao_iniciada', label: 'No Prazo'},
+          { field: 'nao_iniciada_em_atraso', label: 'Atrasado'}
+        ]
+      },
+      {
+        field: 'total',
+        label: 'Total',
+        colspan: 2,
+        subColumns: [
+          { field: 'total_no_prazo', label: 'No Prazo'},
+          { field: 'total_em_atraso', label: 'Atrasado'}
+        ]
+      },
+  ];
 
 export default function ConsultaQuantidadeTarefa() {
     const [dataInicio, setDataInicio] = useState('');
     const [dataFim, setDataFim] = useState('');
-    const [showHiddenColumns, setShowHiddenColumns] = useState(false);
 
     const {
         rows,
@@ -82,34 +140,11 @@ export default function ConsultaQuantidadeTarefa() {
             total_ini_fim_no_periodo_atraso: results.total_ini_fim_no_periodo_atraso || 0,
             total_no_prazo: results.total_no_prazo || 0,
             total_em_atraso: results.total_em_atraso || 0
+        
         };
 
         return [mappedData];
     });
-
-    // Filtrar as colunas que têm valores diferentes de zero
-    const filteredColumns = useMemo(() => {
-        if (!rows || rows.length === 0) {
-            return columns;
-        }
-
-        return columns.filter(column => {
-            const columnName = column.field;
-            const columnValue = rows[0][columnName]; 
-
-            return columnValue !== 0;
-        });
-    }, [columns, rows]);
-
-    const getIcon = () => {
-        return showHiddenColumns ? FiEyeOff : FiEye;
-    };
-
-    const getLabel = () => {
-        return showHiddenColumns ? 'Ocultar colunas sem tarefas' : 'Mostrar colunas sem tarefas';
-    };
-
-    const displayedColumns = showHiddenColumns ? columns : filteredColumns;
 
     useEffect(() => {
         handleChangeFilters('search', basefilters.search);
@@ -123,25 +158,13 @@ export default function ConsultaQuantidadeTarefa() {
         }
     }, [basefilters.search, dataInicio, dataFim]);
 
-    const toggleHiddenColumns = () => {
-        setShowHiddenColumns(!showHiddenColumns);
-    };
-
-
-
     return (
         <Background>
             <HeaderTitle
-                title="Consultar Agrupamentos de Tarefas" optionsButtons={[
-                    {
-                        label: getLabel(),
-                        onClick: () => toggleHiddenColumns(),
-                        icon: getIcon(),
-                    },
-                ]} />
+                title="Consultar Agrupamentos de Tarefas"/>
             <Section>
                 <Table
-                    columns={displayedColumns}
+                    columns={columns}
                     rows={rows}
                     isLoading={isTableLoading}
                     filtersState={filtersState}
