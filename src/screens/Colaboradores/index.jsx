@@ -137,13 +137,16 @@ export default function Conhecimentos() {
   
   return (
     <Background>
-      <HeaderTitle title="Colaboradores" optionsButtons={[
-        {
-          label: 'Cadastrar',
-          onClick: () => navigate('/colaboradores/cadastrar'),
-          icon: FiPlus,
-        },
-      ]} />
+      <HeaderTitle title="Colaboradores" optionsButtons={
+        user.nivel_acesso === 2 ?
+          [{
+            label: 'Cadastrar',
+            onClick: () => navigate('/colaboradores/cadastrar'),
+            icon: FiPlus,
+          }]
+          :
+          []
+      } />
       <Section>
         <Table
           columns={columns}
@@ -203,6 +206,7 @@ export default function Conhecimentos() {
             },
             {
               label: 'Excluir',
+              visibled: user.nivel_acesso === 2,
               onClick: handleDelete,
               icon: FiTrash,
             },
