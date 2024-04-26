@@ -98,18 +98,16 @@ export default function Projetos() {
 
   return (
     <Background>
-      <HeaderTitle title="Projetos" optionsButtons={[
-        {
-          label: 'cadastrar',
-          onClick: () => navigate('/projetos/cadastrar'),
-          icon: FiPlus,
-        },
-        // {
-        //   label: 'Relatório',
-        //   onClick: () => {},
-        //   icon: FiPlus,
-        // }
-      ]} />
+      <HeaderTitle title="Projetos" optionsButtons={
+        user.nivel_acesso === 2 ?
+          [{
+            label: 'cadastrar',
+            onClick: () => navigate('/projetos/cadastrar'),
+            icon: FiPlus,
+          }]
+        :
+        []
+      } />
       <Section>
         <Table
           columns={columns}
@@ -148,13 +146,13 @@ export default function Projetos() {
           actions={[
             {
               label: 'Abrir',
-              visible: true,
+              visibled: true,
               onClick: (row) => navigate('/projetos/visualizar/' + row.id),
               icon: FiEye,
             },
             {
               label: 'Excluir',
-              visible: true,
+              visibled: user.nivel_acesso === 2,
               onClick: (row) => handleDelete(row),
               icon: FiTrash,
             },

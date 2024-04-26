@@ -11,7 +11,9 @@ const SidebarLeft = ({ isOpenSideBarLeft, setIsOpenSideBarLeft }) => {
   const location = useLocation()
   const { user } = useAuth();
   const [searchRoutes, setSearchRoutes] = useState('');
-  const filteredRoutes = sidebarLeftListRoutes.filter(item => searchLike(item.nome, searchRoutes));
+  const filteredRoutes = sidebarLeftListRoutes.filter(item => 
+    user.nivel_acesso >= item.nivel_acesso && searchLike(item.nome, searchRoutes)
+  );
 
   return (
     <Nav defaultActiveKey="/dashboard" className="flex-column">
@@ -50,14 +52,17 @@ const SidebarLeft = ({ isOpenSideBarLeft, setIsOpenSideBarLeft }) => {
 
             </span>
           </NavLink>
-          {!!item.childrens && item.childrens.map((subItem, subindex) => (
-            <NavLink className="nav-link subitem text-white" key={'subItem' + subindex} to={subItem.path}>
-              <subItem.icon />
-              <span>
-                {subItem.nome}
-              </span>
-            </NavLink>
-          ))}
+          {!!item.childrens && item.childrens.map((subItem, subindex) => 
+            user.nivel_acesso >= subItem.nivel_acesso ?
+              <NavLink className="nav-link subitem text-white" key={'subItem' + subindex} to={subItem.path}>
+                <subItem.icon />
+                <span>
+                  {subItem.nome}
+                </span>
+              </NavLink>
+            :
+              ""
+          )}
         </div>
       ))}
     </Nav>
