@@ -1,4 +1,4 @@
-import { Background, HeaderTitle, Section, SelectAsync, Table, TooltipPrazo } from "@/components/index";
+import { Background, DateTest, HeaderTitle, Section, SelectAsync, Table, TooltipPrazo } from "@/components/index";
 import useTable from "@/utils/hooks/useTable";
 import { useEffect, useState } from "react";
 import { listColaboradores } from "@/services/colaborador/colaboradores";
@@ -40,6 +40,8 @@ const columnsFields = [
 ];
 
 export default function ConsultaColaboradoresPorTarefa() {
+    const [dataInicio, setDataInicio] = useState('');
+    const [dataFim, setDataFim] = useState('');
 
     const abreviarStatus = (status, tipo) => {
         const mapeamentoStatus = {
@@ -152,8 +154,16 @@ export default function ConsultaColaboradoresPorTarefa() {
 
 
     useEffect(() => {
+        handleChangeFilters('search', basefilters.search);
         load();
-    }, []);
+        if (dataInicio && dataFim) {
+            handleChangeFilters('data_inicio', dataInicio);
+            handleChangeFilters('data_fim', dataFim);
+        } else if (!dataInicio && !dataFim) {
+            handleChangeFilters('data_inicio', null);
+            handleChangeFilters('data_fim', null);
+        }
+    }, [basefilters.search, dataInicio, dataFim]);
 
     return (
         <Background>
@@ -177,6 +187,28 @@ export default function ConsultaColaboradoresPorTarefa() {
                                         handleChangeFilters('projeto_id', projeto ? projeto.id : null);
                                     }}
                                     isClearable
+                                />
+                            </Col>
+                            <Col md={2}>
+                                <DateTest
+                                    id="dataFim"
+                                    value={dataFim}
+                                    label="Fim:"
+                                    onChange={(date) => {
+                                        setDataFim(date);
+                                        handleChangeFilters('data_fim', date);
+                                    }}
+                                />
+                            </Col>
+                            <Col md={2}>
+                                <DateTest
+                                    id="dataInicio"
+                                    value={dataInicio}
+                                    label="Início:"
+                                    onChange={(date) => {
+                                        setDataInicio(date);
+                                        handleChangeFilters('data_inicio', date);
+                                    }}
                                 />
                             </Col>
                         </>

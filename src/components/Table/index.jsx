@@ -3,6 +3,7 @@ import { Table as TableBootstrap, Pagination, Form, Button, Row, Col, Stack, Pla
 import { AnimatedProgress, CustomDropdown } from '..';
 import PropTypes from 'prop-types';
 import { FiChevronDown, FiChevronUp } from 'react-icons/fi';
+import { centerImage } from 'highcharts';
 
 
 const Table = ({
@@ -72,19 +73,18 @@ const Table = ({
 
   return (
     <div>
-      <Form className="mb-3">
-        <Row className='flex-row-reverse'>
-          {typeof filters.search !== "undefined" && (
-            <Col md={3}>
-              <Form.Control
-                type="text"
-                placeholder={searchPlaceholder ?? "Pesquisar"}
-                value={filters.search}
-                onChange={handleSearchChange}
-                style={{ display: searchPlaceholder ? 'block' : 'none' }}
-              />
-            </Col>
-          )}
+<Form className="mb-3">
+  <Row className='flex-row-reverse'>
+    {typeof filters.search !== "undefined" && searchPlaceholder && (
+      <Col md={3}>
+        <Form.Control
+          type="text"
+          placeholder={searchPlaceholder ?? "Pesquisar"}
+          value={filters.search}
+          onChange={handleSearchChange}
+        />
+      </Col>
+    )}
           {typeof filters.active !== "undefined" && (
             <Col md={1}>
               <Form.Select
@@ -113,14 +113,55 @@ const Table = ({
                 />
               </th>
             )}
-            {columns.map((column) => (
+            {columns.map((column, index) => (
               <th
                 key={column.field}
                 onClick={() => handleSort(column)}
-                style={{ cursor: column.enabledOrder ? 'pointer' : 'default' }}
+                style={{ cursor: column.enabledOrder ? 'pointer' : 'default',
+                paddingRight: index === column.length - 1 ? '0px' : '50px',
+              }
+              }
+                colSpan={column.colspan ?? 1}
+                className={column.subColumns && column.subColumns.length > 0 ? 'text-center' : ''}
               >
                 {column.label}
-                <SortComponent column={column} />
+                {column.subColumns && column.subColumns.length > 0 && (
+                  <tr>
+                    {column.subColumns.map((subColumn, index) => (
+                      <th
+                        key={subColumn.field}
+                        onClick={() => handleSort(subColumn)}
+                        style={{
+                          cursor: subColumn.enabledOrder ? 'pointer' : 'default',
+                          paddingRight: index === column.subColumns.length - 1 ? '0px' : '50px',
+                        
+                        }}
+                      >
+                        {subColumn.label}
+                        <SortComponent column={subColumn} />
+                        {subColumn.nestedColumns && subColumn.nestedColumns.length > 0 && (
+                          <tr>
+                            {subColumn.nestedColumns.map((nestedColumn, nestedIndex) => (
+                              <th
+                                key={nestedColumn.field}
+                                onClick={() => handleSort(nestedColumn)}
+                                style={{
+                                  cursor: nestedColumn.enabledOrder ? 'pointer' : 'default',
+                                  paddingRight: nestedIndex === subColumn.nestedColumns.length - 1 ? '0px' : '40px',
+                                
+                                }}
+                                className={nestedColumn.nestedColumns && nestedColumn.nestedColumns.length > 0 ? 'text-center' : ''}
+                              >
+                                {nestedColumn.label}
+                                <SortComponent column={nestedColumn} />
+                              </th>
+                            ))}
+                          </tr>
+                        )}
+                      </th>
+                    ))}
+                  </tr>
+                )}
               </th>
             ))}
             {actions && <th style={{ width: 70 }}>Ações</th>}
@@ -159,27 +200,61 @@ const Table = ({
                 </td>
               </tr>
             ))}
-          {rows.map((row, index) => (
-            <tr key={index}>
-              {!!filters.selectedRows && (
-                <td>
-                  <Form.Check
-                    type="checkbox"
-                    checked={filters.selectedRows.includes(index)}
-                    onChange={() => handleRowSelect(index)}
-                  />
-                </td>
-              )}
-              {columns.map((column) => (
-                <td key={column.field}>{column.piper ? renderCellValue(column.piper(row[column.field], row, filters)) : renderCellValue(row[column.field])}</td>
-              ))}
-              {actions && (
-                <td>
-                  <CustomDropdown size={'sm'} param={row} items={actions} />
-                </td>
-              )}
-            </tr>
-          ))}
+{rows.map((row, index) => (
+  <tr key={index}>
+    {!!filters.selectedRows && (
+      <td>
+        <Form.Check
+          type="checkbox"
+          checked={filters.selectedRows.includes(index)}
+          onChange={() => handleRowSelect(index)}
+        />
+      </td>
+    )}
+    {columns.map((column) => {
+      if (column.subColumns && column.subColumns.length > 0) {
+        return (
+          <React.Fragment key={column.field}>
+            {column.subColumns.map((subColumn) => (
+              <React.Fragment key={subColumn.field}>
+                {subColumn.nestedColumns && subColumn.nestedColumns.length > 0 ? (
+                  <React.Fragment>
+                    {subColumn.nestedColumns.map((nestedColumn, nestedIndex) => (
+                      <td
+                        key={nestedColumn.field}
+                        style={{ paddingLeft: nestedIndex === 0 ? '0' : '90px',
+                        paddingRight: nestedIndex === 0 ? '0' : '30px',
+                      
+                      }}
+                      >
+                        {nestedColumn.piper ? renderCellValue(nestedColumn.piper(row[nestedColumn.field], row, filters)) : renderCellValue(row[nestedColumn.field])}
+                      </td>
+                    ))}
+                  </React.Fragment>
+                ) : (
+                  <td key={subColumn.field}>
+                    {subColumn.piper ? renderCellValue(subColumn.piper(row[subColumn.field], row, filters)) : renderCellValue(row[subColumn.field])}
+                  </td>
+                )}
+              </React.Fragment>
+            ))}
+          </React.Fragment>
+        );
+      } else {
+        return (
+          <td key={column.field}>
+            {column.piper ? renderCellValue(column.piper(row[column.field], row, filters)) : renderCellValue(row[column.field])}
+          </td>
+        );
+      }
+    })}
+    {actions && (
+      <td>
+        <CustomDropdown size={'sm'} param={row} items={actions} />
+      </td>
+    )}
+  </tr>
+))}
         </tbody>
       </TableBootstrap>
       <Stack direction='horizontal' gap={3} >

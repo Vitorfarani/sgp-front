@@ -163,7 +163,7 @@ export default function ConsultaTarefasPorColaborador() {
                     searchPlaceholder="Consultar Projetos"
                     filtersComponentes={
                         <>
-                            <Col md={2}>
+                            <Col md={3}>
                                 <SelectAsync
                                     placeholder="Filtrar por Colaborador"
                                     loadOptions={(search) => listColaboradores('?search=' + search)}
