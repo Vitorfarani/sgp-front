@@ -18,7 +18,7 @@ const ThumbnailUploader = ({ file, size = 40, readonly, noBorder, onImageChange,
   const [showProgressBar, setshowProgressBar] = useState(false);
   const onProgressExtract = (value) => {
     setProgress(value);
-    console.log({value})
+    
   }
   useEffect(() => {
     if(progress == 100) {
@@ -47,7 +47,7 @@ const ThumbnailUploader = ({ file, size = 40, readonly, noBorder, onImageChange,
     <div className={"rounded-circle "+className} style={{ borderRadius: roundedCircle ? '50%' : null, border: noBorder ? 0 : null }}  
       onClick={() => {
         if(!readonly){
-          console.log('click')
+          
           input.current.click()
         } else if(!!onPress) {
           onPress()

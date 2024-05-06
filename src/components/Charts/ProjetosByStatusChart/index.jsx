@@ -23,7 +23,7 @@ function createProjectData(data) {
       color: parentColor
     });
     projects.forEach((project) => {
-      console.log({id: project.id})
+      
       projectsTrated.push({
         id: project.id,
         cliente: project.cliente,

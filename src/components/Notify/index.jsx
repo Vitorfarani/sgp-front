@@ -26,7 +26,7 @@ const Notify = forwardRef((p, ref) => {
 
   useImperativeHandle(ref, () => ({
     add: (config) => {
-      console.log(config)
+      
       if (!config) {
         console.error('Notify: parameter required');
         return false;

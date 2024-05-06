@@ -113,7 +113,7 @@ function TarefaStatus() {
             {
               label: 'Editar',
               onClick: (row) => {
-                console.log(row)
+                
                 callModalCadastro(row)
               },
               icon: FiEdit,

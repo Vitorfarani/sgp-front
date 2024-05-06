@@ -29,7 +29,7 @@ const Login = () => {
       navigate('/dashboard', {replace: true});
       setIsLoading(false)
     } catch (error) {
-      console.log(error)
+      
       callGlobalAlert(error)
       // callGlobalDialog(error)
       setIsLoading(false)

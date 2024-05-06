@@ -10,7 +10,7 @@ const TooltipConhecimentos = ({ colaborador, style, title, showOnlyId }) => {
   const [debouncedValue] = useDebounce(focused, 400);
 
   const FilteredConhecimentos = () => {
-    console.log(showOnlyId)
+    
     if (!!showOnlyId) {
       
       let colaboradorFinded = colaborador.colaborador_conhecimento.find((cc) => showOnlyId == cc.conhecimento.id)

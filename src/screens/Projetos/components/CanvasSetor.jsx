@@ -21,7 +21,7 @@ const CanvasSetor = forwardRef(({ listParams, onSave, ...props }, ref) => {
   const [index, setIndex] = useState();
 
   function handleForm(propertyName, newValue) {
-    console.log(newValue)
+    
     setformData((prevState) => ({
       ...prevState,
       [propertyName]: newValue

@@ -7,7 +7,7 @@ const LoadingOverLay = forwardRef((props, ref) => {
   const [message, setMessage] = useState();
 
   function hide() {
-    console.log('hide')
+    
 
     setIsShow(false)
     setTimeout(() => {
@@ -16,7 +16,7 @@ const LoadingOverLay = forwardRef((props, ref) => {
   }
 
   function show(msg) {
-    console.log('show')
+    
     if (msg) setMessage(msg)
     setIsShow(true)
   }

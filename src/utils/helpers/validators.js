@@ -3,7 +3,7 @@ export function validarCpf(strCPF) {
     let Resto
     Soma = 0
     strCPF = strCPF.replace(/\D/g, '')
-    console.log(strCPF)
+    
     let invalids = ['00000000000', '11111111111', '22222222222', '33333333333', '44444444444', '55555555555', '66666666666', '99999999999']
 
     if (invalids.indexOf(strCPF) !== -1) {
@@ -105,7 +105,7 @@ export  function validateImageFileType(fileName){
 }
 
 export function formatErrorsToHTML(errors) {
-  console.log(errors)
+  
   if (!errors || !errors.error) {
     return ''; // Retorna uma string vazia se não houver erros ou se a propriedade "error" for falsa.
   }

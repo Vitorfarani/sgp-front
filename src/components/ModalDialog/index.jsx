@@ -66,7 +66,7 @@ const ModalDialog = forwardRef(({
 
               })
               .catch((err) => {
-                console.log(err)
+                
               })
           } else {
             onSuccess(formData)
@@ -77,7 +77,7 @@ const ModalDialog = forwardRef(({
 
         })
         .catch((errors) => {
-          console.log(errors)
+          
           setErrors(errors)
           setValidated(false);
         })

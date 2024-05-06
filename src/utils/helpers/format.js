@@ -78,7 +78,7 @@ export const toBase64 = (file, onProgressExtract = () => { }, maxSizeMB = 0.5) =
 
     const dataToProcess = dataQueue.shift();  // Remove o primeiro dado da fila
     onProgressExtract(dataToProcess)
-    console.log({lazyValue: dataToProcess})
+    
     setTimeout(processQueue, processingInterval);
     processing = true;  // Indica que há processamento em andamento
   }

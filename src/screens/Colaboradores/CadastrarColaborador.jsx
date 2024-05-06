@@ -216,7 +216,7 @@ export default function CadastrarColaborador() {
   }
   function handleVinculoForm(propertyName, newValue) {
     setformData((prevState) => {
-      console.log(prevState['vinculo'])
+      
       return {
         ...prevState,
         ['vinculo']: { ...prevState['vinculo'], [propertyName]: newValue }
@@ -231,7 +231,7 @@ export default function CadastrarColaborador() {
         save()
       })
       .catch((errors) => {
-        console.log(errors)
+        
         setErrors(errors)
       })
     event.preventDefault();
@@ -243,7 +243,7 @@ export default function CadastrarColaborador() {
     data.cpf = data.cpf.replace(/\D/g, '')
     data = formatForm(data).rebaseIds(['setor']).getResult();
     data.vinculo = formatForm(data.vinculo).rebaseIds(['empresa', 'funcao']).trimTextInputs().getResult();
-    console.log(data.vinculo)
+    
     if (!data.vinculo.funcao_id && !data.vinculo.empresa_id) {
       delete data.vinculo;
     }

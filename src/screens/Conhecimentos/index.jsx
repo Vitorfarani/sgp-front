@@ -158,7 +158,7 @@ export default function Conhecimentos() {
             {
               label: 'Excluir',
               onClick: (row) =>{
-                console.log(row)
+                
                  handleGlobalLoading.show()
                   deleteConhecimento(row.id)
                     .then((result) => {

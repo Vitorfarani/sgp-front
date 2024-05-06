@@ -67,7 +67,7 @@ const TarefasByAndamentoChart = forwardRef(({ title }, ref) => {
         });
       })
       .catch((err) => {
-        console.log(err)
+        
         callGlobalAlert(err)
       })
   }

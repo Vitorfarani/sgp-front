@@ -145,7 +145,7 @@ export default function CadastrarProjeto() {
   }
 
   function removeConhecimento(data, removedValue) {
-    console.log(removedValue)
+    
     if (!formData.id) {
       handleForm('projeto_conhecimento', data)
     } else {
@@ -229,7 +229,7 @@ export default function CadastrarProjeto() {
     }
   }
   function handleMainSetor(index) {
-    console.log(index)
+    
     if (!formData.id) {
       setformData((prevState) => ({
         ...prevState,
@@ -266,7 +266,7 @@ export default function CadastrarProjeto() {
     }
   }
   function handleMainResponsavel(index) {
-    console.log(index)
+    
     if (!formData.id) {
       setformData((prevState) => ({
         ...prevState,
@@ -505,7 +505,7 @@ export default function CadastrarProjeto() {
               loadOptions={(search) => listConhecimentos('?search=' + search)}
               value={formData.projeto_conhecimento}
               onChange={(projeto_conhecimento, action) => {
-                console.log(action)
+                
                 if (action.action === 'select-option') {
                   handleConhecimento(projeto_conhecimento, action.option)
                 } else if (action.action === 'remove-value') {

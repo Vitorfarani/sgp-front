@@ -84,7 +84,7 @@ const ModalTarefa = forwardRef(({
   function show(data) {
     setIsShow(true)
     if (!data.id) {
-      console.log(data)
+      
       setFormData(data)
     } else {
       load(data.id)
@@ -125,7 +125,7 @@ const ModalTarefa = forwardRef(({
 
 
   function addTarefaColaborador(colaborador) {
-    console.log(colaborador)
+    
     if (!formData.id) {
       setFormData((prevState) => ({
         ...prevState,
@@ -399,7 +399,7 @@ const ModalTarefa = forwardRef(({
   }
   function save() {
     let data = beforeSave(formData)
-    console.log(data)
+    
     if (!data) return
     handleGlobalLoading.show()
     let method = !data.id ? createTarefa : updateTarefa;
@@ -436,7 +436,7 @@ const ModalTarefa = forwardRef(({
         save()
       })
       .catch((errors) => {
-        console.log(errors)
+        
         setErrors(errors)
       })
     event.preventDefault();

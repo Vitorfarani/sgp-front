@@ -53,8 +53,8 @@ export default function Projetos() {
 
   async function handleDelete(row) {
     let tarefas = await listTarefas('?projeto=' + row.id)
-    console.log(tarefas);
-    console.log('Size of tarefas:', tarefas.length);
+    
+    
     let subtitle = tarefas.length > 0 ? 'Tem certeza que deseja excluir o projeto <strong>' + row.nome + '</strong>? O projeto possui <strong>' + tarefas.length + '</strong> tarefas' : 'Tem certeza que deseja excluir o projeto <strong>' + row.nome + '</strong>?';
 
 
