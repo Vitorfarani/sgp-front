@@ -119,7 +119,7 @@ function Projeto() {
       order: task.order,
       nome: task.nome,
     }
-    console.log(task.order)
+    
     updateTarefaPositionFromKanban(task.id, data)
       .then((result) => {
         loadTarefas()

@@ -50,7 +50,7 @@ const TarefasByStatusChart = forwardRef(({ title }, ref) => {
         listTarefasByStatus(buildQueryString(params))
             .then((resultsList) => {
                 const {status, tarefas} = createTarefaData(resultsList);
-               console.log(status, tarefas)
+               
                 setOptions({
                     chart: {
                         type: 'pie',

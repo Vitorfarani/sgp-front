@@ -23,7 +23,7 @@ const AnexoItem = ({ title, type, url, onRemove }) => {
   const handleImageClick = () => {
     if(!url) return;
     if (type === 'imagem') {
-      console.log(url)
+      
       setImageOpened(true)
     } else {
       window.open(url, '_blank');

@@ -7,7 +7,7 @@ const PuzzleIcon = ({ color, size }) => {
     padding: 0,// Define o tamanho do ícone como a prop 'size' ou 24 (padrão)
     color: color || '#fff'
   };
-console.log(color)
+
   return <FaMountain style={iconStyle} />;
 };
 

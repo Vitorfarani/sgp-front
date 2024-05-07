@@ -18,14 +18,14 @@ export const ThemeProvider = memo(({ children }) => {
   const dialog = useRef();
   function toggleTheme() {
     let newColorMode = colorModeSelected === "dark" ? "light" : "dark";
-    console.log(newColorMode)
+    
     setColorModeSelected(newColorMode)
     document.querySelector("html").setAttribute("data-bs-theme", newColorMode);
   }
 
   function callGlobalAlert(body) {
     if (Object.keys(body).includes('message')) {
-      console.log(body)
+      
       setModalProps(body)
     } else {
       throw 'message is required';

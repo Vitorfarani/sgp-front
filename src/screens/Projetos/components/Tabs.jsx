@@ -85,7 +85,7 @@ const Tabs = () => {
       uri: URL.createObjectURL(file),
       file
     }));
-    console.log(updatedFiles)
+    
     setAnexos([...anexos, ...updatedFiles])
   }
 

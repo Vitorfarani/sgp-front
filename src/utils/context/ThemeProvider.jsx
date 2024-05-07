@@ -34,7 +34,7 @@ export const ThemeProvider = memo(({ children }) => {
   //Example: callGlobalNotify({variant: 'success', message: 'Tarefa foi salva com sucesso', icon: FiCheck, position: 'bottom'})
   const callGlobalNotify = useCallback((body) => {
     if (isString(body.message)) {
-      console.log(body)
+      
       notify.current.add({...body, position: 'top-right'})
     } else {
       console.error('message is required');

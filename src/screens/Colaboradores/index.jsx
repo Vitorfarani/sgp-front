@@ -97,7 +97,7 @@ export default function Conhecimentos() {
     resetFilters,
     isEmpty,
   } = useTable(columnsFields, listColaboradores, basefilters, (results) => {
-    console.log(results)
+    
     return results.data
   });
 

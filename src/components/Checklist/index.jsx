@@ -76,7 +76,7 @@ const Checklist = forwardRef(({ handleForm }, ref) => {
   useEffect(() => {
     handleForm('checklist', checklist)
   }, [checklist]);
-console.log(checklist)
+
   if (!isShow || !checklist) return null;
   return (
     <>

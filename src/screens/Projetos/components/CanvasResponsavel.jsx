@@ -23,7 +23,7 @@ const CanvasResponsavel = forwardRef(({ listParams, onSave, projeto, ...props },
   const [filterBySetor, setFilterBySetor] = useState(true);
   const [filterNivelConhecimento, setFilterNivelConhecimento] = useState(null);
   function handleForm(propertyName, newValue) {
-    console.log(newValue)
+    
     setformData((prevState) => ({
       ...prevState,
       [propertyName]: newValue

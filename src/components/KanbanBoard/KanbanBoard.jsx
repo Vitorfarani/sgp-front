@@ -147,7 +147,7 @@ const KanbanBoard = forwardRef(({
 
 
     setColumns((columns) => {
-      console.log('aa')
+      
       const activeColumnIndex = columns.findIndex((col) => col.id === activeId);
 
       const overColumnIndex = columns.findIndex((col) => col.id === overId);
