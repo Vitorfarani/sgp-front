@@ -11,7 +11,7 @@ import { listSetores } from "@/services/setores";
 const basefilters = {
   search: '',
   perPage: 20,
-  selectedRows: [],
+  //selectedRows: [],
   page: 1,
   sortedColumn: 'id',
   colaborador: null,
@@ -23,50 +23,62 @@ const columnsFields = [
     field: 'inicio_antes_do_periodo',
     label: 'Início Antes do Período',
     colspan: 10,
+    color: '#FFFFFF',
+    backgroundColor: '#18304a',
     subColumns: [
       {
         field: 'inicio_fim_antes_periodo',
         label: 'Fim Antes do Período',
         colspan: 2,
+        color: '#FFFFFF',
+        backgroundColor: '#18304a',
         nestedColumns: [
-          { field: 'inicio_antes_periodo_fim_antes_periodo_no_prazo', label: 'Prazo' },
-          { field: 'inicio_antes_periodo_fim_antes_periodo_em_atraso', label: 'Atrasado' }
+          { field: 'inicio_antes_periodo_fim_antes_periodo_no_prazo', label: 'Prazo', color: 'white', backgroundColor: '#00780e', borderRadius:'10%' },
+          { field: 'inicio_antes_periodo_fim_antes_periodo_em_atraso', label: 'Atrasado', color: 'white', backgroundColor: '#a30019', borderRadius:'10%'}
         ]
       },
       {
         field: 'inicio_antes_fim_no_periodo',
         label: 'Fim no Período',
         colspan: 2,
+        color: '#FFFFFF',
+        backgroundColor: '#18304a',
         nestedColumns: [
-          { field: 'inicio_antes_periodo_fim_no_periodo_no_prazo', label: 'Prazo' },
-          { field: 'inicio_antes_periodo_fim_no_periodo_em_atraso', label: 'Atrasado' }
+          { field: 'inicio_antes_periodo_fim_no_periodo_no_prazo', label: 'Prazo', color: 'white', backgroundColor: '#00780e', borderRadius:'10%' },
+          { field: 'inicio_antes_periodo_fim_no_periodo_em_atraso', label: 'Atrasado', color: 'white', backgroundColor: '#a30019', borderRadius:'10%'}
         ]
       },
       {
         field: 'inicio_antes_fim_apos_periodo',
         label: 'Fim Fora do Período',
         colspan: 2,
+        color: '#FFFFFF',
+        backgroundColor: '#18304a',
         nestedColumns: [
-          { field: 'inicio_antes_periodo_fim_fora_periodo_no_prazo', label: 'Prazo' },
-          { field: 'inicio_antes_periodo_fim_fora_periodo_em_atraso', label: 'Atrasado' }
+          { field: 'inicio_antes_periodo_fim_fora_periodo_no_prazo', label: 'Prazo', color: 'white', backgroundColor: '#00780e', borderRadius:'10%' },
+          { field: 'inicio_antes_periodo_fim_fora_periodo_em_atraso', label: 'Atrasado', color: 'white', backgroundColor: '#a30019', borderRadius:'10%'}
         ]
       },
       {
         field: 'inicio_antes_periodo_nao_finalizada',
         label: 'Não Terminou',
         colspan: 2,
+        color: '#FFFFFF',
+        backgroundColor: '#18304a',
         nestedColumns: [
-          { field: 'inicio_antes_periodo_nao_finalizado_no_prazo', label: 'Prazo' },
-          { field: 'inicio_antes_periodo_nao_finalizado_em_atraso', label: 'Atrasado' }
+          { field: 'inicio_antes_periodo_nao_finalizado_no_prazo', label: 'Prazo', color: 'white', backgroundColor: '#00780e', borderRadius:'10%' },
+          { field: 'inicio_antes_periodo_nao_finalizado_em_atraso', label: 'Atrasado', color: 'white', backgroundColor: '#a30019', borderRadius:'10%'}
         ]
       },
       {
         field: 'total',
         label: 'Total Antes do Período',
         colspan: 2,
+        color: '#FFFFFF',
+        backgroundColor: '#18304a',
         nestedColumns: [
-          { field: 'inicio_antes_periodo_total_prazo', label: 'Prazo' },
-          { field: 'inicio_antes_periodo_total_atraso', label: 'Atrasado' }
+          { field: 'inicio_antes_periodo_total_prazo', label: 'Prazo', color: 'white', backgroundColor: '#00780e', borderRadius:'10%' },
+          { field: 'inicio_antes_periodo_total_atraso', label: 'Atrasado', color: 'white', backgroundColor: '#a30019', borderRadius:'10%'}
         ]
       },
     ]
@@ -75,41 +87,51 @@ const columnsFields = [
     field: 'inicio_no_periodo',
     label: 'Início no Período',
     colspan: 8,
+    color: '#FFFFFF',
+    backgroundColor: '#242825',
     subColumns: [
       {
         field: 'inicio_fim_no_periodo',
         label: 'Fim no Período',
         colspan: 2,
+        color: '#FFFFFF',
+        backgroundColor: '#242825',
         nestedColumns: [
-          { field: 'inicio_no_periodo_fim_no_periodo_no_prazo', label: 'Prazo' },
-          { field: 'inicio_no_periodo_fim_no_periodo_em_atraso', label: 'Atrasado' }
+          { field: 'inicio_no_periodo_fim_no_periodo_no_prazo', label: 'Prazo', color: 'white', backgroundColor: '#00780e', borderRadius:'10%' },
+          { field: 'inicio_no_periodo_fim_no_periodo_em_atraso', label: 'Atrasado', color: 'white', backgroundColor: '#a30019', borderRadius:'10%'}
         ]
       },
       {
         field: 'inicio_fim_apos_periodo',
         label: 'Fim Fora do Período',
         colspan: 2,
+        color: '#FFFFFF',
+        backgroundColor: '#242825',
         nestedColumns: [
-          { field: 'inicio_no_periodo_fim_fora_periodo_no_prazo', label: 'Prazo' },
-          { field: 'inicio_no_periodo_fim_fora_periodo_em_atraso', label: 'Atrasado' }
+          { field: 'inicio_no_periodo_fim_fora_periodo_no_prazo', label: 'Prazo', color: 'white', backgroundColor: '#00780e', borderRadius:'10%' },
+          { field: 'inicio_no_periodo_fim_fora_periodo_em_atraso', label: 'Atrasado', color: 'white', backgroundColor: '#a30019', borderRadius:'10%'}
         ]
       },
       {
         field: 'inicio_fim_apos_periodo_nao_finalizada',
         label: 'Não Terminou',
         colspan: 2,
+        color: '#FFFFFF',
+        backgroundColor: '#242825',
         nestedColumns: [
-          { field: 'inicio_periodo_nao_finalizado_no_prazo', label: 'Prazo' },
-          { field: 'inicio_periodo_nao_finalizado_em_atraso', label: 'Atrasado' }
+          { field: 'inicio_periodo_nao_finalizado_no_prazo', label: 'Prazo', color: 'white', backgroundColor: '#00780e', borderRadius:'10%' },
+          { field: 'inicio_periodo_nao_finalizado_em_atraso', label: 'Atrasado', color: 'white', backgroundColor: '#a30019', borderRadius:'10%'}
         ]
       },
       {
         field: 'total',
         label: 'Total no Período',
         colspan: 2,
+        color: '#FFFFFF',
+        backgroundColor: '#242825',
         nestedColumns: [
-          { field: 'inicio_no_periodo_total_prazo', label: 'Prazo' },
-          { field: 'inicio_no_periodo_total_atraso', label: 'Atrasado' }
+          { field: 'inicio_no_periodo_total_prazo', label: 'Prazo', color: 'white', backgroundColor: '#00780e', borderRadius:'10%' },
+          { field: 'inicio_no_periodo_total_atraso', label: 'Atrasado', color: 'white', backgroundColor: '#a30019', borderRadius:'10%'}
         ]
       },
     ]
@@ -118,20 +140,31 @@ const columnsFields = [
     field: 'nao_iniciada',
     label: 'Não Iniciada',
     colspan: 2,
+    color: "#FFFFFF",
+    backgroundColor: "#003e7c",
     subColumns: [
-      { field: 'nao_iniciado_no_prazo', label: 'Prazo' },
-      { field: 'nao_iniciado_em_atraso', label: 'Atrasado' }
+      { field: 'nao_iniciado_no_prazo', label: 'Prazo', color: 'white', backgroundColor: '#00780e', borderRadius:'10%' },
+      { field: 'nao_iniciado_em_atraso', label: 'Atrasado', color: 'white', backgroundColor: '#a30019', borderRadius:'10%'}
     ]
   },
   {
     field: 'total',
     label: 'Total',
     colspan: 2,
+    color: "#FFFFFF",
+    backgroundColor: "#1b243d",
     subColumns: [
-      { field: 'total_no_prazo', label: 'Prazo' },
-      { field: 'total_em_atraso', label: 'Atrasado' }
+      { field: 'total_no_prazo', label: 'Prazo', color: 'white', backgroundColor: '#00780e', borderRadius:'10%'},
+      { field: 'total_em_atraso', label: 'Atrasado', color: 'white', backgroundColor: '#a30019', borderRadius:'10%'},
     ]
   },
+  {
+    field: 'total_tarefas',
+    label: 'Tarefas',
+    color: "#FFFFFF",
+    backgroundColor: "#4f5450"
+  },
+
 ];
 
 export default function ConsultaQuantidadeTarefa() {
@@ -183,6 +216,8 @@ export default function ConsultaQuantidadeTarefa() {
       nao_iniciado_no_prazo: results.nao_iniciado ? results.nao_iniciado.no_prazo : 0,
       nao_iniciado_em_atraso: results.nao_iniciado ? results.nao_iniciado.em_atraso : 0,
 
+
+      total_tarefas: results.total_tarefas || 0,
       total_no_prazo: results.total_no_prazo || 0,
       total_em_atraso: results.total_em_atraso || 0
     };
