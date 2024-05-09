@@ -22,7 +22,7 @@ const basefilters = {
 
 const columnsFields = [
   { field: 'nome', label: 'Nome', enabledOrder: true},
-  { field: 'descricao', label: 'Email', enabledOrder: true },
+  { field: 'descricao', label: 'Descrição', enabledOrder: true },
 ];
 
 const cadastroInitialValue = {
