@@ -32,6 +32,7 @@ const filtersInitialValue = {
 };
 export default function TarefaDashboard() {
   const { isLoaded, isLogged, user } = useAuth();
+  const restrito = ['setor', 'colaborador']
   const navigate = useNavigate();
   const [data, setData] = useState([]);
   const [visualizacao, setVisualizacao] = useState('dayGridMonth');
@@ -82,56 +83,57 @@ export default function TarefaDashboard() {
   }).flat();
 
   function callModalFilter(data) {
+    const forms = [
+      {
+        name: 'setor',
+        label: 'Setor',
+        type: 'selectAsync',
+        isClearable: true,
+        loadOptions: listSetores,
+      },
+      {
+        name: 'projeto',
+        label: 'Projeto',
+        type: 'selectAsync',
+        isClearable: true,
+        loadOptions: listProjetos,
+      },
+      {
+        name: 'colaborador',
+        label: 'Colaborador',
+        type: 'selectAsync',
+        isClearable: true,
+        loadOptions: listColaboradores,
+      },
+      {
+        name: 'tipo',
+        label: 'Data de referência',
+        type: 'select',
+        options: [
+          { value: 'data_fim_programado', label: 'Fim Estimado' },
+          { value: 'data_inicio_programado', label: 'Inicio Estimado' },
+          { value: 'data_inicio_real', label: 'Inicio Em' },
+          { value: 'data_fim_real', label: 'Finalizado Em' },
+          // { value: 'created_at', label: 'Data de criação' },
+        ]
+      },
+      {
+        name: 'apresentado',
+        label: 'Modo de calendário',
+        type: 'select',
+        options: [
+          { value: 'Somente_selecionado', label: 'Somente selecionado' },
+          { value: 'completo', label: 'Período Completo' }
+
+        ]
+      },
+    ]
+
     callGlobalDialog({
       title: 'Filtros',
       data,
-      forms: [
-
-        {
-          name: 'setor',
-          label: 'Setor',
-          type: 'selectAsync',
-          isClearable: true,
-          loadOptions: listSetores,
-        },
-        {
-          name: 'projeto',
-          label: 'Projeto',
-          type: 'selectAsync',
-          isClearable: true,
-          loadOptions: listProjetos,
-        },
-        {
-          name: 'colaborador',
-          label: 'Colaborador',
-          type: 'selectAsync',
-          isClearable: true,
-          loadOptions: listColaboradores,
-        },
-        {
-          name: 'tipo',
-          label: 'Data de referência',
-          type: 'select',
-          options: [
-            { value: 'data_fim_programado', label: 'Fim Estimado' },
-            { value: 'data_inicio_programado', label: 'Inicio Estimado' },
-            { value: 'data_inicio_real', label: 'Inicio Em' },
-            { value: 'data_fim_real', label: 'Finalizado Em' },
-            // { value: 'created_at', label: 'Data de criação' },
-          ]
-        },
-        {
-          name: 'apresentado',
-          label: 'Modo de calendário',
-          type: 'select',
-          options: [
-            { value: 'Somente_selecionado', label: 'Somente selecionado' },
-            { value: 'completo', label: 'Período Completo' }
-
-          ]
-        },
-
-      ],
+      forms: user.nivel_acesso === 1 ? 
+        forms.filter(item => !restrito.includes(item.name)) : forms,
       labelSucessColor: 'primary',
       labelSuccess: 'Filtrar',
       labelCancel: 'Cancelar',
@@ -229,7 +231,7 @@ export default function TarefaDashboard() {
           <h5>Filtros</h5>
           <Row>
             {(['setor', 'colaborador', 'tipo', 'projeto', 'apresentado']).map((key) => {
-              if (filters[key]) {
+              if (filters[key] && (!restrito.includes(key) || user.nivel_acesso > 1)) {
                 const displayText =
                   typeof filters[key] === 'object' && filters[key].nome
                     ? filters[key].nome
