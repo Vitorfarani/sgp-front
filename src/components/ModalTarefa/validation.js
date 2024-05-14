@@ -3,18 +3,16 @@ import * as Yup from 'yup';
 const hoje = new Date();
 const maximo  = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate(), 23, 59, 59);
 
-function horarioPermitido(horario) {
+function horarioPermitido(value) {
   const horaLimiteInicio = 9;
   const horaLimiteFim = 18;
+  const minutoLimite = 0;
 
-  const agora = new Date();
-  const limiteInicio = new Date(agora.getFullYear(), agora.getMonth(), agora.getDate(), horaLimiteInicio, 0, 0);
-  const limiteFim = new Date(agora.getFullYear(), agora.getMonth(), agora.getDate(), horaLimiteFim, 0, 0);
+  const horaSelect = value.getHours();
+  const minutoSelect = value.getMinutes();
 
-  if (horario >= horaLimiteInicio && horario <= horaLimiteFim) {
-      if (agora >= limiteInicio && agora <= limiteFim) {
-          return true;
-      }
+  if ((horaSelect >= horaLimiteInicio) && (horaSelect < horaLimiteFim || (horaSelect === horaLimiteFim && minutoSelect === minutoLimite))) {
+    return true;
   }
 
   return false;
@@ -35,7 +33,7 @@ export const tarefaSchema = Yup.object().shape({
   data_inicio_programado: Yup.date()
   .required('Estimativa necessária')
   .test('horario', 'Horário permitido entre 9h e 18h', function (value) {
-    return horarioPermitido(value.getHours());
+    return horarioPermitido(value);
   }),
   data_fim_programado: Yup.date()
     .required('Estimativa necessária')
@@ -48,16 +46,16 @@ export const tarefaSchema = Yup.object().shape({
       }
     })
     .test('horario', 'Horário permitido entre 9h e 18h', function (value) {
-      return horarioPermitido(value.getHours());
+      return horarioPermitido(value);
     }),
   data_inicio_real: Yup.date()
   .nullable()
   .max(maximo, 'A data não pode estar no futuro')
   .test('horario', 'Horário permitido entre 9h e 18h', function (value) {
-    if (value === undefined || value === null) {
-      return true;
+    if (value) {
+      return horarioPermitido(value);
     }
-    return horarioPermitido(value.getHours());
+    return true;
   }),
   data_fim_real: Yup.date()
     .nullable()
@@ -71,10 +69,10 @@ export const tarefaSchema = Yup.object().shape({
       }
     })
     .test('horario', 'Horário permitido entre 9h e 18h', function (value) {
-      if (value === undefined || value === null) {
-        return true;
+      if (value) {
+        return horarioPermitido(value);
       }
-      return horarioPermitido(value.getHours());
+      return true;
     }),
   interrompido_at: Yup.date().nullable(),
   interrompido_motivo: Yup.date().nullable(),
