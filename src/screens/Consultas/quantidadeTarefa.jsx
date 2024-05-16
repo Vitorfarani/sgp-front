@@ -137,6 +137,37 @@ const columnsFields = [
     ]
   },
   {
+    field: 'inicio_apos_periodo',
+    label: 'Início Após Período',
+    colspan: 4,
+    color: '#FFFFFF',
+    backgroundColor: '#330a04',
+    subColumns: [
+      {
+        field: 'inicio_apos_periodo',
+        label: 'Fim Após Período',
+        colspan: 2,
+        color: '#FFFFFF',
+        backgroundColor: '#330a04',
+        nestedColumns: [
+          { field: 'inicio_apos_periodo_fim_apos_periodo_no_prazo', label: 'Prazo', color: 'white', backgroundColor: '#00780e', borderRadius:'10%' },
+          { field: 'inicio_apos_periodo_fim_apos_periodo_em_atraso', label: 'Atrasado', color: 'white', backgroundColor: '#a30019', borderRadius:'10%'}
+        ]
+      },
+      {
+        field: 'inicio_fim_apos_periodo',
+        label: 'Não Terminou',
+        colspan: 2,
+        color: '#FFFFFF',
+        backgroundColor: '#330a04',
+        nestedColumns: [
+          { field: 'inicio_apos_periodo_nao_finalizado_no_prazo', label: 'Prazo', color: 'white', backgroundColor: '#00780e', borderRadius:'10%' },
+          { field: 'inicio_apos_periodo_nao_finalizado_em_atraso', label: 'Atrasado', color: 'white', backgroundColor: '#a30019', borderRadius:'10%'}
+        ]
+      },
+    ]
+  },
+  {
     field: 'nao_iniciada',
     label: 'Não Iniciada',
     colspan: 2,
@@ -186,6 +217,7 @@ export default function ConsultaQuantidadeTarefa() {
     }
     const mappedData = {
 
+      //INICIO ANTES DO PERÍODO
       inicio_antes_periodo_fim_antes_periodo_no_prazo: results.inicio_antes_periodo ? results.inicio_antes_periodo.fim_antes_periodo.no_prazo : 0,
       inicio_antes_periodo_fim_antes_periodo_em_atraso: results.inicio_antes_periodo ? results.inicio_antes_periodo.fim_antes_periodo.em_atraso : 0,
 
@@ -201,6 +233,7 @@ export default function ConsultaQuantidadeTarefa() {
       inicio_antes_periodo_total_prazo: results.inicio_antes_periodo ? results.inicio_antes_periodo.total_prazo : 0,
       inicio_antes_periodo_total_atraso: results.inicio_antes_periodo ? results.inicio_antes_periodo.total_atraso : 0,
 
+     //INICIO NO PERÍODO      
       inicio_no_periodo_fim_no_periodo_no_prazo: results.inicio_no_periodo ? results.inicio_no_periodo.fim_no_periodo.no_prazo : 0,
       inicio_no_periodo_fim_no_periodo_em_atraso: results.inicio_no_periodo ? results.inicio_no_periodo.fim_no_periodo.em_atraso : 0,
 
@@ -213,10 +246,18 @@ export default function ConsultaQuantidadeTarefa() {
       inicio_no_periodo_total_prazo: results.inicio_no_periodo ? results.inicio_no_periodo.total_prazo : 0,
       inicio_no_periodo_total_atraso: results.inicio_no_periodo ? results.inicio_no_periodo.total_atraso : 0,
 
+     //INICIO APÓS PERÍODO
+      inicio_apos_periodo_fim_apos_periodo_no_prazo: results.inicio_apos_periodo ? results.inicio_apos_periodo.fim_apos_periodo.no_prazo : 0,
+      inicio_apos_periodo_fim_apos_periodo_em_atraso: results.inicio_apos_periodo ? results.inicio_apos_periodo.fim_apos_periodo.em_atraso : 0,
+
+      inicio_apos_periodo_nao_finalizado_no_prazo: results.inicio_apos_periodo ? results.inicio_apos_periodo.nao_finalizado.no_prazo : 0,
+      inicio_apos_periodo_nao_finalizado_em_atraso: results.inicio_apos_periodo ? results.inicio_apos_periodo.nao_finalizado.em_atraso : 0,
+
+      //NÃO INICIADAS
       nao_iniciado_no_prazo: results.nao_iniciado ? results.nao_iniciado.no_prazo : 0,
       nao_iniciado_em_atraso: results.nao_iniciado ? results.nao_iniciado.em_atraso : 0,
 
-
+      //TOTAIS
       total_tarefas: results.total_tarefas || 0,
       total_no_prazo: results.total_no_prazo || 0,
       total_em_atraso: results.total_em_atraso || 0
