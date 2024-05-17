@@ -112,7 +112,7 @@ const Table = ({
                 />
               </th>
             )}
-            {columns.map((column, index) => (
+            {columns.map((column) => (
               <th
                 key={column.field}
                 onClick={() => handleSort(column)}
@@ -120,51 +120,63 @@ const Table = ({
                   cursor: column.enabledOrder ? 'pointer' : 'default',
                   background: column.backgroundColor,
                   borderRadius: column.borderRadius,
+                  border: 'none',
                 }}
                 colSpan={column.colspan ?? 1}
                 className={column.subColumns && column.subColumns.length > 0 ? 'text-center' : ''}
               >
                 <span style={{ color: column.color, verticalAlign: 'middle' }}>{column.label}</span>
                 {column.subColumns && column.subColumns.length > 0 && (
-                  <tr>
-                    {column.subColumns.map((subColumn, subIndex) => (
-                      <th
-                        key={subColumn.field}
-                        onClick={() => handleSort(subColumn)}
-                        style={{
-                          cursor: subColumn.enabledOrder ? 'pointer' : 'default',
-                          paddingRight: subIndex === column.subColumns.length - 1 ? '0px' : '25px',
-                          borderRadius: subColumn.borderRadius,
-                        }}
-                        className={column.subColumns && column.subColumns.length > 0 ? 'text-center' : ''}
-                      >
-                        <BadgeColor color={subColumn.backgroundColor}>{subColumn.label}</BadgeColor>
-                        <SortComponent column={subColumn} />
-                        {subColumn.nestedColumns && subColumn.nestedColumns.length > 0 && (
-                          <div>
-                            {subColumn.nestedColumns.map((nestedColumn, nestedIndex) => (
-                              <th
-                                key={nestedColumn.field}
-                                onClick={() => handleSort(nestedColumn)}
-                                style={{
-                                  cursor: nestedColumn.enabledOrder ? 'pointer' : 'default',
-                                  paddingRight: nestedIndex === subColumn.nestedColumns.length - 1 ? '0px' : '10px',
-                                  //background: nestedColumn.backgroundColor,
-                                  borderRadius: nestedColumn.borderRadius,
-                                }}
-                                className={nestedColumn.nestedColumns && nestedColumn.nestedColumns.length > 0 ? 'text-center' : ''}
-                              >
-                                <div key={nestedColumn.field} style={{ display: 'inline-block', paddingRight: nestedIndex === subColumn.nestedColumns.length - 1 ? '0px' : '20px' }}>
-                                  <BadgeColor color={nestedColumn.backgroundColor}>{nestedColumn.label}</BadgeColor>
-                                  <SortComponent column={nestedColumn} />
-                                </div>
-                              </th>
-                            ))}
-                          </div>
-                        )}
-                      </th>
-                    ))}
-                  </tr>
+                  <table className="table table-responsive" style={{ margin: 0 }}>
+                    <thead>
+                      <tr>
+                        {column.subColumns.map((subColumn) => (
+                          <th
+                            key={subColumn.field}
+                            onClick={() => handleSort(subColumn)}
+                            style={{
+                              cursor: subColumn.enabledOrder ? 'pointer' : 'default',
+                              paddingRight: '25px',
+                              borderRadius: subColumn.borderRadius,
+                              background: column.backgroundColor,
+                              border: 'none',
+                            }}
+                            className="text-center"
+                            colSpan={subColumn.colspan ?? 1}
+                          >
+                            <BadgeColor color={subColumn.backgroundColor}>{subColumn.label}</BadgeColor>
+                            <SortComponent column={subColumn} />
+                            {subColumn.nestedColumns && subColumn.nestedColumns.length > 0 && (
+                              <table className="table table-responsive" style={{ margin: 0 }}>
+                                <thead>
+                                  <tr>
+                                    {subColumn.nestedColumns.map((nestedColumn) => (
+                                      <th
+                                        key={nestedColumn.field}
+                                        onClick={() => handleSort(nestedColumn)}
+                                        style={{
+                                          cursor: nestedColumn.enabledOrder ? 'pointer' : 'default',
+                                          paddingRight: '10px',
+                                          borderRadius: nestedColumn.borderRadius,
+                                          background: column.backgroundColor,
+                                          border: 'none',
+                                        }}
+                                        className="text-center"
+                                        colSpan={nestedColumn.colspan ?? 1}
+                                      >
+                                        <BadgeColor color={nestedColumn.backgroundColor}>{nestedColumn.label}</BadgeColor>
+                                        <SortComponent column={nestedColumn} />
+                                      </th>
+                                    ))}
+                                  </tr>
+                                </thead>
+                              </table>
+                            )}
+                          </th>
+                        ))}
+                      </tr>
+                    </thead>
+                  </table>
                 )}
               </th>
             ))}
