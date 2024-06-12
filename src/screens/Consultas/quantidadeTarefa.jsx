@@ -22,6 +22,14 @@ const basefilters = {
 
 const columnsFields = [
   {
+    field: 'colaborador_nome',
+    label: 'Colaborador',
+    backgroundColor: '#331b3b',
+    color: '#FFFFFF',
+    enabledOrder: true,
+    colspan: 1,
+  },
+  {
     field: 'inicio_antes_do_periodo',
     label: 'Início Antes do Período',
     colspan: 10,
@@ -204,6 +212,7 @@ export default function ConsultaQuantidadeTarefa() {
   const [dataInicio, setDataInicio] = useState('');
   const [dataFim, setDataFim] = useState('');
   const [visibleColumns, setVisibleColumns] = useState({
+    colaborador_nome: true,
     inicio_antes_do_periodo: true,
     inicio_no_periodo: true,
     inicio_apos_periodo: true,
@@ -224,56 +233,63 @@ export default function ConsultaQuantidadeTarefa() {
     if (!results || Object.keys(results).length === 0) {
       return [];
     }
-    const mappedData = {
 
-      //INICIO ANTES DO PERÍODO
-      inicio_antes_periodo_fim_antes_periodo_no_prazo: results.inicio_antes_periodo ? results.inicio_antes_periodo.fim_antes_periodo.no_prazo : 0,
-      inicio_antes_periodo_fim_antes_periodo_em_atraso: results.inicio_antes_periodo ? results.inicio_antes_periodo.fim_antes_periodo.em_atraso : 0,
+    const mappedData = Object.keys(results).map(colaboradorId => {
+      const colaborador = results[colaboradorId];
 
-      inicio_antes_periodo_fim_no_periodo_no_prazo: results.inicio_antes_periodo ? results.inicio_antes_periodo.fim_no_periodo.no_prazo : 0,
-      inicio_antes_periodo_fim_no_periodo_em_atraso: results.inicio_antes_periodo ? results.inicio_antes_periodo.fim_no_periodo.em_atraso : 0,
+      return {
+        colaborador_id: colaboradorId,
+        colaborador_nome: colaborador.colaborador_nome,
 
-      inicio_antes_periodo_fim_fora_periodo_no_prazo: results.inicio_antes_periodo ? results.inicio_antes_periodo.fim_fora_periodo.no_prazo : 0,
-      inicio_antes_periodo_fim_fora_periodo_em_atraso: results.inicio_antes_periodo ? results.inicio_antes_periodo.fim_fora_periodo.em_atraso : 0,
+        //INICIO ANTES DO PERÍODO
+        inicio_antes_periodo_fim_antes_periodo_no_prazo: colaborador.inicio_antes_periodo ? colaborador.inicio_antes_periodo.fim_antes_periodo.no_prazo : 0,
+        inicio_antes_periodo_fim_antes_periodo_em_atraso: colaborador.inicio_antes_periodo ? colaborador.inicio_antes_periodo.fim_antes_periodo.em_atraso : 0,
 
-      inicio_antes_periodo_nao_finalizado_no_prazo: results.inicio_antes_periodo ? results.inicio_antes_periodo.nao_finalizado.no_prazo : 0,
-      inicio_antes_periodo_nao_finalizado_em_atraso: results.inicio_antes_periodo ? results.inicio_antes_periodo.nao_finalizado.em_atraso : 0,
+        inicio_antes_periodo_fim_no_periodo_no_prazo: colaborador.inicio_antes_periodo ? colaborador.inicio_antes_periodo.fim_no_periodo.no_prazo : 0,
+        inicio_antes_periodo_fim_no_periodo_em_atraso: colaborador.inicio_antes_periodo ? colaborador.inicio_antes_periodo.fim_no_periodo.em_atraso : 0,
 
-      inicio_antes_periodo_total_prazo: results.inicio_antes_periodo ? results.inicio_antes_periodo.total_prazo : 0,
-      inicio_antes_periodo_total_atraso: results.inicio_antes_periodo ? results.inicio_antes_periodo.total_atraso : 0,
+        inicio_antes_periodo_fim_fora_periodo_no_prazo: colaborador.inicio_antes_periodo ? colaborador.inicio_antes_periodo.fim_fora_periodo.no_prazo : 0,
+        inicio_antes_periodo_fim_fora_periodo_em_atraso: colaborador.inicio_antes_periodo ? colaborador.inicio_antes_periodo.fim_fora_periodo.em_atraso : 0,
 
-      //INICIO NO PERÍODO      
-      inicio_no_periodo_fim_no_periodo_no_prazo: results.inicio_no_periodo ? results.inicio_no_periodo.fim_no_periodo.no_prazo : 0,
-      inicio_no_periodo_fim_no_periodo_em_atraso: results.inicio_no_periodo ? results.inicio_no_periodo.fim_no_periodo.em_atraso : 0,
+        inicio_antes_periodo_nao_finalizado_no_prazo: colaborador.inicio_antes_periodo ? colaborador.inicio_antes_periodo.nao_finalizado.no_prazo : 0,
+        inicio_antes_periodo_nao_finalizado_em_atraso: colaborador.inicio_antes_periodo ? colaborador.inicio_antes_periodo.nao_finalizado.em_atraso : 0,
 
-      inicio_no_periodo_fim_fora_periodo_no_prazo: results.inicio_no_periodo ? results.inicio_no_periodo.fim_fora_periodo.no_prazo : 0,
-      inicio_no_periodo_fim_fora_periodo_em_atraso: results.inicio_no_periodo ? results.inicio_no_periodo.fim_fora_periodo.em_atraso : 0,
+        inicio_antes_periodo_total_prazo: colaborador.inicio_antes_periodo ? colaborador.inicio_antes_periodo.total_prazo : 0,
+        inicio_antes_periodo_total_atraso: colaborador.inicio_antes_periodo ? colaborador.inicio_antes_periodo.total_atraso : 0,
 
-      inicio_periodo_nao_finalizado_no_prazo: results.inicio_no_periodo ? results.inicio_no_periodo.nao_finalizado.no_prazo : 0,
-      inicio_periodo_nao_finalizado_em_atraso: results.inicio_no_periodo ? results.inicio_no_periodo.nao_finalizado.em_atraso : 0,
+        //INICIO NO PERÍODO
+        inicio_no_periodo_fim_no_periodo_no_prazo: colaborador.inicio_no_periodo ? colaborador.inicio_no_periodo.fim_no_periodo.no_prazo : 0,
+        inicio_no_periodo_fim_no_periodo_em_atraso: colaborador.inicio_no_periodo ? colaborador.inicio_no_periodo.fim_no_periodo.em_atraso : 0,
 
-      inicio_no_periodo_total_prazo: results.inicio_no_periodo ? results.inicio_no_periodo.total_prazo : 0,
-      inicio_no_periodo_total_atraso: results.inicio_no_periodo ? results.inicio_no_periodo.total_atraso : 0,
+        inicio_no_periodo_fim_fora_periodo_no_prazo: colaborador.inicio_no_periodo ? colaborador.inicio_no_periodo.fim_fora_periodo.no_prazo : 0,
+        inicio_no_periodo_fim_fora_periodo_em_atraso: colaborador.inicio_no_periodo ? colaborador.inicio_no_periodo.fim_fora_periodo.em_atraso : 0,
 
-      //INICIO APÓS PERÍODO
-      inicio_apos_periodo_fim_apos_periodo_no_prazo: results.inicio_apos_periodo ? results.inicio_apos_periodo.fim_apos_periodo.no_prazo : 0,
-      inicio_apos_periodo_fim_apos_periodo_em_atraso: results.inicio_apos_periodo ? results.inicio_apos_periodo.fim_apos_periodo.em_atraso : 0,
+        inicio_periodo_nao_finalizado_no_prazo: colaborador.inicio_no_periodo ? colaborador.inicio_no_periodo.nao_finalizado.no_prazo : 0,
+        inicio_periodo_nao_finalizado_em_atraso: colaborador.inicio_no_periodo ? colaborador.inicio_no_periodo.nao_finalizado.em_atraso : 0,
 
-      inicio_apos_periodo_nao_finalizado_no_prazo: results.inicio_apos_periodo ? results.inicio_apos_periodo.nao_finalizado.no_prazo : 0,
-      inicio_apos_periodo_nao_finalizado_em_atraso: results.inicio_apos_periodo ? results.inicio_apos_periodo.nao_finalizado.em_atraso : 0,
+        inicio_no_periodo_total_prazo: colaborador.inicio_no_periodo ? colaborador.inicio_no_periodo.total_prazo : 0,
+        inicio_no_periodo_total_atraso: colaborador.inicio_no_periodo ? colaborador.inicio_no_periodo.total_atraso : 0,
 
-      //NÃO INICIADAS
-      nao_iniciado_no_prazo: results.nao_iniciado ? results.nao_iniciado.no_prazo : 0,
-      nao_iniciado_em_atraso: results.nao_iniciado ? results.nao_iniciado.em_atraso : 0,
+        //INICIO APÓS PERÍODO
+        inicio_apos_periodo_fim_apos_periodo_no_prazo: colaborador.inicio_apos_periodo ? colaborador.inicio_apos_periodo.fim_apos_periodo.no_prazo : 0,
+        inicio_apos_periodo_fim_apos_periodo_em_atraso: colaborador.inicio_apos_periodo ? colaborador.inicio_apos_periodo.fim_apos_periodo.em_atraso : 0,
+        inicio_apos_periodo_nao_finalizado_no_prazo: colaborador.inicio_apos_periodo ? colaborador.inicio_apos_periodo.nao_finalizado.no_prazo : 0,
+        inicio_apos_periodo_nao_finalizado_em_atraso: colaborador.inicio_apos_periodo ? colaborador.inicio_apos_periodo.nao_finalizado.em_atraso : 0,
 
-      //TOTAIS
-      total_tarefas: results.total_tarefas || 0,
-      total_no_prazo: results.total_no_prazo || 0,
-      total_em_atraso: results.total_em_atraso || 0
-    };
+        //NÃO INICIADAS
+        nao_iniciado_no_prazo: colaborador.nao_iniciado ? colaborador.nao_iniciado.no_prazo : 0,
+        nao_iniciado_em_atraso: colaborador.nao_iniciado ? colaborador.nao_iniciado.em_atraso : 0,
 
-    return [mappedData];
+        //TOTAIS
+        total_tarefas: colaborador.total_tarefas || 0,
+        total_no_prazo: colaborador.total_no_prazo || 0,
+        total_em_atraso: colaborador.total_em_atraso || 0,
+      };
+    });
+
+    return mappedData;
   });
+
 
   const toggleColumnVisibility = (columnName) => {
     setVisibleColumns((prevVisibleColumns) => ({
@@ -297,38 +313,38 @@ export default function ConsultaQuantidadeTarefa() {
   return (
     <Background>
       <HeaderTitle
-      title="Consultar Agrupamentos de Tarefas" optionsButtons = {[
-        {
-          label: visibleColumns.inicio_antes_do_periodo ? 'Esconder Início Antes do Período' : 'Mostrar Início Antes do Período',
-          onClick: () => toggleColumnVisibility('inicio_antes_do_periodo'),
-          icon: visibleColumns.inicio_antes_do_periodo ? FiEyeOff : FiEye,
-        },
-        {
-          label: visibleColumns.inicio_no_periodo ? 'Esconder Início no Período' : 'Mostrar Início no Período',
-          onClick: () => toggleColumnVisibility('inicio_no_periodo'),
-          icon: visibleColumns.inicio_no_periodo ? FiEyeOff : FiEye,
-        },
-        {
-          label: visibleColumns.inicio_apos_periodo ? 'Esconder Início Após o Período' : 'Mostrar Início Após o Período',
-          onClick: () => toggleColumnVisibility('inicio_apos_periodo'),
-          icon: visibleColumns.inicio_apos_periodo ? FiEyeOff : FiEye,
-        },
-        {
-          label: visibleColumns.nao_iniciada ? 'Esconder Não Iniciada' : 'Mostrar Não Iniciada',
-          onClick: () => toggleColumnVisibility('nao_iniciada'),
-          icon: visibleColumns.nao_iniciada ? FiEyeOff : FiEye,
-        },
-        {
-          label: visibleColumns.total ? 'Esconder Total' : 'Mostrar Total',
-          onClick: () => toggleColumnVisibility('total'),
-          icon: visibleColumns.total ? FiEyeOff : FiEye,
-        },
-        {
-          label: visibleColumns.total_tarefas ? 'Esconder Total de Tarefas' : 'Mostrar Total de Tarefas',
-          onClick: () => toggleColumnVisibility('total_tarefas'),
-          icon: visibleColumns.total_tarefas ? FiEyeOff : FiEye,
-        },
-      ]}
+        title="Consultar Agrupamentos de Tarefas" optionsButtons={[
+          {
+            label: visibleColumns.inicio_antes_do_periodo ? 'Esconder Início Antes do Período' : 'Mostrar Início Antes do Período',
+            onClick: () => toggleColumnVisibility('inicio_antes_do_periodo'),
+            icon: visibleColumns.inicio_antes_do_periodo ? FiEyeOff : FiEye,
+          },
+          {
+            label: visibleColumns.inicio_no_periodo ? 'Esconder Início no Período' : 'Mostrar Início no Período',
+            onClick: () => toggleColumnVisibility('inicio_no_periodo'),
+            icon: visibleColumns.inicio_no_periodo ? FiEyeOff : FiEye,
+          },
+          {
+            label: visibleColumns.inicio_apos_periodo ? 'Esconder Início Após o Período' : 'Mostrar Início Após o Período',
+            onClick: () => toggleColumnVisibility('inicio_apos_periodo'),
+            icon: visibleColumns.inicio_apos_periodo ? FiEyeOff : FiEye,
+          },
+          {
+            label: visibleColumns.nao_iniciada ? 'Esconder Não Iniciada' : 'Mostrar Não Iniciada',
+            onClick: () => toggleColumnVisibility('nao_iniciada'),
+            icon: visibleColumns.nao_iniciada ? FiEyeOff : FiEye,
+          },
+          {
+            label: visibleColumns.total ? 'Esconder Total' : 'Mostrar Total',
+            onClick: () => toggleColumnVisibility('total'),
+            icon: visibleColumns.total ? FiEyeOff : FiEye,
+          },
+          {
+            label: visibleColumns.total_tarefas ? 'Esconder Total de Tarefas' : 'Mostrar Total de Tarefas',
+            onClick: () => toggleColumnVisibility('total_tarefas'),
+            icon: visibleColumns.total_tarefas ? FiEyeOff : FiEye,
+          },
+        ]}
       />
       <Section>
         <Table
