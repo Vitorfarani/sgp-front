@@ -286,10 +286,56 @@ export default function ConsultaQuantidadeTarefa() {
         total_em_atraso: colaborador.total_em_atraso || 0,
       };
     });
+      
+        const totais = {
+          colaborador_id: 'totais',
+          colaborador_nome: 'TOTAIS',
+    
+          inicio_antes_periodo_fim_antes_periodo_no_prazo: 0,
+          inicio_antes_periodo_fim_antes_periodo_em_atraso: 0,
+          inicio_antes_periodo_fim_no_periodo_no_prazo: 0,
+          inicio_antes_periodo_fim_no_periodo_em_atraso: 0,
+          inicio_antes_periodo_fim_fora_periodo_no_prazo: 0,
+          inicio_antes_periodo_fim_fora_periodo_em_atraso: 0,
+          inicio_antes_periodo_nao_finalizado_no_prazo: 0,
+          inicio_antes_periodo_nao_finalizado_em_atraso: 0,
+          inicio_antes_periodo_total_prazo: 0,
+          inicio_antes_periodo_total_atraso: 0,
+    
+          inicio_no_periodo_fim_no_periodo_no_prazo: 0,
+          inicio_no_periodo_fim_no_periodo_em_atraso: 0,
+          inicio_no_periodo_fim_fora_periodo_no_prazo: 0,
+          inicio_no_periodo_fim_fora_periodo_em_atraso: 0,
+          inicio_periodo_nao_finalizado_no_prazo: 0,
+          inicio_periodo_nao_finalizado_em_atraso: 0,
+          inicio_no_periodo_total_prazo: 0,
+          inicio_no_periodo_total_atraso: 0,
+    
+          inicio_apos_periodo_fim_apos_periodo_no_prazo: 0,
+          inicio_apos_periodo_fim_apos_periodo_em_atraso: 0,
+          inicio_apos_periodo_nao_finalizado_no_prazo: 0,
+          inicio_apos_periodo_nao_finalizado_em_atraso: 0,
+    
+          nao_iniciado_no_prazo: 0,
+          nao_iniciado_em_atraso: 0,
+    
+          total_tarefas: 0,
+          total_no_prazo: 0,
+          total_em_atraso: 0,
+        };
+    
+        mappedData.forEach(item => {
+          for (let key in totais) {
+            if (key !== 'colaborador_id' && key !== 'colaborador_nome') {
+              totais[key] += item[key];
+            }
+          }
+        });
+    
+        mappedData.push(totais);
 
     return mappedData;
   });
-
 
   const toggleColumnVisibility = (columnName) => {
     setVisibleColumns((prevVisibleColumns) => ({
