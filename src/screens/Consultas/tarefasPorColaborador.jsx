@@ -8,6 +8,8 @@ import { dateDiffWithLabels, dateEnToPtWithHour } from '@/utils/helpers/date';
 import { TooltipPrazo } from "@/components/index";
 import { DateTest } from "@/components/index";
 import orderBy from 'lodash/orderBy';
+import { listSetores } from "@/services/setores";
+import { listProjetos } from "@/services/projeto/projetos";
 
 const basefilters = {
     search: '',
@@ -160,10 +162,21 @@ export default function ConsultaTarefasPorColaborador() {
                     rows={rows}
                     isLoading={isTableLoading}
                     filtersState={filtersState}
-                    searchPlaceholder="Consultar Projetos"
+                    //searchPlaceholder="Consultar Projetos"
                     filtersComponentes={
                         <>
-                            <Col md={3}>
+                            {/* <Col md={2}>
+                                <SelectAsync
+                                    placeholder="Filtrar por Projeto"
+                                    loadOptions={(search) => listProjetos('?search=' + search)}
+                                    getOptionLabel={(option) => option.nome}
+                                    onChange={(projeto) => {
+                                        handleChangeFilters('projeto_id', projeto ? projeto.id : null);
+                                    }}
+                                    isClearable
+                                />
+                            </Col> */}
+                            <Col md={2}>
                                 <SelectAsync
                                     placeholder="Filtrar por Colaborador"
                                     loadOptions={(search) => listColaboradores('?search=' + search)}
@@ -174,6 +187,17 @@ export default function ConsultaTarefasPorColaborador() {
                                     isClearable
                                 />
                             </Col>
+                            {/* <Col md={2}>
+                                <SelectAsync
+                                    placeholder="Filtrar por Setor"
+                                    loadOptions={(search) => listSetores('?search=' + search)}
+                                    getOptionLabel={(option) => option.nome}
+                                    onChange={(setor) => {
+                                        handleChangeFilters('setor_id', setor ? setor.id : null);
+                                    }}
+                                    isClearable
+                                />
+                            </Col> */}
                             <Col md={2}>
                                 <DateTest
                                     id="dataFim"
