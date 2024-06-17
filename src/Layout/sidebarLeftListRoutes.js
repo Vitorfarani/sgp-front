@@ -43,6 +43,14 @@ export default [
         childrens: []
       },
       {
+        nome: 'Colaborador/Projeto',
+        nivel_acesso: 2,
+        icon: FaLayerGroup,
+        path: 'consultas/colaboradorPorProjeto',
+        rolesPermited: [],
+        childrens: []
+      },
+      {
         nome: 'Tarefas/Colaborador',
         nivel_acesso: 2,
         icon: FaTasks,
