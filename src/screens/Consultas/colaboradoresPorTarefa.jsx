@@ -8,6 +8,7 @@ import { FcClearFilters } from "react-icons/fc";
 import { listProjetos } from "@/services/projeto/projetos";
 import { dateDiffWithLabels, dateEnToPtWithHour } from "@/utils/helpers/date";
 import orderBy from 'lodash/orderBy';
+import { listSetores } from "@/services/setores";
 
 const basefilters = {
     search: '',
@@ -178,13 +179,24 @@ export default function ConsultaColaboradoresPorTarefa() {
                     //searchPlaceholder="Consultar Projetos"
                     filtersComponentes={
                         <>
-                            <Col md={3} >
+                            <Col md={2} >
                                 <SelectAsync
                                     placeholder="Filtrar por Projeto"
                                     loadOptions={(search) => listProjetos('?search=' + search)}
                                     getOptionLabel={(option) => option.nome}
                                     onChange={(projeto) => {
                                         handleChangeFilters('projeto_id', projeto ? projeto.id : null);
+                                    }}
+                                    isClearable
+                                />
+                            </Col>
+                            <Col md={2} >
+                                <SelectAsync
+                                    placeholder="Filtrar por Setor"
+                                    loadOptions={(search) => listSetores('?search=' + search)}
+                                    getOptionLabel={(option) => option.sigla + " - " + option.nome}
+                                    onChange={(setor) => {
+                                        handleChangeFilters('setor_id', setor ? setor.id : null);
                                     }}
                                     isClearable
                                 />
