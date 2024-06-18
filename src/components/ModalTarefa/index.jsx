@@ -15,7 +15,7 @@ import ColaboradoresSelecteds from './ColaboradoresSelecteds';
 import { createTarefaColaborador, deleteTarefaColaborador, updateTarefaColaborador } from '@/services/tarefa/tarefaColaborador';
 import { useTheme } from '@/utils/context/ThemeProvider';
 import { listTarefaBase } from '@/services/tarefa/tarefaBase';
-import { dateDiffWithLabels, diffDatetimes, diffDatetimesHumanized } from '@/utils/helpers/date';
+import { dateDiffWithLabels, datetimeToPt, diffDatetimes, diffDatetimesHumanized } from '@/utils/helpers/date';
 import Checklist from '../Checklist';
 import { useAuth } from '@/utils/context/AuthProvider';
 import { formatForm } from '@/utils/helpers/forms';
@@ -140,6 +140,30 @@ const ModalTarefa = forwardRef(({
       handleGlobalLoading.show();
       createTarefaColaborador(data)
         .then((result) => {
+          if(result.tarefas_programadas_conflito.length > 0) {
+            const mensagem = result.tarefas_programadas_conflito.reduce((prev, curr, index, arr) => `
+              ${prev}
+              <b>Tarefa:</b> ${curr.nome}<br/>
+              <b>Data Programada:</b>
+              ${datetimeToPt(curr.data_inicio_programado, false)}
+              - 
+              ${datetimeToPt(curr.data_fim_programado, false)}<br/>
+              <a href="/projetos/visualizar/${curr.projeto_id}?tarefa=${curr.id}" target="_blank">
+                Ir para tarefa
+              </a> 
+              ${arr.length > 1 && index < arr.length - 1 ? '<br/><br/>' : ''}
+            `, `
+              Colaborador(a) foi adicionado(a) nessa tarefa,
+              porém possui outra tarefa programada durante esse período:<br/><br/>
+            `)
+
+            callGlobalAlert({ 
+              title: 'Aviso sobre data programada', 
+              message: mensagem, 
+              color: 'var(--bs-primary)' 
+            })
+          }
+
           callGlobalNotify({ message: result.message, variant: 'success' })
           setFormData((prevState) => ({
             ...prevState,

@@ -44,10 +44,7 @@ export const datetimeToPt = function (d, justDate = true) {
     timeArr.push('00')
   }
   d = `${d[2]}/${d[1]}/${d[0]}`
-  if(!justDate) {
-    `${d} ${timeArr.join(':')}`
-  }
-  return d
+  return justDate ? d : `${d} ${timeArr.join(':')}`
 }
 
 export const convertDate = function (varDate, splitDateTime = false) {
