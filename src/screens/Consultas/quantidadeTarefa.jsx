@@ -305,7 +305,7 @@ export default function ConsultaQuantidadeTarefa() {
       
         const totais = {
           colaborador_id: 'totais',
-          colaborador_nome: 'TOTAIS',
+          colaborador_nome: 'TOTAL',
     
           inicio_antes_periodo_fim_antes_periodo_no_prazo: 0,
           inicio_antes_periodo_fim_antes_periodo_em_atraso: 0,

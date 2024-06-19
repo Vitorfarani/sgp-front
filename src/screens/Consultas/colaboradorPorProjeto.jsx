@@ -103,7 +103,6 @@ export default function ConsultaColaboradorPorProjeto() {
         for (const [key, colaboradorData] of Object.entries(results)) {
             const { colaborador_nome, projetos } = colaboradorData || {};
 
-            // Iterate through each projeto for the collaborator
             for (const [projetoKey, projetoData] of Object.entries(projetos)) {
                 const {
                     projeto_nome,
@@ -139,6 +138,28 @@ export default function ConsultaColaboradorPorProjeto() {
                 });
             }
         }
+
+        const totais = {
+            colaborador_nome: 'TOTAL',
+            projeto_nome: '',
+
+            total_entregues_prazo: 0,
+            total_entregues_atraso: 0,
+            total_desenvolvimento_prazo: 0,
+            total_desenvolvimento_atraso: 0,
+            total_nao_iniciadas_prazo: 0,
+            total_nao_iniciadas_atraso: 0,
+        };
+
+        mappedData.forEach(item => {
+            for (let key in totais) {
+              if (key !== 'colaborador_id' && key !== 'colaborador_nome' && key !== 'projeto_id' && key !== 'projeto_nome' ) {
+                totais[key] += item[key];
+              }
+            }
+          });
+      
+          mappedData.push(totais);
 
         const sortedData = orderBy(mappedData, [filtersState.sortedColumn], [filtersState.sortOrder]);
 
