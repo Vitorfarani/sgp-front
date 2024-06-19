@@ -49,17 +49,27 @@ export const tarefaSchema = Yup.object().shape({
       return horarioPermitido(value);
     }),
   data_inicio_real: Yup.date()
-  .nullable()
-  .max(maximo, 'A data não pode estar no futuro')
-  .test('horario', 'Horário permitido entre 9h e 18h', function (value) {
-    if (value) {
-      return horarioPermitido(value);
-    }
-    return true;
-  }),
+    .nullable()
+    .max(maximo, 'A data não pode estar no futuro')
+    .test('horario', 'Horário permitido entre 9h e 18h', function (value) {
+      if (value) {
+        return horarioPermitido(value);
+      }
+      return true;
+    })
+    .test('data_fim_real_preenchida', 'Informação necessária', function() {
+      const form = this.parent;
+      return !form['data_fim_real'] || form['data_inicio_real'];
+    }),
   data_fim_real: Yup.date()
     .nullable()
     .max(maximo, 'A data não pode estar no futuro')
+    .test('horario', 'Horário permitido entre 9h e 18h', function (value) {
+      if (value) {
+        return horarioPermitido(value);
+      }
+      return true;
+    })
     .when('data_inicio_real', (data_inicio, schema) => {
       if (data_inicio[0] !== null) {
         return schema.min(
@@ -67,12 +77,6 @@ export const tarefaSchema = Yup.object().shape({
           'Fim não pode ser anterior a início'
         );
       }
-    })
-    .test('horario', 'Horário permitido entre 9h e 18h', function (value) {
-      if (value) {
-        return horarioPermitido(value);
-      }
-      return true;
     }),
   interrompido_at: Yup.date().nullable(),
   interrompido_motivo: Yup.date().nullable(),
