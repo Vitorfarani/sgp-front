@@ -236,11 +236,27 @@ export default function ConsultaQuantidadeTarefa() {
 
     const mappedData = Object.keys(results).map(colaboradorId => {
       const colaborador = results[colaboradorId];
-
+    
+      const abreviarNome = (nomeCompleto) => {
+        const partesNome = nomeCompleto.split(' ');
+        if (partesNome.length <= 1) return nomeCompleto; 
+    
+        const primeiroNome = partesNome[0];
+        let sobrenomesAbreviados = [];
+    
+        for (let i = 1; i < partesNome.length; i++) {
+          const nome = partesNome[i];
+          if (!["DE", "DA", "DO"].includes(nome.toUpperCase())) {
+            sobrenomesAbreviados.push(nome.charAt(0).toUpperCase() + '.');
+          }
+        }
+    
+        return `${primeiroNome} ${sobrenomesAbreviados.join(' ')}`;
+      };
+    
       return {
         colaborador_id: colaboradorId,
-        colaborador_nome: colaborador.colaborador_nome,
-
+        colaborador_nome: abreviarNome(colaborador.colaborador_nome),
         //INICIO ANTES DO PERÍODO
         inicio_antes_periodo_fim_antes_periodo_no_prazo: colaborador.inicio_antes_periodo ? colaborador.inicio_antes_periodo.fim_antes_periodo.no_prazo : 0,
         inicio_antes_periodo_fim_antes_periodo_em_atraso: colaborador.inicio_antes_periodo ? colaborador.inicio_antes_periodo.fim_antes_periodo.em_atraso : 0,
@@ -289,7 +305,7 @@ export default function ConsultaQuantidadeTarefa() {
       
         const totais = {
           colaborador_id: 'totais',
-          colaborador_nome: 'TOTAIS',
+          colaborador_nome: 'TOTAL',
     
           inicio_antes_periodo_fim_antes_periodo_no_prazo: 0,
           inicio_antes_periodo_fim_antes_periodo_em_atraso: 0,

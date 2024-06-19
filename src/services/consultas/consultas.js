@@ -27,3 +27,8 @@ export const listTarefasPorAgrupamento = async (params = "") => {
   let url = `dashboard/tarefasAgrupadasColaboradorPrazos${params}`;
   return _get(url);
 }
+
+export const listColaboradorProjetosStatusTarefa = async (params = "") => {
+  let url = `dashboard/colaboradorProjetosStatusTarefa${params}`;
+  return _get(url);
+}
