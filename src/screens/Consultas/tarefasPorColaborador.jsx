@@ -165,7 +165,7 @@ export default function ConsultaTarefasPorColaborador() {
                     //searchPlaceholder="Consultar Projetos"
                     filtersComponentes={
                         <>
-                            {/* <Col md={2}>
+                            <Col md={2}>
                                 <SelectAsync
                                     placeholder="Filtrar por Projeto"
                                     loadOptions={(search) => listProjetos('?search=' + search)}
@@ -175,7 +175,7 @@ export default function ConsultaTarefasPorColaborador() {
                                     }}
                                     isClearable
                                 />
-                            </Col> */}
+                            </Col>
                             <Col md={2}>
                                 <SelectAsync
                                     placeholder="Filtrar por Colaborador"
@@ -187,7 +187,7 @@ export default function ConsultaTarefasPorColaborador() {
                                     isClearable
                                 />
                             </Col>
-                            {/* <Col md={2}>
+                            <Col md={2}>
                                 <SelectAsync
                                     placeholder="Filtrar por Setor"
                                     loadOptions={(search) => listSetores('?search=' + search)}
@@ -197,7 +197,7 @@ export default function ConsultaTarefasPorColaborador() {
                                     }}
                                     isClearable
                                 />
-                            </Col> */}
+                            </Col>
                             <Col md={2}>
                                 <DateTest
                                     id="dataFim"
