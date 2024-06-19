@@ -192,6 +192,17 @@ export default function ConsultaColaboradoresPorTarefa() {
                             </Col>
                             <Col md={2} >
                                 <SelectAsync
+                                    placeholder="Filtrar por Colaborador"
+                                    loadOptions={(search) => listColaboradores('?search=' + search)}
+                                    getOptionLabel={(option) => option.nome}
+                                    onChange={(colaborador) => {
+                                        handleChangeFilters('colaborador_id', colaborador ? colaborador.id : null);
+                                    }}
+                                    isClearable
+                                />
+                            </Col>
+                            <Col md={2} >
+                                <SelectAsync
                                     placeholder="Filtrar por Setor"
                                     loadOptions={(search) => listSetores('?search=' + search)}
                                     getOptionLabel={(option) => option.sigla + " - " + option.nome}
