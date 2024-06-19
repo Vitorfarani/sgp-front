@@ -1,17 +1,18 @@
 import { Background, DateTest, HeaderTitle, Section, SelectAsync, Table, TooltipPrazo } from "@/components/index";
 import useTable from "@/utils/hooks/useTable";
 import { useEffect, useState } from "react";
-import { listColaboradorProjetosTarefa, listProjetoColaboradoresTarefa } from "@/services/consultas/consultas";
+import { listColaboradorProjetosStatusTarefa} from "@/services/consultas/consultas";
 import { Col } from "react-bootstrap";
 import { listProjetos } from "@/services/projeto/projetos";
 import { listColaboradores } from "@/services/colaborador/colaboradores";
-import { dateDiffWithLabels, dateEnToPtWithHour } from "@/utils/helpers/date";
+import { listSetores } from "@/services/setores";
 import orderBy from 'lodash/orderBy';
+
 
 const basefilters = {
     search: '',
     perPage: 20,
-    selectedRows: [],
+    //selectedRows: [],
     page: 1,
     sortedColumn: 'id',
     colaborador: null,
@@ -19,55 +20,69 @@ const basefilters = {
 };
 
 const columnsFields = [
-    { field: 'colaborador_nome', label: 'Colaborador', enabledOrder: true },
-    { field: 'projeto_nome', label: 'Projeto(s)', enabledOrder: true },
+    
     {
-        field: 'prazo', label: 'Situação no(s) projeto(s)', enabledOrder: false, piper: (value, row) => {
-            const { prazo_label } = row;
-            return <TooltipPrazo prazoLabels={prazo_label} />;
-        },
-    },
+        field: 'colaborador_nome',
+        label: 'Colaborador',
+        backgroundColor: '#435678',
+        color: '#FFFFFF',
+        enabledOrder: true,
+        colspan: 1,
+      },
+      {
+        field: 'projeto_nome',
+        label: 'Projeto',
+        backgroundColor: '#5a6d90',
+        color: '#FFFFFF',
+        enabledOrder: true,
+        colspan: 1,
+      },
+      {
+        field: 'Tarefas',
+        label: 'Tarefas',
+        colspan: 6,
+        color: '#FFFFFF',
+        backgroundColor: '#18304a',
+        subColumns: [
+          {
+            field: 'Entregues',
+            label: 'Entregues',
+            colspan: 2,
+            color: '#FFFFFF',
+            backgroundColor: '#18304a',
+            nestedColumns: [
+              { field: 'total_entregues_prazo', label: 'Prazo', color: 'white', backgroundColor: '#00780e', borderRadius: '10%' },
+              { field: 'total_entregues_atraso', label: 'Atrasado', color: 'white', backgroundColor: '#a30019', borderRadius: '10%' }
+            ]
+          },
+          {
+            field: 'Em Desenvolvimento',
+            label: 'Em Desenvolvimento',
+            colspan: 2,
+            color: '#FFFFFF',
+            backgroundColor: '#18304a',
+            nestedColumns: [
+              { field: 'total_desenvolvimento_prazo', label: 'Prazo', color: 'white', backgroundColor: '#00780e', borderRadius: '10%' },
+              { field: 'total_desenvolvimento_atraso', label: 'Atrasado', color: 'white', backgroundColor: '#a30019', borderRadius: '10%' }
+            ]
+          },
+          {
+            field: 'Não Iniciada',
+            label: 'Não Iniciada',
+            colspan: 2,
+            color: '#FFFFFF',
+            backgroundColor: '#18304a',
+            nestedColumns: [
+              { field: 'total_nao_iniciadas_prazo', label: 'Prazo', color: 'white', backgroundColor: '#00780e', borderRadius: '10%' },
+              { field: 'total_nao_iniciadas_atraso', label: 'Atrasado', color: 'white', backgroundColor: '#a30019', borderRadius: '10%' }
+            ]
+          },
+    ]}
 ];
 
 export default function ConsultaColaboradorPorProjeto() {
     const [dataInicio, setDataInicio] = useState('');
     const [dataFim, setDataFim] = useState('');
-
-    const abreviarStatus = (status, tipo) => {
-        const mapeamentoStatus = {
-            projeto: {
-                'Em Desenvolvimento': 'ED',
-                'Em Homologação': 'EH',
-                'Em Produção': 'PR',
-                'Em Negociação': 'EN',
-                'Suspenso': 'SP',
-                'Cancelado': 'CC'
-            },
-            tarefa: {
-                'Em Desenvolvimento': 'ED',
-                'Em Homologação': 'EH',
-                'Em Produção': 'PR',
-                'Em Negociação': 'EN',
-                'Suspensa': 'SP',
-                'Sustentação': 'ST',
-                'Cancelada': 'CC'
-            },
-        };
-        return mapeamentoStatus[tipo][status] || status;
-    };
-
-    const abreviarSetor = (setorArray) => {
-        const palavrasSignificativas = ['de', 'e', 'do', 'da', 'dos', 'das'];
-
-        return setorArray.map((setor) => {
-            const palavras = setor.split(' ');
-            const abreviatura = palavras
-                .filter((palavra) => !palavrasSignificativas.includes(palavra.toLowerCase()))
-                .map((palavra) => palavra.charAt(0))
-                .join('');
-            return abreviatura.toUpperCase();
-        });
-    };
 
     const {
         rows,
@@ -78,70 +93,57 @@ export default function ConsultaColaboradorPorProjeto() {
         handleChangeFilters,
         resetFilters,
         isEmpty,
-    } = useTable(columnsFields, listColaboradorProjetosTarefa, basefilters, (results) => {
+    } = useTable(columnsFields, listColaboradorProjetosStatusTarefa, basefilters, (results) => {
         if (!results || Object.keys(results).length === 0) {
             return [];
         }
 
         const mappedData = [];
+
         for (const [key, colaboradorData] of Object.entries(results)) {
             const { colaborador_nome, projetos } = colaboradorData || {};
 
-            for (const [projetoKey, projeto] of Object.entries(projetos)) {
+            // Iterate through each projeto for the collaborator
+            for (const [projetoKey, projetoData] of Object.entries(projetos)) {
                 const {
                     projeto_nome,
-                    projeto_status,
-                    projeto_fase,
-                    tarefas,
-                } = projeto || {};
+                    tarefas_entregues,
+                    tarefas_em_desenvolvimento,
+                    tarefas_nao_iniciadas,
+                } = projetoData || {};
 
+                const {
+                    total_prazo: total_entregues_prazo,
+                    total_atraso: total_entregues_atraso,
+                } = tarefas_entregues || { total_prazo: 0, total_atraso: 0 };
 
+                const {
+                    total_prazo: total_desenvolvimento_prazo,
+                    total_atraso: total_desenvolvimento_atraso,
+                } = tarefas_em_desenvolvimento || { total_prazo: 0, total_atraso: 0 };
 
-                for (const tarefa of tarefas) {
-                    const {
-                        tarefa_nome,
-                        inicio_programado,
-                        fim_programado,
-                        inicio_real,
-                        fim_real,
-                        tarefa_status,
-                    } = tarefa || {};
+                const {
+                    total_prazo: total_nao_iniciadas_prazo,
+                    total_atraso: total_nao_iniciadas_atraso,
+                } = tarefas_nao_iniciadas || { total_prazo: 0, total_atraso: 0 };
 
-                    const prazoLabels = dateDiffWithLabels(fim_programado, fim_real);
-                    const inicio_programado_pt = inicio_programado !== "N/D" ? dateEnToPtWithHour(inicio_programado) : inicio_programado;
-                    const fim_programado_pt = fim_programado !== "N/D" ? dateEnToPtWithHour(fim_programado) : fim_programado;
-                    const inicio_real_pt = inicio_real !== "N/D" ? dateEnToPtWithHour(inicio_real) : inicio_real;
-                    const fim_real_pt = fim_real !== "N/D" ? dateEnToPtWithHour(fim_real) : fim_real;
-
-
-                    const projeto_status_abreviado = abreviarStatus(projeto_status, "projeto")
-                    const tarefa_status_abreviado = abreviarStatus(tarefa_status, "projeto")
-
-                    mappedData.push({
-                        colaborador_nome: colaborador_nome || "",
-                        projeto_nome: projeto_nome || "",
-                        projeto_status: projeto_status_abreviado || "",
-                        projeto_fase: projeto_fase || "",
-                        tarefa_nome: tarefa_nome || "",
-                        inicio_programado: inicio_programado_pt || "",
-                        fim_programado: fim_programado_pt || "",
-                        inicio_real: inicio_real_pt || "",
-                        fim_real: fim_real_pt,
-                        tarefa_status: tarefa_status_abreviado || "",
-                        prazo_label: prazoLabels,
-                    });
-
-
-                }
+                mappedData.push({
+                    colaborador_nome: colaborador_nome || "",
+                    projeto_nome: projeto_nome || "",
+                    total_entregues_prazo: total_entregues_prazo || 0,
+                    total_entregues_atraso: total_entregues_atraso || 0,
+                    total_desenvolvimento_prazo: total_desenvolvimento_prazo || 0,
+                    total_desenvolvimento_atraso: total_desenvolvimento_atraso || 0,
+                    total_nao_iniciadas_prazo: total_nao_iniciadas_prazo || 0,
+                    total_nao_iniciadas_atraso: total_nao_iniciadas_atraso || 0,
+                });
             }
         }
 
         const sortedData = orderBy(mappedData, [filtersState.sortedColumn], [filtersState.sortOrder]);
 
         return sortedData;
-
     });
-
 
     useEffect(() => {
         handleChangeFilters('search', basefilters.search);
@@ -160,7 +162,7 @@ export default function ConsultaColaboradorPorProjeto() {
                     filtersState={filtersState}
                     filtersComponentes={
                         <>
-                            <Col md={3} >
+                            <Col md={2} >
                                 <SelectAsync
                                     placeholder="Filtrar por Colaborador"
                                     loadOptions={(search) => listColaboradores('?search=' + search)}
@@ -171,7 +173,7 @@ export default function ConsultaColaboradorPorProjeto() {
                                     isClearable
                                 />
                             </Col>
-                            <Col md={3} >
+                            <Col md={2} >
                                 <SelectAsync
                                     placeholder="Filtrar por Projeto"
                                     loadOptions={(search) => listProjetos('?search=' + search)}
@@ -180,6 +182,39 @@ export default function ConsultaColaboradorPorProjeto() {
                                         handleChangeFilters('projeto_id', projeto ? projeto.id : null);
                                     }}
                                     isClearable
+                                />
+                            </Col>
+                            <Col md={2} >
+                                <SelectAsync
+                                    placeholder="Filtrar por Setor"
+                                    loadOptions={(search) => listSetores('?search=' + search)}
+                                    getOptionLabel={(option) => option.nome}
+                                    onChange={(setor) => {
+                                        handleChangeFilters('setor_id', setor ? setor.id : null);
+                                    }}
+                                    isClearable
+                                />
+                            </Col>
+                            <Col md={2}>
+                                <DateTest
+                                    id="dataFim"
+                                    value={dataFim}
+                                    label="Fim:"
+                                    onChange={(date) => {
+                                        setDataFim(date);
+                                        handleChangeFilters('data_fim', date);
+                                    }}
+                                />
+                            </Col>
+                            <Col md={2}>
+                                <DateTest
+                                    id="dataInicio"
+                                    value={dataInicio}
+                                    label="Início:"
+                                    onChange={(date) => {
+                                        setDataInicio(date);
+                                        handleChangeFilters('data_inicio', date);
+                                    }}
                                 />
                             </Col>
                         </>
