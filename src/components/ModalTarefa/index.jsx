@@ -140,29 +140,8 @@ const ModalTarefa = forwardRef(({
       handleGlobalLoading.show();
       createTarefaColaborador(data)
         .then((result) => {
-          if(result.tarefas_programadas_conflito.length > 0) {
-            const mensagem = result.tarefas_programadas_conflito.reduce((prev, curr, index, arr) => `
-              ${prev}
-              <b>Tarefa:</b> ${curr.nome}<br/>
-              <b>Data Programada:</b>
-              ${datetimeToPt(curr.data_inicio_programado, false)}
-              - 
-              ${datetimeToPt(curr.data_fim_programado, false)}<br/>
-              <a href="/projetos/visualizar/${curr.projeto_id}?tarefa=${curr.id}" target="_blank">
-                Ir para tarefa
-              </a> 
-              ${arr.length > 1 && index < arr.length - 1 ? '<br/><br/>' : ''}
-            `, `
-              Colaborador(a) foi adicionado(a) nessa tarefa,
-              porém possui outra tarefa programada durante esse período:<br/><br/>
-            `)
-
-            callGlobalAlert({ 
-              title: 'Aviso sobre data programada', 
-              message: mensagem, 
-              color: 'var(--bs-primary)' 
-            })
-          }
+          if(result.colaboradoresComConflito)
+            apresentarTarefasConflito(result.colaboradoresComConflito)
 
           callGlobalNotify({ message: result.message, variant: 'success' })
           setFormData((prevState) => ({
@@ -179,6 +158,43 @@ const ModalTarefa = forwardRef(({
           handleGlobalLoading.hide()
         })
     }
+  }
+
+  function apresentarTarefasConflito(colaboradoresComConflito) {
+    let mensagem = `
+      Colaborador${colaboradoresComConflito.lenght > 1 ? 'es' : ''} 
+      adicionad${colaboradoresComConflito.lenght > 1 ? 'os' : 'o'} nessa tarefa,
+      embora exista(m) tarefa(s) programada(s) durante esse período:
+    `
+
+    colaboradoresComConflito.forEach(colaborador => {
+      const mensagemColaborador = colaborador.tarefasProgramadasConflito.reduce((prev, curr, index, arr) => `
+        ${prev}
+        <b>Tarefa:</b> ${curr.nome}<br/>
+        <b>Data Programada:</b>
+        ${datetimeToPt(curr.data_inicio_programado, false)}
+        - 
+        ${datetimeToPt(curr.data_fim_programado, false)}<br/>
+        <a href="/projetos/visualizar/${curr.projeto_id}?tarefa=${curr.id}" target="_blank">
+          Ir para tarefa
+        </a> 
+        ${index < arr.length - 1 ? '<br/><br/>' : ''}
+      `, `
+        <hr/>
+        <p style="font-size: 1.2rem; border-bottom: 1px dashed; padding-bottom: 1rem;">
+          <strong>Colaborador(a): </strong>
+          <span>${colaborador?.info.nome}</span>
+        </p>
+      `)
+
+      mensagem += mensagemColaborador
+    })
+
+    callGlobalAlert({ 
+      title: 'Aviso sobre período programado', 
+      message: mensagem, 
+      color: 'var(--bs-primary)'
+    })
   }
 
   function removeTarefaColaborador(tarefa_colaborador) {
@@ -212,6 +228,7 @@ const ModalTarefa = forwardRef(({
         })
     }
   }
+
   function enabledChecklist() {
     handleForm('checklist', [])
     checklistRef.current.init([])
@@ -429,6 +446,9 @@ const ModalTarefa = forwardRef(({
     let method = !data.id ? createTarefa : updateTarefa;
     method(data)
       .then((res) => {
+        if(res.colaboradoresComConflito)
+          apresentarTarefasConflito(res.colaboradoresComConflito)
+
         callGlobalNotify({ message: res.message, variant: 'success' })
         load(res.tarefa.id)
         handleGlobalLoading.hide()
