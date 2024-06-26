@@ -70,7 +70,8 @@ export const axiosError = (error) => {
             subtitle:  error.response.data.message,
             message:  formatErrorsToHTML(error.response.data),
             color: 'var(--bs-danger)',
-            code: error.response?.status
+            code: error.response?.status,
+            data: error.response?.data
           }
         }
         if(error.response?.status == 405) {
@@ -78,7 +79,8 @@ export const axiosError = (error) => {
             title: getStatusMessage(error.response?.status),
             message:  'Rota não habilitada na API',
             color: 'var(--bs-danger)',
-            code: error.response?.status
+            code: error.response?.status,
+            data: error.response?.data
           }
         }
         if(error.response?.status == 401) {
@@ -89,7 +91,8 @@ export const axiosError = (error) => {
             title: getStatusMessage(error.response?.status),
             message:  error.response.data.message,
             color: 'var(--bs-danger)',
-            code: error.response?.status
+            code: error.response?.status,
+            data: error.response?.data
           }
         }
         
@@ -97,7 +100,8 @@ export const axiosError = (error) => {
           title: getStatusMessage(error.response?.status),
           message:  error.response.data.message,
           color: 'var(--bs-danger)',
-          code: error.response?.status
+          code: error.response?.status,
+          data: error.response?.data
         }
       } catch (exception) {
         return standartResponseApiError('Erro durante a solicitação: '+ exception);
