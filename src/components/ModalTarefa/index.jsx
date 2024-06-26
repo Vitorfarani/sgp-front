@@ -140,8 +140,8 @@ const ModalTarefa = forwardRef(({
       handleGlobalLoading.show();
       createTarefaColaborador(data)
         .then((result) => {
-          if(result.colaboradoresComConflito)
-            apresentarTarefasConflito(result.colaboradoresComConflito)
+          if(result.conflitos)
+            apresentarTarefasConflituosas(result.conflitos, result.tipo_conflito)
 
           callGlobalNotify({ message: result.message, variant: 'success' })
           setFormData((prevState) => ({
@@ -154,46 +154,87 @@ const ModalTarefa = forwardRef(({
           handleGlobalLoading.hide()
         })
         .catch((error) => {
-          callGlobalAlert(error)
+          if(typeof error.data.tipo_conflito !== 'undefined')
+            apresentarTarefasConflituosas(error.data.conflitos, error.data.tipo_conflito)
+          else
+            callGlobalAlert(error)
+
           handleGlobalLoading.hide()
         })
     }
   }
 
-  function apresentarTarefasConflito(colaboradoresComConflito) {
-    let mensagem = `
-      Colaborador${colaboradoresComConflito.lenght > 1 ? 'es' : ''} 
-      adicionad${colaboradoresComConflito.lenght > 1 ? 'os' : 'o'} nessa tarefa,
-      embora exista(m) tarefa(s) programada(s) durante esse período:
-    `
+  function apresentarTarefasConflituosas(conflitos, tipo_conflito) {
+    let mensagem, titulo, cor
 
-    colaboradoresComConflito.forEach(colaborador => {
-      const mensagemColaborador = colaborador.tarefasProgramadasConflito.reduce((prev, curr, index, arr) => `
-        ${prev}
-        <b>Tarefa:</b> ${curr.nome}<br/>
-        <b>Data Programada:</b>
-        ${datetimeToPt(curr.data_inicio_programado, false)}
-        - 
-        ${datetimeToPt(curr.data_fim_programado, false)}<br/>
-        <a href="/projetos/visualizar/${curr.projeto_id}?tarefa=${curr.id}" target="_blank">
-          Ir para tarefa
-        </a> 
-        ${index < arr.length - 1 ? '<br/><br/>' : ''}
-      `, `
+    if(tipo_conflito === 'programado') {
+      titulo = 'Aviso sobre período programado'
+
+      mensagem = `
+        <div style="color: var(--bs-primary)">
+        Colaborador${conflitos.length > 1 ? 'es' : ''} 
+        adicionad${conflitos.length > 1 ? 'os' : 'o'} nessa tarefa,
+        embora exista(m) tarefa(s) programada(s) durante esse período:
+      `
+      cor = 'var(--bs-primary)'
+    } else {
+      titulo = 'Erro ao adicionar tarefa'
+      mensagem = `
+        <div style="color: var(--bs-primary)">
+        Colaborador${conflitos.length > 1 ? 'es' : ''} 
+        possu${conflitos.length > 1 ? 'em' : 'i'} 
+        tarefa(s) em execução no mesmo período de execução
+        dessa tarefa:
+      `
+
+      cor = 'var(--bs-danger)'
+    }
+
+    conflitos.forEach(conflito => {
+
+      const mensagemColaborador = conflito.tarefas.reduce((prev, curr, index, arr) => {
+        let data_inicio, data_fim, tipo
+
+        if(tipo_conflito === 'programado') {
+          data_inicio = curr.data_inicio_programado
+          data_fim = curr.data_fim_programado
+          tipo = 'Programada'
+        } else {
+          data_inicio = curr.data_inicio_real
+          data_fim = curr.data_fim_real
+          tipo = 'Real'
+        } 
+
+        return `
+          ${prev}
+          <b>Tarefa:</b> ${curr.nome}<br/>
+          <b>Data ${tipo}:</b>
+          ${data_inicio ? datetimeToPt(data_inicio, false) : '(não iniciada)'}
+          - 
+          ${data_fim ? datetimeToPt(data_fim, false) : 'até o momento'}<br/>
+          <a href="/projetos/visualizar/${curr.projeto_id}?tarefa=${curr.id}" target="_blank">
+            Ir para tarefa
+          </a> 
+          ${index < arr.length - 1 ? '<br/><br/>' : ''}
+        
+        `
+      }, `
         <hr/>
         <p style="font-size: 1.2rem; border-bottom: 1px dashed; padding-bottom: 1rem;">
           <strong>Colaborador(a): </strong>
-          <span>${colaborador?.info.nome}</span>
+          <span>${conflito.colaborador.nome}</span>
         </p>
       `)
 
       mensagem += mensagemColaborador
     })
 
+    mensagem += '</div>'
+
     callGlobalAlert({ 
-      title: 'Aviso sobre período programado', 
+      title: titulo, 
       message: mensagem, 
-      color: 'var(--bs-primary)'
+      color: cor
     })
   }
 
@@ -446,8 +487,8 @@ const ModalTarefa = forwardRef(({
     let method = !data.id ? createTarefa : updateTarefa;
     method(data)
       .then((res) => {
-        if(res.colaboradoresComConflito)
-          apresentarTarefasConflito(res.colaboradoresComConflito)
+        if(res.conflitos)
+          apresentarTarefasConflituosas(res.conflitos, res.tipo_conflito)
 
         callGlobalNotify({ message: res.message, variant: 'success' })
         load(res.tarefa.id)
@@ -456,7 +497,11 @@ const ModalTarefa = forwardRef(({
 
       })
       .catch((error) => {
-        callGlobalAlert(error)
+        if(typeof error.data.tipo_conflito !== 'undefined')
+          apresentarTarefasConflituosas(error.data.conflitos, error.data.tipo_conflito)
+        else
+          callGlobalAlert(error)
+
         handleGlobalLoading.hide()
       })
   }
