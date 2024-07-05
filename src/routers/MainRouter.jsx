@@ -15,6 +15,7 @@ import {
   ConsultaColaboradorPorProjeto,
   ConsultaTarefasPorColaborador,
   ConsultaQuantidadeTarefa,
+  ConsultaHorasTrabalhadas,
   NotFound,
   Projeto,
   Projetos,
@@ -86,6 +87,8 @@ const MainRouter = () => {
         <Route path="consultas/tarefasPorColaborador" Component={ConsultaTarefasPorColaborador}/>
         <Route path="consultas/colaboradoresPorTarefa" Component={ConsultaColaboradoresPorTarefa}/>
         <Route path="consultas/tarefasPorAgrupamento" Component={ConsultaQuantidadeTarefa}/>
+        <Route path="consultas/colaboradorHorasTrabalhadas" Component={ConsultaHorasTrabalhadas}/>
+
 
 
 
