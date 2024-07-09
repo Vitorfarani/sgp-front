@@ -32,3 +32,8 @@ export const listColaboradorProjetosStatusTarefa = async (params = "") => {
   let url = `dashboard/colaboradorProjetosStatusTarefa${params}`;
   return _get(url);
 }
+
+export const listColaboradorHorasTrabalhadas = async (params = "") => {
+  let url = `dashboard/colaboradorHorasTrabalhadas${params}`;
+  return _get(url);
+}
