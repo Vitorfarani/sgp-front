@@ -192,6 +192,14 @@ const ModalTarefa = forwardRef(({
 
     conflitos.forEach(conflito => {
 
+      const texto_inicial = typeof conflito.colaborador === 'undefined' ? '<hr/>' : `
+        <hr/>
+        <p style="font-size: 1.2rem; border-bottom: 1px dashed; padding-bottom: 1rem;">
+          <strong>Colaborador(a): </strong>
+          <span>${conflito.colaborador.nome}</span>
+        </p>
+      `
+
       const mensagemColaborador = conflito.tarefas.reduce((prev, curr, index, arr) => {
         let data_inicio, data_fim, tipo
 
@@ -218,13 +226,7 @@ const ModalTarefa = forwardRef(({
           ${index < arr.length - 1 ? '<br/><br/>' : ''}
         
         `
-      }, `
-        <hr/>
-        <p style="font-size: 1.2rem; border-bottom: 1px dashed; padding-bottom: 1rem;">
-          <strong>Colaborador(a): </strong>
-          <span>${conflito.colaborador.nome}</span>
-        </p>
-      `)
+      }, texto_inicial)
 
       mensagem += mensagemColaborador
     })
