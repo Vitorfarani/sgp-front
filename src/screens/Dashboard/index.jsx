@@ -50,7 +50,7 @@ export default function Dashboard() {
       yupSchema: dateSchema,
       data,
       forms: [
-        {
+        user.nivel_acesso > 1 && {
           name: 'cliente',
           label: 'Cliente',
           type: 'selectAsync',
@@ -64,21 +64,21 @@ export default function Dashboard() {
           isClearable: true,
           loadOptions: listProjetos,
         },
-        {
+        user.nivel_acesso > 1 && {
           name: 'colaborador',
           label: 'Colaborador',
           type: 'selectAsync',
           isClearable: true,
           loadOptions: listColaboradores,
         },
-        {
+        user.nivel_acesso > 1 && {
           name: 'setor',
           label: 'Setor',
           type: 'selectAsync',
           isClearable: true,
           loadOptions: listSetores,
         },
-        {
+        user.nivel_acesso > 1 && {
           name: 'empresa',
           label: 'Empresa',
           type: 'selectAsync',
@@ -109,7 +109,7 @@ export default function Dashboard() {
           label: 'Fim ',
           type: 'date',
         }
-      ],
+      ].filter(Boolean),
       labelSucessColor: 'primary',
       labelSuccess: 'Filtrar',
       labelCancel: 'Cancelar',
@@ -157,7 +157,7 @@ export default function Dashboard() {
 
   return (
     <Container style={{}}>
-      <HeaderTitle title="DashBoards" enabledBreadcrumb={false} optionsButtons={[
+      <HeaderTitle title="Dashboard" enabledBreadcrumb={false} optionsButtons={[
         {
           label: '',
           onClick: () => callModalFilter(filters),
@@ -169,6 +169,7 @@ export default function Dashboard() {
           backgroundColor: 'rgba(13, 0, 77, 0.29)',
           padding: ' 12px 6px',
           marginBottom: 10,
+          borderRadius: '4px',
           animation: "ease-in-out"
         }}>
           <h5>Filtros</h5>
@@ -188,17 +189,15 @@ export default function Dashboard() {
       <Row>
         <Col>
           <ProjetosByStatusChart ref={ProjetosByStatusChartRef} />
-          {/* <PieChartCard title="Chart 1" data={data2} /> */}
         </Col>
-        {/* Adicione mais PieChartCard aqui para formar a grade 2x3 */}
         <Col>
           <TarefasByStatusChart ref={TarefasByStatusChartRef} />
         </Col>
-      </Row>
-      <Row>
-        <Col>
-          <TarefasByAndamentoChart ref={TarefasByAndamentoChartRef} />
-        </Col>
+        <Row>
+          <Col>
+            <TarefasByAndamentoChart ref={TarefasByAndamentoChartRef} />
+          </Col>
+        </Row>          
       </Row>
     </Container>
   );

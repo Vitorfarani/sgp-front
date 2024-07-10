@@ -157,21 +157,21 @@ export default function Conhecimentos() {
           searchOffiline
           filtersComponentes={
             <>
-              <Col md={2} style={{ opacity: filtersState.conhecimento == null ? 0.5 : 1 }}>
+              <Col md={2} style={{
+                display: 'none',
+                opacity: filtersState.conhecimento == null ? 0.5 : 1 }}>
                 <SelectAsync
                   placeholder="Filtrar por Nivel"
                   loadOptions={(search) => listConhecimentoNivels('?search=' + search)}
                   getOptionLabel={(option) => option.grau}
                   onChange={(nivel) => {
                     handleChangeFilters('conhecimento_nivel', nivel ? nivel.id : "");
-
                   }}
                   isDisabled={filtersState.conhecimento == null}
                   isClearable
-
                 />
               </Col>
-              <Col md={2} >
+              <Col md={3} >
                 <SelectAsync
                   placeholder="Filtrar por Conhecimento"
                   loadOptions={(search) => listConhecimentos('?search=' + search)}
