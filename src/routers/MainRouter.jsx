@@ -40,6 +40,7 @@ import {
 } from '@/screens/index';
 import { useTheme } from '@/utils/context/ThemeProvider';
 import CadastrarProjeto from '@/screens/Projetos/CadastrarProjeto';
+import Feriados from '@/screens/Feriados';
 
 const MainRouter = () => {
   const { isLogged, isLoaded } = useAuth();
@@ -115,10 +116,11 @@ const MainRouter = () => {
         <Route path="conhecimentos/classe" Component={ConhecimentoClasse}/>
         <Route path="conhecimentos/nivel" Component={ConhecimentoNivel}/>
           
-
         <Route path="funcoes" Component={Funcoes}/>
 
         <Route path="empresas" Component={Empresas}/>
+
+        <Route path="feriados" Component={Feriados}/>
 
         <Route path="setores" Component={Setor}/>
 
