@@ -82,8 +82,10 @@ const columnsFields = [
 ];
 
 export default function ConsultaColaboradorPorProjeto() {
-    const [dataInicio, setDataInicio] = useState(moment().format('YYYY-MM-01'));
-    const [dataFim, setDataFim] = useState(moment().format('YYYY-MM-DD'));
+    // const [dataInicio, setDataInicio] = useState(moment().format('YYYY-MM-01'));
+    // const [dataFim, setDataFim] = useState(moment().format('YYYY-MM-DD'));
+    const [dataInicio, setDataInicio] = useState('');
+    const [dataFim, setDataFim] = useState('');
 
     const {
         rows,
@@ -169,10 +171,10 @@ export default function ConsultaColaboradorPorProjeto() {
 
     useEffect(() => {
         handleChangeFilters('search', basefilters.search);
-        handleChangeFilters('data_inicio', dataInicio)
-        handleChangeFilters('data_fim', dataFim)
+        // handleChangeFilters('data_inicio', dataInicio)
+        // handleChangeFilters('data_fim', dataFim)
         load();
-    }, [basefilters.search, dataInicio, dataFim]);
+    }, [basefilters.search]);
 
     return (
         <Background>
