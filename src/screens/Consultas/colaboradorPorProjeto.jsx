@@ -7,6 +7,7 @@ import { listProjetos } from "@/services/projeto/projetos";
 import { listColaboradores } from "@/services/colaborador/colaboradores";
 import { listSetores } from "@/services/setores";
 import orderBy from 'lodash/orderBy';
+import moment from "moment";
 
 
 const basefilters = {
@@ -81,8 +82,8 @@ const columnsFields = [
 ];
 
 export default function ConsultaColaboradorPorProjeto() {
-    const [dataInicio, setDataInicio] = useState('');
-    const [dataFim, setDataFim] = useState('');
+    const [dataInicio, setDataInicio] = useState(moment().format('YYYY-MM-01'));
+    const [dataFim, setDataFim] = useState(moment().format('YYYY-MM-DD'));
 
     const {
         rows,
@@ -168,8 +169,10 @@ export default function ConsultaColaboradorPorProjeto() {
 
     useEffect(() => {
         handleChangeFilters('search', basefilters.search);
+        handleChangeFilters('data_inicio', dataInicio)
+        handleChangeFilters('data_fim', dataFim)
         load();
-    }, [basefilters.search]);
+    }, [basefilters.search, dataInicio, dataFim]);
 
     return (
         <Background>
