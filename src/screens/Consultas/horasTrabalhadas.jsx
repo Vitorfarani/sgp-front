@@ -8,7 +8,6 @@ import { listColaboradores } from "@/services/colaborador/colaboradores";
 import { listSetores } from "@/services/setores";
 import orderBy from 'lodash/orderBy';
 import TooltipHorario from "@/components/TooltipHorario";
-import moment from "moment";
 
 
 const basefilters = {
@@ -74,8 +73,8 @@ const columnsFields = [
 ];
 
 export default function ConsultaHorasTrabalhadas() {
-    const [dataInicio, setDataInicio] = useState(moment().format('YYYY-MM-01'));
-    const [dataFim, setDataFim] = useState(moment().format('YYYY-MM-DD'));
+    const [dataInicio, setDataInicio] = useState('');
+    const [dataFim, setDataFim] = useState('');
 
     const {
         rows,
@@ -146,9 +145,6 @@ export default function ConsultaHorasTrabalhadas() {
 
     useEffect(() => {
         handleChangeFilters('search', basefilters.search);
-        handleChangeFilters('data_inicio', dataInicio)
-        handleChangeFilters('data_fim', dataFim)
-
         load();
     }, [basefilters.search]);
 

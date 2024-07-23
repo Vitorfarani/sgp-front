@@ -8,7 +8,6 @@ import { Button, Col } from "react-bootstrap";
 import { DateTest } from "@/components/index";
 import { listSetores } from "@/services/setores";
 import { FiEye, FiEyeOff } from 'react-icons/fi';
-import moment from "moment";
 
 
 const basefilters = {
@@ -210,8 +209,8 @@ const columnsFields = [
 ];
 
 export default function ConsultaQuantidadeTarefa() {
-  const [dataInicio, setDataInicio] = useState(moment().format('YYYY-MM-01'));
-  const [dataFim, setDataFim] = useState(moment().format('YYYY-MM-DD'));
+  const [dataInicio, setDataInicio] = useState('');
+  const [dataFim, setDataFim] = useState('');
   const [visibleColumns, setVisibleColumns] = useState({
     colaborador_nome: true,
     inicio_antes_do_periodo: true,
@@ -363,16 +362,14 @@ export default function ConsultaQuantidadeTarefa() {
 
   useEffect(() => {
     handleChangeFilters('search', basefilters.search);
-    handleChangeFilters('data_inicio', dataInicio)
-    handleChangeFilters('data_fim', dataFim)
     load();
-    // if (dataInicio && dataFim) {
-    //   handleChangeFilters('data_inicio', dataInicio);
-    //   handleChangeFilters('data_fim', dataFim);
-    // } else if (!dataInicio && !dataFim) {
-    //   handleChangeFilters('data_inicio', null);
-    //   handleChangeFilters('data_fim', null);
-    // }
+    if (dataInicio && dataFim) {
+      handleChangeFilters('data_inicio', dataInicio);
+      handleChangeFilters('data_fim', dataFim);
+    } else if (!dataInicio && !dataFim) {
+      handleChangeFilters('data_inicio', null);
+      handleChangeFilters('data_fim', null);
+    }
   }, [basefilters.search, dataInicio, dataFim]);
 
   return (

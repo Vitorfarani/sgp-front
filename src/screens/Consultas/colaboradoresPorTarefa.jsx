@@ -9,7 +9,6 @@ import { listProjetos } from "@/services/projeto/projetos";
 import { dateDiffWithLabels, dateEnToPtWithHour } from "@/utils/helpers/date";
 import orderBy from 'lodash/orderBy';
 import { listSetores } from "@/services/setores";
-import moment from "moment";
 
 const basefilters = {
     search: '',
@@ -42,8 +41,8 @@ const columnsFields = [
 ];
 
 export default function ConsultaColaboradoresPorTarefa() {
-    const [dataInicio, setDataInicio] = useState(moment().format('YYYY-MM-01'));
-    const [dataFim, setDataFim] = useState(moment().format('YYYY-MM-DD'));
+    const [dataInicio, setDataInicio] = useState('');
+    const [dataFim, setDataFim] = useState('');
 
     const abreviarStatus = (status, tipo) => {
         const mapeamentoStatus = {
@@ -157,16 +156,14 @@ export default function ConsultaColaboradoresPorTarefa() {
 
     useEffect(() => {
         handleChangeFilters('search', basefilters.search);
-        handleChangeFilters('data_inicio', dataInicio)
-        handleChangeFilters('data_fim', dataFim)
         load();
-        // if (dataInicio && dataFim) {
-        //     handleChangeFilters('data_inicio', dataInicio);
-        //     handleChangeFilters('data_fim', dataFim);
-        // } else if (!dataInicio && !dataFim) {
-        //     handleChangeFilters('data_inicio', null);
-        //     handleChangeFilters('data_fim', null);
-        // }
+        if (dataInicio && dataFim) {
+            handleChangeFilters('data_inicio', dataInicio);
+            handleChangeFilters('data_fim', dataFim);
+        } else if (!dataInicio && !dataFim) {
+            handleChangeFilters('data_inicio', null);
+            handleChangeFilters('data_fim', null);
+        }
     }, [basefilters.search, dataInicio, dataFim]);
 
     return (
