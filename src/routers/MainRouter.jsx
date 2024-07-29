@@ -29,8 +29,8 @@ import {
   ProjetoFases,
   ConhecimentoClasse,
   ConhecimentoNivel,
+  Tarefas,
   TarefaStatus,
-  TarefaDashboard,
   TarefaBase,
   TarefaClasse,
   AfastamentoTipos,
@@ -80,6 +80,7 @@ const MainRouter = () => {
             <Layout />
           </RequireAuth>
         }>
+
         <Route index path="dashboard" Component={Dashboard} />
 
         <Route path="consultas/colaborador" Component={ConsultaColaborador}/>
@@ -91,15 +92,15 @@ const MainRouter = () => {
         <Route path="consultas/colaboradorHorasTrabalhadas" Component={ConsultaHorasTrabalhadas}/>
 
 
-
-
         <Route path="colaboradores" Component={Colaboradores}/>
         <Route path="colaboradores/cadastrar" Component={CadastrarColaborador}/>
         <Route path="colaboradores/editar/:id" Component={CadastrarColaborador}/>
-        
+
+
         <Route path="afastamentos" Component={Afastamentos}/>
         <Route path="afastamentos/tipos" Component={AfastamentoTipos}/>
     
+
         <Route path="projetos" Component={Projetos}/>
         <Route path="projetos/status" Component={ProjetoStatus}/>
         <Route path="projetos/fases" Component={ProjetoFases}/>
@@ -107,10 +108,12 @@ const MainRouter = () => {
         <Route path="projetos/visualizar/:id" Component={Projeto}/>
         <Route path="projetos/editar/:id" Component={CadastrarProjeto}/>
 
-        <Route path="tarefas" Component={TarefaDashboard}/>
+
+        <Route path="tarefas" Component={Tarefas}/>
         <Route path="tarefas/status" Component={TarefaStatus}/>
         <Route path="tarefas/bases" Component={TarefaBase}/>
         <Route path="tarefas/classes" Component={TarefaClasse}/>
+
 
         <Route path="conhecimentos" Component={Conhecimentos}/>
         <Route path="conhecimentos/classe" Component={ConhecimentoClasse}/>

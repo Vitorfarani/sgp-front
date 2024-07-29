@@ -1,7 +1,6 @@
-import { HeaderTitle, Section } from "@/components/index";
+import { Background, HeaderTitle, Section } from "@/components/index";
 import { listColaboradores } from "@/services/colaborador/colaboradores";
 import { listTarefasByTime } from "@/services/dashboard";
-import { listEmpresas } from "@/services/empresas";
 import { listProjetos } from "@/services/projeto/projetos";
 import { listSetores } from "@/services/setores";
 import { useAuth } from "@/utils/context/AuthProvider";
@@ -13,13 +12,15 @@ import { Col, Container, OverlayTrigger, Row, Spinner, Tooltip } from "react-boo
 import { FiFilter } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import FullCalendar from '@fullcalendar/react';
+import allLocales from '@fullcalendar/core/locales-all';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import { useDebouncedCallback } from "use-debounce";
 import moment from "moment/moment";
 
-var resetData = true;
-var ultimoColaborador = null;
+let resetData = true;
+let ultimoColaborador = null;
+
 const filtersInitialValue = {
   cliente: null,
   projeto: null,
@@ -30,7 +31,8 @@ const filtersInitialValue = {
   intervalType: null,
   apresentado: 'somente_selecionado'
 };
-export default function TarefaDashboard() {
+
+export default function Tarefas() {
   const { isLoaded, isLogged, user } = useAuth();
   const restrito = ['setor', 'colaborador']
   const navigate = useNavigate();
@@ -39,6 +41,7 @@ export default function TarefaDashboard() {
   const { callGlobalDialog, handleGlobalLoading, callGlobalAlert, callGlobalNotify } = useTheme();
   const [filters, setFilters] = useState({ ...filtersInitialValue, colaborador: user.colaborador });
   ultimoColaborador = user.id
+
   const handleMudancaVisualizacao = useDebouncedCallback((novaVisualizacao, callback) => {
     const startOriginal = moment(novaVisualizacao.startStr);
     const startFormatada = startOriginal.format('YYYY-MM-DD HH:mm:ss');
@@ -58,16 +61,10 @@ export default function TarefaDashboard() {
     load(formatedFilters, resetData)
   }, 500);
 
-
   const eventos = data.map((tarefa) => {
-
-
     let eventoProgramado = {
       id: tarefa.id,
       title: tarefa.nome,
-
-
-
       start: tarefa.data_inicio_real || tarefa.data_inicio_programado || tarefa.data_fim_programado,
       extendedProps: {
         ...tarefa,
@@ -81,6 +78,7 @@ export default function TarefaDashboard() {
 
     return [eventoProgramado];
   }).flat();
+
 
   function callModalFilter(data) {
     const forms = [
@@ -114,7 +112,6 @@ export default function TarefaDashboard() {
           { value: 'data_inicio_programado', label: 'Inicio Estimado' },
           { value: 'data_inicio_real', label: 'Inicio Em' },
           { value: 'data_fim_real', label: 'Finalizado Em' },
-          // { value: 'created_at', label: 'Data de criação' },
         ]
       },
       {
@@ -164,6 +161,7 @@ export default function TarefaDashboard() {
       })
 
   }
+
   const filtersIsEmpty = useMemo(() => !Object.keys(filters).find(e => !!filters[e]), [filters]);
 
   function load(params = {}, resetData, colaboradorAlterado) {
@@ -179,10 +177,6 @@ export default function TarefaDashboard() {
       });
   }
 
-
-  // useEffect(() => {
-  //   load()
-  // }, []);
   const renderTooltip = (event) => (
     <Tooltip id={`tooltip-${event.id}`}>
       <strong>{event.extendedProps.projectName}</strong><br />
@@ -212,49 +206,54 @@ export default function TarefaDashboard() {
   );
 
   return (
-    <Container style={{}}>
-      <HeaderTitle title={filters.projeto !== null ? filters.projeto.nome : 'Tarefa dashBoard'} enabledBreadcrumb={false} optionsButtons={[
-        {
-          label: '',
-          onClick: () => callModalFilter(filters),
-          icon: FiFilter,
-        },
-      ]} />
-      {!filtersIsEmpty && (
-        <Row style={{
-          backgroundColor: 'rgba(35, 38, 43, 0.29)',
-          // backgroundColor: 'rgb(242 242 242)',
-          padding: ' 12px 6px',
-          marginBottom: 10,
-          animation: "ease-in-out"
-        }}>
-          <h5>Filtros</h5>
-          <Row>
-            {(['setor', 'colaborador', 'tipo', 'projeto', 'apresentado']).map((key) => {
-              if (filters[key] && (!restrito.includes(key) || user.nivel_acesso > 1)) {
-                const displayText =
-                  typeof filters[key] === 'object' && filters[key].nome
-                    ? filters[key].nome
-                    : capitalize(filters[key].replace(/_/g, ' '));
+    <Background style={{}}>
 
-                return (
-                  <Col key={key} className="filter" style={{ maxWidth: "350px" }}>
-                    <b>{capitalize(key.replace('_', ' '))}</b><br />
-                    {displayText}
-                  </Col>
-                );
-              }
-              return null;
-            })}
+      <HeaderTitle title={filters.projeto !== null ? filters.projeto.nome : 'Tarefas'} enabledBreadcrumb={true} optionsButtons={[
+          {
+            label: 'Filtros',
+            onClick: () => callModalFilter(filters),
+            icon: FiFilter,
+          },
+        ]} 
+      />
+
+      <Container fluid="md">
+
+        {!filtersIsEmpty && (
+          <Row style={{
+            backgroundColor: 'rgba(35, 38, 43, 0.29)',
+            // backgroundColor: 'rgb(242 242 242)',
+            padding: ' 12px 6px',
+            marginBottom: 10,
+            animation: "ease-in-out"
+          }}>
+            <h5>Filtros</h5>
+            <Row>
+              {(['setor', 'colaborador', 'tipo', 'projeto', 'apresentado']).map((key) => {
+                if (filters[key] && (!restrito.includes(key) || user.nivel_acesso > 1)) {
+                  const displayText =
+                    typeof filters[key] === 'object' && filters[key].nome
+                      ? filters[key].nome
+                      : capitalize(filters[key].replace(/_/g, ' '));
+
+                  return (
+                    <Col key={key} className="filter" style={{ maxWidth: "350px" }}>
+                      <b>{capitalize(key.replace('_', ' '))}</b><br />
+                      {displayText}
+                    </Col>
+                  );
+                }
+                return null;
+              })}
+            </Row>
+
           </Row>
+        )}
 
-        </Row>
-      )}
-
-      <div>
         <FullCalendar
           plugins={[dayGridPlugin, interactionPlugin]}
           initialView={visualizacao}
+          locales={allLocales}
           locale={'pt-br'}
           headerToolbar={{
             left: 'prev,next today',
@@ -263,38 +262,32 @@ export default function TarefaDashboard() {
           }}
           datesSet={handleMudancaVisualizacao}
           events={eventos}
-
           eventClick={(info) => {
             window.open(`/projetos/visualizar/${info.event.extendedProps.projeto_id}?tarefa=${info.event.id}`, "_blank", "noreferrer noopener");
           }}
           onActiveStartDateChange={handleMudancaVisualizacao}
           eventDisplay="block"
           eventContent={(eventInfo) => (
-            <>
-              <OverlayTrigger
-                // ...rest of the code
-                overlay={renderTooltip(eventInfo.event)}
-              >
-                <div style={{ fontSize: 16, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', color: eventInfo.event.backgroundColor === 'var(--bs-warning)' ? 'black' : null }}>
-                  <div style={{ marginBottom: '2px' }}>
-                    <b>{eventInfo.event.extendedProps.hourType}:</b> {moment(eventInfo.event.start).format('HH:mm')}
-                  </div>
-                  <div style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                    <i>
-                      {filters.projeto ? `Tarefa: ${eventInfo.event.title}` : `Projeto: ${eventInfo.event.extendedProps.projectName}`}
-                    </i>
+            <OverlayTrigger overlay={renderTooltip(eventInfo.event)}>
+              <div style={{ fontSize: 16, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', color: eventInfo.event.backgroundColor === 'var(--bs-warning)' ? 'black' : null }}>
 
-                  </div>
+                <div style={{ marginBottom: '2px' }}>
+                  <b>{eventInfo.event.extendedProps.hourType}:</b> {moment(eventInfo.event.start).format('HH:mm')}
                 </div>
-              </OverlayTrigger>
 
+                <div style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                  <i>
+                    {filters.projeto ? `Tarefadasdsa: ${eventInfo.event.title}` : `Projeto: ${eventInfo.event.extendedProps.projectName}`}
+                  </i>
+                </div>
 
-
-            </>
+              </div>
+            </OverlayTrigger>
           )}
-
         />
-      </div>
-    </Container>
+
+      </Container>
+
+    </Background>
   );
 }
