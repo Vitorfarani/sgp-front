@@ -42,43 +42,7 @@ export default function Tarefas() {
   const [filters, setFilters] = useState({ ...filtersInitialValue, colaborador: user.colaborador });
   ultimoColaborador = user.id
 
-  const handleMudancaVisualizacao = useDebouncedCallback((novaVisualizacao, callback) => {
-    const startOriginal = moment(novaVisualizacao.startStr);
-    const startFormatada = startOriginal.format('YYYY-MM-DD HH:mm:ss');
-
-    const endOriginal = moment(novaVisualizacao.endStr);
-    const endFormatada = endOriginal.format('YYYY-MM-DD HH:mm:ss');
-
-    setVisualizacao(novaVisualizacao);
-    let updatedFilters = { ...filters, intervalType: 'personalizado', data1: startFormatada, data2: endFormatada }
-    setFilters(updatedFilters)
-    let formatedFilters = formatForm(updatedFilters).rebaseIds([
-      'cliente',
-      'projeto',
-      'colaborador',
-      'apresentado'
-    ]).getResult()
-    load(formatedFilters, resetData)
-  }, 500);
-
-  const eventos = data.map((tarefa) => {
-    let eventoProgramado = {
-      id: tarefa.id,
-      title: tarefa.nome,
-      start: tarefa.data_inicio_real || tarefa.data_inicio_programado || tarefa.data_fim_programado,
-      extendedProps: {
-        ...tarefa,
-        projectName: tarefa.projeto.nome,
-        hourType: tarefa.data_inicio_real ? 'Inicio Real' : 'Inicio Programado'
-      },
-      end: tarefa.data_fim_real || tarefa.data_fim_programado || new Date(),
-      backgroundColor: tarefa.andamento.color,
-      borderColor: tarefa.andamento.color,
-    };
-
-    return [eventoProgramado];
-  }).flat();
-
+  const filtersIsEmpty = useMemo(() => !Object.keys(filters).find(e => !!filters[e]), [filters]);
 
   function callModalFilter(data) {
     const forms = [
@@ -162,8 +126,6 @@ export default function Tarefas() {
 
   }
 
-  const filtersIsEmpty = useMemo(() => !Object.keys(filters).find(e => !!filters[e]), [filters]);
-
   function load(params = {}, resetData, colaboradorAlterado) {
     listTarefasByTime(buildQueryString(params))
       .then((resultsList) => {
@@ -176,6 +138,39 @@ export default function Tarefas() {
         }
       });
   }
+
+  const eventos = data.map((tarefa) => new Object({
+    id: tarefa.id,
+    title: tarefa.nome,
+    start: tarefa.data_inicio_real || tarefa.data_inicio_programado || tarefa.data_fim_programado,
+    extendedProps: {
+      ...tarefa,
+      projectName: tarefa.projeto.nome,
+      hourType: tarefa.data_inicio_real ? 'Inicio Real' : 'Inicio Programado'
+    },
+    end: tarefa.data_fim_real || tarefa.data_fim_programado || new Date(),
+    backgroundColor: tarefa.andamento.color,
+    borderColor: tarefa.andamento.color,
+}))
+
+  const handleMudancaVisualizacao = useDebouncedCallback((novaVisualizacao, callback) => {
+    const startOriginal = moment(novaVisualizacao.startStr);
+    const startFormatada = startOriginal.format('YYYY-MM-DD HH:mm:ss');
+
+    const endOriginal = moment(novaVisualizacao.endStr);
+    const endFormatada = endOriginal.format('YYYY-MM-DD HH:mm:ss');
+
+    setVisualizacao(novaVisualizacao);
+    let updatedFilters = { ...filters, intervalType: 'personalizado', data1: startFormatada, data2: endFormatada }
+    setFilters(updatedFilters)
+    let formatedFilters = formatForm(updatedFilters).rebaseIds([
+      'cliente',
+      'projeto',
+      'colaborador',
+      'apresentado'
+    ]).getResult()
+    load(formatedFilters, resetData)
+  }, 500);
 
   const renderTooltip = (event) => (
     <Tooltip id={`tooltip-${event.id}`}>
