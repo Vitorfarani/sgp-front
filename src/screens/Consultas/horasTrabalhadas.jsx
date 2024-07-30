@@ -155,7 +155,7 @@ export default function ConsultaHorasTrabalhadas() {
     return (
         <Background>
             <HeaderTitle
-                title="Consultar Colaborador Por Projeto" />
+                title="Consultar Horas Trabalhadas" />
             <Section>
                 <Table
                     columns={columns}
