@@ -51,8 +51,16 @@ const columnsFields = [
         label: 'Horas Trabalhadas',
     },
     {
+        field: 'horas_afastado',
+        label: 'Horas Afastado',
+    },
+    {
         field: 'horas_maximas_permitidas',
         label: 'Horas Max. Permitidas',
+    },
+    {
+        field: 'banco_horas',
+        label: 'Banco de Horas',
     },
     {
         field: 'total_tarefas',
@@ -102,6 +110,8 @@ export default function ConsultaHorasTrabalhadas() {
                 dias_trabalhados, 
                 horas_maximas_permitidas,
                 situacao,
+                horas_afastado,
+                banco_horas
             } = colaboradorData || {};
 
             mappedData.push({
@@ -112,6 +122,8 @@ export default function ConsultaHorasTrabalhadas() {
                 dias_trabalhados: dias_trabalhados || 0,
                 horas_maximas_permitidas: horas_maximas_permitidas || 0,
                 situacao: situacao || "",
+                horas_afastado: horas_afastado ? horas_afastado.toFixed(2) : 0,
+                banco_horas: banco_horas ? banco_horas.toFixed(2) : 0,
 
             });
         }
@@ -124,6 +136,8 @@ export default function ConsultaHorasTrabalhadas() {
             dias_trabalhados: 0,
             horas_maximas_permitidas: 0,
             situacao: '',
+            horas_afastado: 0,
+            banco_horas: 0,
         };
 
         mappedData.forEach(item => {
@@ -132,6 +146,8 @@ export default function ConsultaHorasTrabalhadas() {
             totais.total_tarefas += parseInt(item.total_tarefas);
             totais.dias_trabalhados += parseInt(item.dias_trabalhados);
             totais.horas_maximas_permitidas += parseInt(item.horas_maximas_permitidas);
+            totais.horas_afastado += parseInt(item.horas_afastado);
+            totais.banco_horas += parseInt(item.banco_horas);
         });
         totais.horas_trabalhadas = totais.horas_trabalhadas.toFixed(2);
 
