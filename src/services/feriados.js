@@ -5,6 +5,11 @@ export const listFeriados = async (params = "") => {
   return _get(url);
 }
 
+export const listDiasNaoUteis = async (params = "") => {
+  let url = `feriados/dias-nao-uteis${params}`;
+  return _get(url);
+}
+
 export const createFeriado = async (data) => {
   let url = 'feriados';
   return _post(url, data);
