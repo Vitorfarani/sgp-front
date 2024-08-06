@@ -81,22 +81,32 @@ export default function ConsultaTarefasPorColaborador() {
         if (!results || Object.keys(results).length === 0) {
             return [];
         }
-
+    
         const mappedData = [];
-        for (const [key, colaboradorData] of Object.entries(results)) {
-            const { colaborador_nome, projetos } = colaboradorData || {};
-
-            for (const [projetoKey, projeto] of Object.entries(projetos)) {
+    
+        Object.keys(results).forEach(key => {
+            const colaboradorData = results[key];
+            if (!colaboradorData) return;
+    
+            const { colaborador_nome, projetos } = colaboradorData;
+            if (!projetos || typeof projetos !== 'object') return;
+    
+            Object.keys(projetos).forEach(projetoKey => {
+                const projeto = projetos[projetoKey];
+                if (!projeto) return;
+    
                 const {
                     projeto_nome,
                     projeto_status,
                     projeto_fase,
                     tarefas,
-                } = projeto || {};
-
-
-
-                for (const tarefa of tarefas) {
+                } = projeto;
+    
+                if (!Array.isArray(tarefas)) return;
+    
+                tarefas.forEach(tarefa => {
+                    if (!tarefa) return;
+    
                     const {
                         tarefa_nome,
                         inicio_programado,
@@ -104,18 +114,17 @@ export default function ConsultaTarefasPorColaborador() {
                         inicio_real,
                         fim_real,
                         tarefa_status,
-                    } = tarefa || {};
-
+                    } = tarefa;
+    
                     const prazoLabels = dateDiffWithLabels(fim_programado, fim_real);
                     const inicio_programado_pt = inicio_programado !== "N/D" ? dateEnToPtWithHour(inicio_programado) : inicio_programado;
                     const fim_programado_pt = fim_programado !== "N/D" ? dateEnToPtWithHour(fim_programado) : fim_programado;
                     const inicio_real_pt = inicio_real !== "N/D" ? dateEnToPtWithHour(inicio_real) : inicio_real;
                     const fim_real_pt = fim_real !== "N/D" ? dateEnToPtWithHour(fim_real) : fim_real;
-
-
-                    const projeto_status_abreviado = abreviarStatus(projeto_status, "projeto")
-                    const tarefa_status_abreviado = abreviarStatus(tarefa_status, "projeto")
-
+    
+                    const projeto_status_abreviado = abreviarStatus(projeto_status, "projeto");
+                    const tarefa_status_abreviado = abreviarStatus(tarefa_status, "projeto");
+    
                     mappedData.push({
                         colaborador_nome: colaborador_nome || "",
                         projeto_nome: projeto_nome || "",
@@ -129,17 +138,16 @@ export default function ConsultaTarefasPorColaborador() {
                         tarefa_status: tarefa_status_abreviado || "",
                         prazo_label: prazoLabels,
                     });
-
-
-                }
-            }
-        }
-
+                });
+            });
+        });
+    
         const sortedData = orderBy(mappedData, [filtersState.sortedColumn], [filtersState.sortOrder]);
-
+    
         return sortedData;
-
     });
+    
+    
 
     useEffect(() => {
         handleChangeFilters('search', basefilters.search);
