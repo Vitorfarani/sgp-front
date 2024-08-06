@@ -18,14 +18,13 @@ export { default as CadastrarColaborador } from './Colaboradores/CadastrarColabo
 export { default as Afastamentos } from './Afastamentos/index.jsx';
 export { default as AfastamentoTipos } from './Afastamentos/screens/Tipo';
 
-
 export { default as Projetos } from './Projetos/index.jsx';
 export { default as ProjetoFases } from './Projetos/screens/Fases/index.jsx';
 export { default as ProjetoStatus } from './Projetos/screens/Status/index.jsx';
 export { default as Projeto } from './Projetos/Projeto.jsx';
 export { default as CadastrarProjeto } from './Projetos/CadastrarProjeto.jsx';
 
-export { default as TarefaDashboard } from './Tarefas/TarefaDashboard.jsx';
+export { default as Tarefas } from './Tarefas/index.jsx';
 export { default as TarefaStatus } from './Tarefas/screens/Status/index.jsx';
 export { default as TarefaBase } from './Tarefas/screens/Base/index.jsx';
 export { default as TarefaClasse } from './Tarefas/screens/Classe/index.jsx';
