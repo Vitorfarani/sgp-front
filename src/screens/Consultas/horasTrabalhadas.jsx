@@ -63,8 +63,16 @@ const columnsFields = [
         label: 'Banco de Horas',
     },
     {
+        field: 'total_tarefas_no_prazo',
+        label: 'Tarefas no Prazo',
+    },
+    {
+        field: 'total_tarefas_atrasado',
+        label: 'Tarefas Atrasadas',
+    },
+    {
         field: 'total_tarefas',
-        label: 'Tarefas',
+        label: 'Total Tarefas',
     },
     {
         field: 'dias_trabalhados',
@@ -105,7 +113,9 @@ export default function ConsultaHorasTrabalhadas() {
             const { 
                 colaborador_nome, 
                 horas_trabalhadas, 
-                carga_horaria, 
+                carga_horaria,
+                total_tarefas_no_prazo,
+                total_tarefas_atrasado, 
                 total_tarefas, 
                 dias_trabalhados, 
                 horas_maximas_permitidas,
@@ -124,6 +134,8 @@ export default function ConsultaHorasTrabalhadas() {
                 situacao: situacao || "",
                 horas_afastado: horas_afastado ? horas_afastado.toFixed(2) : 0,
                 banco_horas: banco_horas ? banco_horas.toFixed(2) : 0,
+                total_tarefas_no_prazo: total_tarefas_no_prazo || 0,
+                total_tarefas_atrasado: total_tarefas_atrasado || 0,
 
             });
         }
@@ -132,6 +144,8 @@ export default function ConsultaHorasTrabalhadas() {
             colaborador_nome: 'TOTAL',
             horas_trabalhadas: 0,
             carga_horaria: 0,
+            total_tarefas_no_prazo: 0,
+            total_tarefas_atrasado: 0,
             total_tarefas: 0,
             dias_trabalhados: 0,
             horas_maximas_permitidas: 0,
@@ -148,6 +162,9 @@ export default function ConsultaHorasTrabalhadas() {
             totais.horas_maximas_permitidas += parseInt(item.horas_maximas_permitidas);
             totais.horas_afastado += parseInt(item.horas_afastado);
             totais.banco_horas += parseInt(item.banco_horas);
+            totais.total_tarefas_no_prazo += parseInt(item.total_tarefas_no_prazo);
+            totais.total_tarefas_atrasado += parseInt(item.total_tarefas_atrasado);
+
         });
         totais.horas_trabalhadas = totais.horas_trabalhadas.toFixed(2);
 
