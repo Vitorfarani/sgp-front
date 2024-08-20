@@ -69,18 +69,18 @@ export default function ConsultaColaboradoresPorTarefa() {
     };
 
     const abreviarSetor = (setorArray) => {
-        const palavrasSignificativas = ['de', 'e', 'do', 'da', 'dos', 'das']; 
-      
+        const palavrasSignificativas = ['de', 'e', 'do', 'da', 'dos', 'das'];
+
         return setorArray.map((setor) => {
-          const palavras = setor.split(' ');
-          const abreviatura = palavras
-            .filter((palavra) => !palavrasSignificativas.includes(palavra.toLowerCase()))
-            .map((palavra) => palavra.charAt(0))
-            .join('');
-          return abreviatura.toUpperCase();
+            const palavras = setor.split(' ');
+            const abreviatura = palavras
+                .filter((palavra) => !palavrasSignificativas.includes(palavra.toLowerCase()))
+                .map((palavra) => palavra.charAt(0))
+                .join('');
+            return abreviatura.toUpperCase();
         });
-      };
-      
+    };
+
     const {
         rows,
         columns,
@@ -113,7 +113,7 @@ export default function ConsultaColaboradoresPorTarefa() {
                             } = tarefa;
 
                             const prazoLabels = dateDiffWithLabels(fim_programado, fim_real);
-                            
+
                             const inicio_programado_pt = inicio_programado !== "N/D" ? dateEnToPtWithHour(inicio_programado) : inicio_programado;
                             const fim_programado_pt = fim_programado !== "N/D" ? dateEnToPtWithHour(fim_programado) : fim_programado;
                             const inicio_real_pt = inicio_real !== "N/D" ? dateEnToPtWithHour(inicio_real) : inicio_real;
@@ -184,22 +184,22 @@ export default function ConsultaColaboradoresPorTarefa() {
                         <>
                             <Col md={2} >
                                 <SelectAsync
-                                    placeholder="Filtrar por Projeto"
-                                    loadOptions={(search) => listProjetos('?search=' + search)}
+                                    placeholder="Filtrar por Colaborador"
+                                    loadOptions={(search) => listColaboradores('?search=' + search)}
                                     getOptionLabel={(option) => option.nome}
-                                    onChange={(projeto) => {
-                                        handleChangeFilters('projeto_id', projeto ? projeto.id : null);
+                                    onChange={(colaborador) => {
+                                        handleChangeFilters('colaborador_id', colaborador ? colaborador.id : null);
                                     }}
                                     isClearable
                                 />
                             </Col>
                             <Col md={2} >
                                 <SelectAsync
-                                    placeholder="Filtrar por Colaborador"
-                                    loadOptions={(search) => listColaboradores('?search=' + search)}
+                                    placeholder="Filtrar por Projeto"
+                                    loadOptions={(search) => listProjetos('?search=' + search)}
                                     getOptionLabel={(option) => option.nome}
-                                    onChange={(colaborador) => {
-                                        handleChangeFilters('colaborador_id', colaborador ? colaborador.id : null);
+                                    onChange={(projeto) => {
+                                        handleChangeFilters('projeto_id', projeto ? projeto.id : null);
                                     }}
                                     isClearable
                                 />

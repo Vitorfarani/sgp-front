@@ -8,6 +8,7 @@ import { listConhecimentoNivels } from "@/services/conhecimento/conhecimentoNive
 import { listConhecimentos } from "@/services/conhecimento/conhecimentos";
 import { listSetores } from "@/services/setores";
 import { Col } from "react-bootstrap";
+import { listColaboradores } from "@/services/colaborador/colaboradores";
 
 const basefilters = {
   search: '',
@@ -47,7 +48,7 @@ export default function ConsultarColaborador() {
     for (const [id, colaborador] of Object.entries(results)) {
       for (const conhecimento of colaborador.conhecimento) {
         const setorSigla = colaborador.setor ? colaborador.setor.sigla : '';
-    
+
         mappedData.push({
           colaborador: colaborador.colaborador,
           nome: conhecimento.nome,
@@ -94,18 +95,29 @@ export default function ConsultarColaborador() {
   return (
     <Background>
       <HeaderTitle
-        title="Consultar Colaboradores"/>
+        title="Consultar Colaboradores" />
       <Section>
         <Table
           columns={columns}
           rows={rows}
           isLoading={isTableLoading}
           filtersState={filtersState}
-          searchPlaceholder="Consultar Colaborador"
+          //searchPlaceholder="Consultar Colaborador"
           searchOffiline
           filtersComponentes={
             <>
-              <Col md={3}>
+              <Col md={2} >
+                <SelectAsync
+                  placeholder="Filtrar por Colaborador"
+                  loadOptions={(search) => listColaboradores('?search=' + search)}
+                  getOptionLabel={(option) => option.nome}
+                  onChange={(colaborador) => {
+                    handleChangeFilters('colaborador_id', colaborador ? colaborador.id : null);
+                  }}
+                  isClearable
+                />
+              </Col>
+              <Col md={2}>
                 <SelectAsync
                   placeholder="Filtrar por Nivel"
                   loadOptions={(search) => listConhecimentoNivels('?search=' + search)}
@@ -116,7 +128,7 @@ export default function ConsultarColaborador() {
                   isClearable
                 />
               </Col>
-              <Col md={3}>
+              <Col md={2}>
                 <SelectAsync
                   placeholder="Filtrar por Conhecimento"
                   loadOptions={(search) => listConhecimentos('?search=' + search)}
@@ -127,7 +139,7 @@ export default function ConsultarColaborador() {
                   isClearable
                 />
               </Col>
-              <Col md={3}>
+              <Col md={2}>
                 <SelectAsync
                   placeholder="Filtrar por Setor"
                   loadOptions={(search) => listSetores('?search=' + search)}
