@@ -41,6 +41,7 @@ const columnsFields = [
     {
         field: 'colaborador_nome',
         label: 'Colaborador',
+        enabledOrder: true,
     },
     {
         field: 'carga_horaria',
@@ -170,8 +171,14 @@ export default function ConsultaHorasTrabalhadas() {
 
         mappedData.push(totais);
 
-        const sortedData = orderBy(mappedData, [filtersState.sortedColumn], [filtersState.sortOrder]);
-
+        const sortedData = orderBy(
+            mappedData.filter(item => item.colaborador_nome !== 'TOTAL'), 
+            [filtersState.sortedColumn], 
+            [filtersState.sortOrder]
+        );
+        
+        sortedData.push(mappedData.find(item => item.colaborador_nome === 'TOTAL'));
+        
         return sortedData;
     });
 

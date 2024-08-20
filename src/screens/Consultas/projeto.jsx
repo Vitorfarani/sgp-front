@@ -116,24 +116,24 @@ export default function ConsultaProjeto() {
           searchPlaceholder="Consultar Projetos"
           filtersComponentes={
             <>
-              <Col md={3}>
-                <SelectAsync
-                  placeholder="Filtrar por Setor"
-                  loadOptions={(search) => listSetores('?search=' + search)}
-                  getOptionLabel={(option) => option.sigla + ' - ' + option.nome}
-                  onChange={(setor) => {
-                    handleChangeFilters('setor_id', setor ? setor.id : "");
-                  }}
-                  isClearable
-                />
-              </Col>
-              <Col md={3}>
+              <Col md={2}>
                 <SelectAsync
                   placeholder="Filtrar por Cliente"
                   loadOptions={(search) => listClientes('?search=' + search)}
                   getOptionLabel={(option) => option.nome}
                   onChange={(cliente) => {
                     handleChangeFilters('cliente_id', cliente ? cliente.id : "");
+                  }}
+                  isClearable
+                />
+              </Col>
+              <Col md={2}>
+                <SelectAsync
+                  placeholder="Filtrar por Setor"
+                  loadOptions={(search) => listSetores('?search=' + search)}
+                  getOptionLabel={(option) => option.sigla + ' - ' + option.nome}
+                  onChange={(setor) => {
+                    handleChangeFilters('setor_id', setor ? setor.id : "");
                   }}
                   isClearable
                 />
