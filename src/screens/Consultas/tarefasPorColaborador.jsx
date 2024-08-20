@@ -27,7 +27,7 @@ const columnsFields = [
     { field: 'projeto_nome', label: 'Projeto', enabledOrder: true },
     { field: 'projeto_status', label: 'Status do Projeto', enabledOrder: true },
     { field: 'tarefa_nome', label: 'Tarefa', enabledOrder: true },
-    { field: 'tarefa_status', label: 'Status da Tarefa', enabledOrder: true},
+    { field: 'tarefa_status', label: 'Status da Tarefa', enabledOrder: true },
     { field: 'inicio_programado', label: 'Início Programado', enabledOrder: true },
     { field: 'fim_programado', label: 'Fim Programado', enabledOrder: true },
     { field: 'inicio_real', label: 'Início Real', enabledOrder: true },
@@ -81,32 +81,32 @@ export default function ConsultaTarefasPorColaborador() {
         if (!results || Object.keys(results).length === 0) {
             return [];
         }
-    
+
         const mappedData = [];
-    
+
         Object.keys(results).forEach(key => {
             const colaboradorData = results[key];
             if (!colaboradorData) return;
-    
+
             const { colaborador_nome, projetos } = colaboradorData;
             if (!projetos || typeof projetos !== 'object') return;
-    
+
             Object.keys(projetos).forEach(projetoKey => {
                 const projeto = projetos[projetoKey];
                 if (!projeto) return;
-    
+
                 const {
                     projeto_nome,
                     projeto_status,
                     projeto_fase,
                     tarefas,
                 } = projeto;
-    
+
                 if (!Array.isArray(tarefas)) return;
-    
+
                 tarefas.forEach(tarefa => {
                     if (!tarefa) return;
-    
+
                     const {
                         tarefa_nome,
                         inicio_programado,
@@ -115,16 +115,16 @@ export default function ConsultaTarefasPorColaborador() {
                         fim_real,
                         tarefa_status,
                     } = tarefa;
-    
+
                     const prazoLabels = dateDiffWithLabels(fim_programado, fim_real);
                     const inicio_programado_pt = inicio_programado !== "N/D" ? dateEnToPtWithHour(inicio_programado) : inicio_programado;
                     const fim_programado_pt = fim_programado !== "N/D" ? dateEnToPtWithHour(fim_programado) : fim_programado;
                     const inicio_real_pt = inicio_real !== "N/D" ? dateEnToPtWithHour(inicio_real) : inicio_real;
                     const fim_real_pt = fim_real !== "N/D" ? dateEnToPtWithHour(fim_real) : fim_real;
-    
+
                     const projeto_status_abreviado = abreviarStatus(projeto_status, "projeto");
                     const tarefa_status_abreviado = abreviarStatus(tarefa_status, "projeto");
-    
+
                     mappedData.push({
                         colaborador_nome: colaborador_nome || "",
                         projeto_nome: projeto_nome || "",
@@ -141,13 +141,13 @@ export default function ConsultaTarefasPorColaborador() {
                 });
             });
         });
-    
+
         const sortedData = orderBy(mappedData, [filtersState.sortedColumn], [filtersState.sortOrder]);
-    
+
         return sortedData;
     });
-    
-    
+
+
 
     useEffect(() => {
         handleChangeFilters('search', basefilters.search);
@@ -178,22 +178,22 @@ export default function ConsultaTarefasPorColaborador() {
                         <>
                             <Col md={2}>
                                 <SelectAsync
-                                    placeholder="Filtrar por Projeto"
-                                    loadOptions={(search) => listProjetos('?search=' + search)}
+                                    placeholder="Filtrar por Colaborador"
+                                    loadOptions={(search) => listColaboradores('?search=' + search)}
                                     getOptionLabel={(option) => option.nome}
-                                    onChange={(projeto) => {
-                                        handleChangeFilters('projeto_id', projeto ? projeto.id : null);
+                                    onChange={(colaborador) => {
+                                        handleChangeFilters('colaborador_id', colaborador ? colaborador.id : null);
                                     }}
                                     isClearable
                                 />
                             </Col>
                             <Col md={2}>
                                 <SelectAsync
-                                    placeholder="Filtrar por Colaborador"
-                                    loadOptions={(search) => listColaboradores('?search=' + search)}
+                                    placeholder="Filtrar por Projeto"
+                                    loadOptions={(search) => listProjetos('?search=' + search)}
                                     getOptionLabel={(option) => option.nome}
-                                    onChange={(colaborador) => {
-                                        handleChangeFilters('colaborador_id', colaborador ? colaborador.id : null);
+                                    onChange={(projeto) => {
+                                        handleChangeFilters('projeto_id', projeto ? projeto.id : null);
                                     }}
                                     isClearable
                                 />

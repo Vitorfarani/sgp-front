@@ -164,8 +164,14 @@ export default function ConsultaColaboradorPorProjeto() {
       
           mappedData.push(totais);
 
-        const sortedData = orderBy(mappedData, [filtersState.sortedColumn], [filtersState.sortOrder]);
-
+          const sortedData = orderBy(
+            mappedData.filter(item => item.colaborador_nome !== 'TOTAL'), 
+            [filtersState.sortedColumn], 
+            [filtersState.sortOrder]
+        );
+        
+        sortedData.push(mappedData.find(item => item.colaborador_nome === 'TOTAL'));
+        
         return sortedData;
     });
 

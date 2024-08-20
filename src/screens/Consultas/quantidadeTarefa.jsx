@@ -9,6 +9,7 @@ import { DateTest } from "@/components/index";
 import { listSetores } from "@/services/setores";
 import { FiEye, FiEyeOff } from 'react-icons/fi';
 import moment from "moment";
+import orderBy from 'lodash/orderBy';
 
 
 const basefilters = {
@@ -351,7 +352,16 @@ export default function ConsultaQuantidadeTarefa() {
     
         mappedData.push(totais);
 
-    return mappedData;
+        const sortedData = orderBy(
+          mappedData.filter(item => item.colaborador_id !== 'totais'), 
+          [filtersState.sortedColumn], 
+          [filtersState.sortOrder]
+      );
+      
+      // Reinsere o item "TOTAL" no final da lista ordenada
+      sortedData.push(mappedData.find(item => item.colaborador_id === 'totais'));
+      
+      return sortedData;
   });
 
   const toggleColumnVisibility = (columnName) => {
