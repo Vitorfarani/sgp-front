@@ -158,6 +158,14 @@ export default [
       },
     ]
   },
+  {
+    nome: 'Minhas Tarefas',
+    nivel_acesso: 1,
+    icon: FaTasks,
+    path: 'tarefas/execucao',
+    rolesPermited: [],
+    childrens: []
+  },
 
   {
     nome: 'Conhecimentos',

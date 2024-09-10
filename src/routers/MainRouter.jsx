@@ -33,6 +33,7 @@ import {
   TarefaStatus,
   TarefaBase,
   TarefaClasse,
+  TarefaExecucao,
   AfastamentoTipos,
   Afastamentos,
   Funcoes,
@@ -108,6 +109,7 @@ const MainRouter = () => {
         <Route path="projetos/visualizar/:id" Component={Projeto}/>
         <Route path="projetos/editar/:id" Component={CadastrarProjeto}/>
 
+        <Route path="tarefas/execucao" Component={TarefaExecucao}/>
 
         <Route path="tarefas" Component={Tarefas}/>
         <Route path="tarefas/status" Component={TarefaStatus}/>

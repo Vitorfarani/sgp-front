@@ -29,6 +29,8 @@ export { default as TarefaStatus } from './Tarefas/screens/Status/index.jsx';
 export { default as TarefaBase } from './Tarefas/screens/Base/index.jsx';
 export { default as TarefaClasse } from './Tarefas/screens/Classe/index.jsx';
 
+export { default as TarefaExecucao} from './TarefaExecucao/index.jsx'
+
 export { default as Conhecimentos } from './Conhecimentos/index.jsx';
 export { default as ConhecimentoClasse } from './Conhecimentos/screens/Classe/index.jsx';
 export { default as ConhecimentoNivel } from './Conhecimentos/screens/Nivel/index.jsx';
