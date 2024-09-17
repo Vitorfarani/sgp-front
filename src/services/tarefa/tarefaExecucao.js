@@ -7,21 +7,21 @@ export const listTarefaExecucao = async (params = "") => {
 }
 
 export const createTarefaExecucao = async (data) => {
-  let url = 'tarefa-execucao';
+  let url = 'tarefa-execucao/store';
   return _post(url, data);
 }
 
 export const showTarefaExecucao = async (id) => {
-  let url = `tarefa-execucao/${id}`;
+  let url = `tarefa-execucao/show/${id}`;
   return _get(url);
 }
 
 export const updateTarefaExecucao = async (data) => {
-  let url = `tarefa-execucao/${data.id}`;
+  let url = `tarefa-execucao/update/${data.id}`;
   return _put(url, data);
 }
 
 export const deleteTarefaExecucao = async (id) => {
-  let url = `tarefa-execucao/${id}`;
+  let url = `tarefa-execucao/delete/${id}`;
   return _delete(url);
 }

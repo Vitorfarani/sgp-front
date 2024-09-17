@@ -27,8 +27,8 @@ const columnsFields = [
   //{ field: 'nome', label: 'Nome', enabledOrder: true, piper: (field) => !!field ? field : '' },
   { field: 'tarefa_id', label: 'Tarefa' },
   { field: 'colaborador_id', label: 'Colaborador' },
-  { field: 'data_inicio_execucao', label: 'Início da Execução', enabledOrder: true, piper: (field) => !!field ? dateEnToPt(field) : '' },
-  { field: 'data_fim_execucao', label: 'Fim da Execução', enabledOrder: true, piper: (field) => !!field ? dateEnToPt(field) : '' },
+  { field: 'data_inicio_execucao', label: 'Início da Execução', enabledOrder: true},
+  { field: 'data_fim_execucao', label: 'Fim da Execução', enabledOrder: true},
 ];
 
 const cadastroInitialValue = {
@@ -53,6 +53,7 @@ export default function TarefaExecucao() {
     resetFilters,
     isEmpty,
   } = useTable(columnsFields, listTarefaExecucao, basefilters, (results) => {
+    console.log("Dados retornados de listTarefaExecucao:", results); // Adiciona o console.log aqui
     return results.data;
   });
 
@@ -70,6 +71,7 @@ export default function TarefaExecucao() {
           isClearable: true,
           loadOptions: listColaboradores,
           required: true,
+          formatOptionLabel: option => `${option.nome}`, // Exibe o nome e o ID
         },
         {
           name: 'projeto',
@@ -78,6 +80,7 @@ export default function TarefaExecucao() {
           isClearable: true,
           loadOptions: listProjetos,
           required: true,
+          formatOptionLabel: option => `${option.nome}`, // Exibe o nome e o ID
         },
         {
           name: 'tarefa',
@@ -85,6 +88,7 @@ export default function TarefaExecucao() {
           type: 'selectAsync',
           loadOptions: listTarefas,
           required: true,
+          formatOptionLabel: option => `${option.nome}`, // Exibe o nome e o ID
         },
         {
           name: 'data_inicio_execucao',
@@ -103,24 +107,27 @@ export default function TarefaExecucao() {
       labelSuccess: 'Salvar',
       labelCancel: 'Cancelar',
     })
-      .then((result) => {
-        return formatForm(result).getResult();
-      })
-
+    .then((result) => {
+      return formatForm(result).rebaseIds(['projeto', 'colaborador', 'tarefa']).getResult()
+    })
       .then(async (result) => {
-        handleGlobalLoading.show()
+        handleGlobalLoading.show();
         let method = !result.id ? createTarefaExecucao : updateTarefaExecucao;
         method(result)
           .then((res) => {
-            callGlobalNotify({ message: res.message, variant: 'success' })
-            load()
+            callGlobalNotify({ message: res.message, variant: 'success' });
+            load();
           })
           .catch(callGlobalAlert)
-          .finally(handleGlobalLoading.hide)
+          .finally(handleGlobalLoading.hide);
       })
-      .catch(console.log)
-    console.log(data)
+      .catch(console.log);
   }
+  
+  useEffect(() => {
+    load();
+  }, []);
+  
 
 
   // const handleDelete = async (row) => {
@@ -156,11 +163,6 @@ export default function TarefaExecucao() {
           filtersState={filtersState}
           //searchPlaceholder="Buscar Tarefas"
           searchOffiline
-          filtersComponentes={
-            <>
-
-            </>
-          }
           handleFilters={handleChangeFilters}
           actions={[
             {
