@@ -6,15 +6,11 @@ import { useEffect, useState } from "react";
 import { FiCheckCircle, FiEdit, FiPlus, FiTrash } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import { formatForm } from "@/utils/helpers/forms";
-import { datetimeToPt } from "@/utils/helpers/date";
-import moment from "moment";
-import { createTarefaExecucao, deleteTarefaExecucao, listTarefaExecucao } from "@/services/tarefa/tarefaExecucao";
+import { dateEnToPt, datetimeToPt } from "@/utils/helpers/date";
+import { createTarefaExecucao, deleteTarefaExecucao, listTarefaExecucao, updateTarefaExecucao } from "@/services/tarefa/tarefaExecucao";
 import { tarefaExecucaoSchema } from "./validations";
 import { listColaboradores } from "@/services/colaborador/colaboradores";
 import { listProjetos } from "@/services/projeto/projetos";
-import { listSetores } from "@/services/setores";
-import { Col } from "react-bootstrap";
-import { listTarefaColaborador } from "@/services/tarefa/tarefaColaborador";
 import { listTarefas } from "@/services/tarefa/tarefas";
 
 // Configuração dos filtros e colunas
@@ -28,9 +24,11 @@ const basefilters = {
 };
 
 const columnsFields = [
-  { field: 'nome', label: 'Nome', enabledOrder: true, piper: (field) => !!field ? field : '' },
-  { field: 'data_inicio_execucao', label: 'Início da Execução', enabledOrder: true, piper: (field) => !!field ? datetimeToPt(field) : '' },
-  { field: 'data_fim_execucao', label: 'Fim da Execução', enabledOrder: true, piper: (field) => !!field ? datetimeToPt(field) : '' },
+  //{ field: 'nome', label: 'Nome', enabledOrder: true, piper: (field) => !!field ? field : '' },
+  { field: 'tarefa_id', label: 'Tarefa' },
+  { field: 'colaborador_id', label: 'Colaborador' },
+  { field: 'data_inicio_execucao', label: 'Início da Execução', enabledOrder: true, piper: (field) => !!field ? dateEnToPt(field) : '' },
+  { field: 'data_fim_execucao', label: 'Fim da Execução', enabledOrder: true, piper: (field) => !!field ? dateEnToPt(field) : '' },
 ];
 
 const cadastroInitialValue = {
@@ -39,9 +37,6 @@ const cadastroInitialValue = {
   data_inicio_execucao: '',
   data_fim_execucao: '',
 };
-
-const formattedResult = formatForm(result).getResult();
-formattedResult.tarefa_id = Number(formattedResult.tarefa_id); // Assegure-se de que seja um número
 
 export default function TarefaExecucao() {
   const navigate = useNavigate();
@@ -62,36 +57,46 @@ export default function TarefaExecucao() {
   });
 
 
-  function callModalCadastro(data) {
+  function callModalCadastro(data = {}) {
     callGlobalDialog({
       title: 'Registrar Execução de Tarefa',
       yupSchema: tarefaExecucaoSchema,
       data,
       forms: [
-        user.nivel_acesso > 1 && {
+        {
           name: 'colaborador',
           label: 'Colaborador',
           type: 'selectAsync',
           isClearable: true,
           loadOptions: listColaboradores,
+          required: true,
         },
-        user.nivel_acesso > 1 && {
-          name: 'tarefa_id',
+        {
+          name: 'projeto',
+          label: 'Projeto',
+          type: 'selectAsync',
+          isClearable: true,
+          loadOptions: listProjetos,
+          required: true,
+        },
+        {
+          name: 'tarefa',
           label: 'Tarefa',
           type: 'selectAsync',
           loadOptions: listTarefas,
           required: true,
         },
-        user.nivel_acesso > 1 && {
+        {
           name: 'data_inicio_execucao',
           label: 'Início da Execução',
           type: 'datetime-local',
           required: true,
         },
-        user.nivel_acesso > 1 && {
+        {
           name: 'data_fim_execucao',
           label: 'Fim da Execução',
           type: 'datetime-local',
+          required: true,
         },
       ],
       labelSucessColor: 'green',
@@ -101,36 +106,35 @@ export default function TarefaExecucao() {
       .then((result) => {
         return formatForm(result).getResult();
       })
+
       .then(async (result) => {
-        handleGlobalLoading.show();
-        try {
-          // Converter tarefa_id para inteiro se necessário
-          const payload = { ...result, tarefa_id: Number(result.tarefa_id) };
-          await createTarefaExecucao(payload);
-          callGlobalNotify({ message: 'Execução registrada com sucesso!', variant: 'success' });
-          load(); // Atualiza a lista de tarefas
-        } catch (error) {
-          callGlobalAlert({ message: 'Erro ao registrar execução.', variant: 'danger' });
-        } finally {
-          handleGlobalLoading.hide();
-        }
+        handleGlobalLoading.show()
+        let method = !result.id ? createTarefaExecucao : updateTarefaExecucao;
+        method(result)
+          .then((res) => {
+            callGlobalNotify({ message: res.message, variant: 'success' })
+            load()
+          })
+          .catch(callGlobalAlert)
+          .finally(handleGlobalLoading.hide)
       })
-      
-      .catch(console.log);
+      .catch(console.log)
+    console.log(data)
   }
 
-  const handleDelete = async (row) => {
-    handleGlobalLoading.show();
-    try {
-      await deleteTarefaExecucao(row.id);
-      callGlobalNotify({ message: 'Tarefa excluída com sucesso!', variant: 'success' });
-      load(); // Atualiza a lista após exclusão
-    } catch (error) {
-      callGlobalAlert({ message: 'Erro ao excluir tarefa.', variant: 'danger' });
-    } finally {
-      handleGlobalLoading.hide();
-    }
-  };
+
+  // const handleDelete = async (row) => {
+  //   handleGlobalLoading.show();
+  //   try {
+  //     await deleteTarefaExecucao(row.id);
+  //     callGlobalNotify({ message: 'Tarefa excluída com sucesso!', variant: 'success' });
+  //     load(); // Atualiza a lista após exclusão
+  //   } catch (error) {
+  //     callGlobalAlert({ message: 'Erro ao excluir tarefa.', variant: 'danger' });
+  //   } finally {
+  //     handleGlobalLoading.hide();
+  //   }
+  // };
 
   return (
     <Background>
@@ -166,13 +170,13 @@ export default function TarefaExecucao() {
               },
               icon: FiEdit,
             },
-            {
-              label: 'Excluir',
-              onClick: (row) => {
-                handleDelete(row);
-              },
-              icon: FiTrash,
-            },
+            // {
+            //   label: 'Excluir',
+            //   onClick: (row) => {
+            //     handleDelete(row);
+            //   },
+            //   icon: FiTrash,
+            // },
           ]}
 
         />

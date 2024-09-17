@@ -1,6 +1,7 @@
 import { FiBarChart, FiBookmark, FiGrid, FiPieChart, FiUsers, FiBriefcase, FiBookOpen } from "react-icons/fi";
 import { FaSearch, FaUserClock, FaLayerGroup, FaArchive, FaBalanceScale, FaBity, FaBrain, FaBuilding, FaClock, FaFlag, FaIdCard, FaLevelUpAlt, FaListAlt, FaMarkdown, FaPeopleCarry, FaStopCircle, FaStopwatch, FaTasks, FaUserSlash, FaSnowboarding} from "react-icons/fa";
 import { PiUserList } from "react-icons/pi";
+import { BiTask } from "react-icons/bi";
 
 export default [
   {
@@ -159,9 +160,9 @@ export default [
     ]
   },
   {
-    nome: 'Minhas Tarefas',
+    nome: 'Execução de Tarefas',
     nivel_acesso: 1,
-    icon: FaTasks,
+    icon: BiTask,
     path: 'tarefas/execucao',
     rolesPermited: [],
     childrens: []

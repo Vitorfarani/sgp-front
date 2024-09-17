@@ -11,11 +11,6 @@ export const createTarefaExecucao = async (data) => {
   return _post(url, data);
 }
 
-export const getAllTarefaExecucao = async () => {
-  let url = 'tarefa-execucao';
-  return _get(url);
-}
-
 export const showTarefaExecucao = async (id) => {
   let url = `tarefa-execucao/${id}`;
   return _get(url);
