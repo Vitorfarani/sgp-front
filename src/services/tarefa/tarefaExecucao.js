@@ -25,3 +25,52 @@ export const deleteTarefaExecucao = async (id) => {
   let url = `tarefa-execucao/delete/${id}`;
   return _delete(url);
 }
+
+export const listColaboradorTarefaPorExecucao = async (params = "") => {
+  let url = `tarefa-execucao/colaboradorTarefaPorExecucao${params}`;
+  return _get(url);
+}
+
+export const listTarefasColaborador = async (colaboradorId) => {
+  const url = colaboradorId ? `tarefa?colaboradorId=${colaboradorId}` : 'tarefa';
+  
+  try {
+    const response = await _get(url);
+    return response;
+  } catch (error) {
+    console.error('Error fetching tarefas:', error); 
+    throw error; 
+  }
+};
+
+export const listProjetosColaborador = async (projetoId) => {
+  const url = projetoId ? `projeto?projetoId=${projetoId}` : 'projeto';
+  
+  try {
+    const response = await _get(url);
+    return response;
+  } catch (error) {
+    console.error('Error fetching projetos:', error); 
+    throw error; 
+  }
+};
+
+// Adicionando uma nova função para verificar conflitos de execução
+export const checkExecutionConflict = async (colaboradorId, dataInicio, dataFim, execucaoId) => {
+  const url = 'tarefa-execucao/checkExecutionConflict';
+  const data = {
+    colaborador_id: colaboradorId,
+    data_inicio: dataInicio,
+    data_fim: dataFim,
+    execucao_id: execucaoId,
+  };
+  
+  try {
+    const response = await _post(data, url);
+    return response.data.conflict;
+  } catch (error) {
+    console.error('Error checking execution conflict:', error);
+    throw error;
+  }
+};
+
