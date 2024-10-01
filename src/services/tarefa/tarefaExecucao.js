@@ -55,7 +55,6 @@ export const listProjetosColaborador = async (projetoId) => {
   }
 };
 
-// Adicionando uma nova função para verificar conflitos de execução
 export const checkExecutionConflict = async (colaboradorId, dataInicio, dataFim, execucaoId) => {
   const url = 'tarefa-execucao/checkExecutionConflict';
   const data = {
@@ -71,6 +70,26 @@ export const checkExecutionConflict = async (colaboradorId, dataInicio, dataFim,
   } catch (error) {
     console.error('Error checking execution conflict:', error);
     throw error;
+  }
+};
+
+export const finalizarTarefa = async (tarefaId, dataFimReal) => {
+  if (!tarefaId) {
+    console.error("ID da tarefa não foi fornecido!"); 
+    return;
+  }
+  
+  const url = `tarefa-execucao/finalizar/${id}`;
+  const data = {
+    data_fim_real: dataFimReal
+  };
+
+  try {
+    const response = await _post(url, data);
+    return response;
+  } catch (error) {
+    console.error('Erro ao finalizar tarefa:', error);
+    throw error; 
   }
 };
 

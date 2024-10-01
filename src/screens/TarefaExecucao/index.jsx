@@ -46,7 +46,7 @@ export default function TarefaExecucao() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { callGlobalDialog, handleGlobalLoading, callGlobalAlert, callGlobalNotify } = useTheme();
-  const userAccessLevel = user?.nivel_acesso; // Obtém o nível de acesso do usuário
+  const userAccessLevel = user?.nivel_acesso; 
 
 
   const {
@@ -59,14 +59,11 @@ export default function TarefaExecucao() {
     resetFilters,
     isEmpty,
   } = useTable(columnsFields,
-    // Modifique aqui a função que carrega as tarefas
     async (filters) => {
       if (userAccessLevel === 1) {
-        // Usuário com nível de acesso 1
-        const colaboradorId = user.colaborador_id; // ID do colaborador do usuário
+        const colaboradorId = user.colaborador_id; 
         return await listColaboradorTarefaPorExecucao({ colaboradorId, ...filters });
       } else {
-        // Usuário com nível de acesso 2
         return await listColaboradorTarefaPorExecucao(filters);
       }
     },
@@ -114,7 +111,6 @@ export default function TarefaExecucao() {
 
 
   function callModalCadastro(data = {}) {
-    // Define diretamente o ID do colaborador
     const colaboradorId = 39;
     const colaboradorNome = "Wesley Braga de Faria";
 
@@ -122,6 +118,7 @@ export default function TarefaExecucao() {
 
     const initialData = {
       colaborador: colaboradorId ? { id: colaboradorId, nome: colaboradorNome } : null,
+      finalizar_tarefa: false, 
       ...data,
     };
 
@@ -219,6 +216,17 @@ export default function TarefaExecucao() {
           type: 'datetime-local',
           required: true,
         },
+        {
+          name: 'finalizar_tarefa',
+          label: 'Deseja finalizar a tarefa?',
+          type: 'select',
+          options: [
+            { value: true, label: 'Sim' },
+            { value: false, label: 'Não' },
+          ],
+          required: true,
+          formatOptionLabel: option => `${option.label}`,
+        },
       ],
       labelSucessColor: 'green',
       labelSuccess: 'Salvar',
@@ -237,9 +245,16 @@ export default function TarefaExecucao() {
       })
       .then(async (result) => {
         handleGlobalLoading.show();
-
+      
+        const shouldFinalizeTask = result.finalizar_tarefa;
+        console.log(shouldFinalizeTask)
+      
+        if (shouldFinalizeTask) {
+          result.status = 'finalizada'; 
+        }
+      
         const method = result.id ? updateTarefaExecucao : createTarefaExecucao;
-
+      
         try {
           const res = await method(result);
           callGlobalNotify({ message: res.message, variant: 'success' });
@@ -247,7 +262,7 @@ export default function TarefaExecucao() {
         } catch (error) {
           const errorMessage = `Erro: ${error.message}`;
           const additionalMessage = "Por favor, verifique os dados e tente novamente.";
-
+      
           callGlobalAlert({
             message: `${errorMessage} ${additionalMessage}`,
             variant: 'danger'
@@ -256,6 +271,7 @@ export default function TarefaExecucao() {
           handleGlobalLoading.hide();
         }
       })
+      
       .catch(console.log);
   }
 
