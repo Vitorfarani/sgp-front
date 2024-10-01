@@ -12,6 +12,8 @@ export {default as ConsultaColaboradorPorProjeto} from './Consultas/colaboradorP
 export {default as ConsultaQuantidadeTarefa} from './Consultas/quantidadeTarefa.jsx'
 export {default as ConsultaHorasTrabalhadas} from './Consultas/horasTrabalhadas.jsx'
 
+export {default as ConsultaTarefasPorColaboradorTeste} from './ConsultasTeste/tarefasPorColaboradorTeste.jsx'
+
 export { default as Colaboradores } from './Colaboradores/index.jsx';
 export { default as CadastrarColaborador } from './Colaboradores/CadastrarColaborador.jsx';
 
