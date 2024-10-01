@@ -121,6 +121,18 @@ export const dateDiffWithLabels = (dataFimEstimado, dataFimReal = null) => {
   }
 };
 
+export const dateExecutionDiffWithLabels = (dataFimEstimado, dataFimReal = null, execucaoFeita = false) => {
+  const dataAtual = moment();
+  if (!dataFimEstimado) return false;
+
+  dataFimEstimado = moment(dataFimEstimado, 'YYYY-MM-DD[T]HH:mm');
+  dataFimReal = !!dataFimReal ? moment(dataFimReal, 'YYYY-MM-DD[T]HH:mm') : null;
+
+  if (execucaoFeita) {
+      return { label: 'Execução Parcial', diff: null, Icon: FaCalendarAlt, color: 'purple' }; // Cor roxa para execução parcial
+  }
+}
+
 export const dateEnToPtWithHour = function (d) {
   const dateParts = d.split(' ');
   const dateOnly = dateParts[0].split('-');
