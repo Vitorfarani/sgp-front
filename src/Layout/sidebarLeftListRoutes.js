@@ -2,6 +2,7 @@ import { FiBarChart, FiBookmark, FiGrid, FiPieChart, FiUsers, FiBriefcase, FiBoo
 import { FaSearch, FaUserClock, FaLayerGroup, FaArchive, FaBalanceScale, FaBity, FaBrain, FaBuilding, FaClock, FaFlag, FaIdCard, FaLevelUpAlt, FaListAlt, FaMarkdown, FaPeopleCarry, FaStopCircle, FaStopwatch, FaTasks, FaUserSlash, FaSnowboarding} from "react-icons/fa";
 import { PiUserList } from "react-icons/pi";
 import { BiTask } from "react-icons/bi";
+import { VscSearchStop } from "react-icons/vsc";
 
 export default [
   {
@@ -72,6 +73,23 @@ export default [
         nivel_acesso: 2,
         icon: FaLayerGroup,
         path: 'consultas/tarefasPorAgrupamento',
+        rolesPermited: [],
+        childrens: []
+      },
+    ]
+  },
+  {
+    nome: 'Consultas em Andamento',
+    nivel_acesso: 2,
+    icon: VscSearchStop,
+    path: '',
+    rolesPermited: [],
+    childrens: [
+      {
+        nome: 'Tarefas/Colaborador',
+        nivel_acesso: 2,
+        icon: FaTasks,
+        path: 'consultasteste/tarefasPorColaboradorTeste',
         rolesPermited: [],
         childrens: []
       },
