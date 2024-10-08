@@ -13,6 +13,7 @@ export {default as ConsultaQuantidadeTarefa} from './Consultas/quantidadeTarefa.
 export {default as ConsultaHorasTrabalhadas} from './Consultas/horasTrabalhadas.jsx'
 
 export {default as ConsultaTarefasPorColaboradorTeste} from './ConsultasTeste/tarefasPorColaboradorTeste.jsx'
+export {default as ConsultaColaboradoresPorTarefaTeste} from './ConsultasTeste/colaboradoresPorTarefaTeste.jsx'
 
 export { default as Colaboradores } from './Colaboradores/index.jsx';
 export { default as CadastrarColaborador } from './Colaboradores/CadastrarColaborador.jsx';

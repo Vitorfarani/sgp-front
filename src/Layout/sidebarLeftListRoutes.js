@@ -93,6 +93,14 @@ export default [
         rolesPermited: [],
         childrens: []
       },
+      {
+        nome: 'Colaboradores/Tarefa',
+        nivel_acesso: 2,
+        icon: FaTasks,
+        path: 'consultasteste/colaboradoresPorTarefaTeste',
+        rolesPermited: [],
+        childrens: []
+      },
     ]
   },
   {

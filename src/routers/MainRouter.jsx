@@ -16,7 +16,10 @@ import {
   ConsultaTarefasPorColaborador,
   ConsultaQuantidadeTarefa,
   ConsultaHorasTrabalhadas,
+
   ConsultaTarefasPorColaboradorTeste,
+  ConsultaColaboradoresPorTarefaTeste,
+  
   NotFound,
   Projeto,
   Projetos,
@@ -94,8 +97,9 @@ const MainRouter = () => {
         <Route path="consultas/colaboradorHorasTrabalhadas" Component={ConsultaHorasTrabalhadas}/>
 
         <Route path="consultasteste/tarefasPorColaboradorTeste" Component={ConsultaTarefasPorColaboradorTeste}/>
-        
+        <Route path="consultasteste/colaboradoresPorTarefaTeste" Component={ConsultaColaboradoresPorTarefaTeste}/>
 
+        
         <Route path="colaboradores" Component={Colaboradores}/>
         <Route path="colaboradores/cadastrar" Component={CadastrarColaborador}/>
         <Route path="colaboradores/editar/:id" Component={CadastrarColaborador}/>
