@@ -11,4 +11,9 @@ export const listProjetoColaboradoresTarefaTeste= async (params = "") => {
   return _get(url);
 }
 
+export const listColaboradorHorasTrabalhadasTeste= async (params = "") => {
+  let url = `tarefa-execucao/colaboradorHorasTrabalhadasTeste${params}`;
+  return _get(url);
+}
+
 

@@ -96,8 +96,16 @@ export default [
       {
         nome: 'Colaboradores/Tarefa',
         nivel_acesso: 2,
-        icon: FaTasks,
+        icon: PiUserList,
         path: 'consultasteste/colaboradoresPorTarefaTeste',
+        rolesPermited: [],
+        childrens: []
+      },
+      {
+        nome: 'Horas Trabalhadas',
+        nivel_acesso: 2,
+        icon: FaUserClock,
+        path: 'consultasteste/colaboradorHorasTrabalhadasTeste',
         rolesPermited: [],
         childrens: []
       },
