@@ -10,6 +10,7 @@ import orderBy from 'lodash/orderBy';
 import TooltipHorario from "@/components/TooltipHorario";
 import moment from "moment";
 import { listColaboradorHorasTrabalhadasTeste } from "@/services/consultasTeste/consultasteste";
+import { useAuth } from "@/utils/context/AuthProvider";
 
 
 const basefilters = {
@@ -92,6 +93,7 @@ const columnsFields = [
 ];
 
 export default function ConsultaHorasTrabalhadasTeste() {
+    const { user } = useAuth();
     const [dataInicio, setDataInicio] = useState(moment().format('YYYY-MM-01'));
     const [dataFim, setDataFim] = useState(moment().format('YYYY-MM-DD'));
 
@@ -205,17 +207,19 @@ export default function ConsultaHorasTrabalhadasTeste() {
                     filtersState={filtersState}
                     filtersComponentes={
                         <>
-                            <Col md={2} >
-                                <SelectAsync
-                                    placeholder="Filtrar por Colaborador"
-                                    loadOptions={(search) => listColaboradores('?search=' + search)}
-                                    getOptionLabel={(option) => option.nome}
-                                    onChange={(colaborador) => {
-                                        handleChangeFilters('colaborador_id', colaborador ? colaborador.id : null);
-                                    }}
-                                    isClearable
-                                />
-                            </Col>
+                            {user.nivel_acesso === 2 && ( // Verificação do nível de acesso
+                                <Col md={2}>
+                                    <SelectAsync
+                                        placeholder="Filtrar por Colaborador"
+                                        loadOptions={(search) => listColaboradores('?search=' + search)}
+                                        getOptionLabel={(option) => option.nome}
+                                        onChange={(colaborador) => {
+                                            handleChangeFilters('colaborador_id', colaborador ? colaborador.id : null);
+                                        }}
+                                        isClearable
+                                    />
+                                </Col>
+                            )}
                             <Col md={2} >
                                 <SelectAsync
                                     placeholder="Filtrar por Projeto"

@@ -12,6 +12,7 @@ import { listSetores } from "@/services/setores";
 import { listProjetos } from "@/services/projeto/projetos";
 import moment from "moment";
 import { listColaboradorProjetosTarefatTeste } from "@/services/consultasTeste/consultasteste";
+import { useAuth } from "@/utils/context/AuthProvider";
 
 const basefilters = {
     search: '',
@@ -41,6 +42,7 @@ const columnsFields = [
     },
 ];
 export default function ConsultaTarefasPorColaboradorTeste() {
+    const { user } = useAuth();
     const [dataInicio, setDataInicio] = useState(moment().format('YYYY-MM-01'));
     const [dataFim, setDataFim] = useState(moment().format('YYYY-MM-DD'));
 
@@ -214,17 +216,19 @@ export default function ConsultaTarefasPorColaboradorTeste() {
                     //searchPlaceholder="Consultar Projetos"
                     filtersComponentes={
                         <>
-                            <Col md={2}>
-                                <SelectAsync
-                                    placeholder="Filtrar por Colaborador"
-                                    loadOptions={(search) => listColaboradores('?search=' + search)}
-                                    getOptionLabel={(option) => option.nome}
-                                    onChange={(colaborador) => {
-                                        handleChangeFilters('colaborador_id', colaborador ? colaborador.id : null);
-                                    }}
-                                    isClearable
-                                />
-                            </Col>
+                            {user.nivel_acesso === 2 && ( // Verificação do nível de acesso
+                                <Col md={2}>
+                                    <SelectAsync
+                                        placeholder="Filtrar por Colaborador"
+                                        loadOptions={(search) => listColaboradores('?search=' + search)}
+                                        getOptionLabel={(option) => option.nome}
+                                        onChange={(colaborador) => {
+                                            handleChangeFilters('colaborador_id', colaborador ? colaborador.id : null);
+                                        }}
+                                        isClearable
+                                    />
+                                </Col>
+                            )}
                             <Col md={2}>
                                 <SelectAsync
                                     placeholder="Filtrar por Projeto"

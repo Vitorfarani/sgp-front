@@ -80,14 +80,14 @@ export default [
   },
   {
     nome: 'Consultas em Andamento',
-    nivel_acesso: 2,
+    nivel_acesso: 1,
     icon: VscSearchStop,
     path: '',
     rolesPermited: [],
     childrens: [
       {
         nome: 'Tarefas/Colaborador',
-        nivel_acesso: 2,
+        nivel_acesso: 1,
         icon: FaTasks,
         path: 'consultasteste/tarefasPorColaboradorTeste',
         rolesPermited: [],
@@ -95,7 +95,7 @@ export default [
       },
       {
         nome: 'Colaboradores/Tarefa',
-        nivel_acesso: 2,
+        nivel_acesso: 1,
         icon: PiUserList,
         path: 'consultasteste/colaboradoresPorTarefaTeste',
         rolesPermited: [],
@@ -103,7 +103,7 @@ export default [
       },
       {
         nome: 'Horas Trabalhadas',
-        nivel_acesso: 2,
+        nivel_acesso: 1,
         icon: FaUserClock,
         path: 'consultasteste/colaboradorHorasTrabalhadasTeste',
         rolesPermited: [],
