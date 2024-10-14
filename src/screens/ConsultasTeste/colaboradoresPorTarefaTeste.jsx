@@ -133,10 +133,12 @@ export default function ConsultaColaboradoresPorTarefaTeste() {
                                 // Se houver execuções, mapear cada execução
                                 execucoes.forEach((execucao) => {
                                     const { inicio_execucao, fim_execucao } = execucao;
-                                    const prazoLabels = fim_execucao === fim_real
-                                    ? dateDiffWithLabels(fim_programado, fim_real) // Se forem iguais, usa dateDiffWithLabels
-                                    : dateExecutionDiffWithLabels(fim_programado, fim_real, fim_real === execucoes[execucoes.length - 1].fim_execucao); // Caso contrário, usa dateExecutionDiffWithLabels
-    
+                                    // Verifica se fim_execucao é igual a fim_real ou se fim_real está indefinido (N/D)
+                                    const prazoLabels = fim_real && fim_real !== "N/D"
+                                        ? fim_execucao === fim_real
+                                            ? dateDiffWithLabels(fim_programado, fim_real) // Se forem iguais, usa dateDiffWithLabels
+                                            : dateExecutionDiffWithLabels(fim_programado, fim_real, fim_real === execucoes[execucoes.length - 1].fim_execucao) // Caso contrário, usa dateExecutionDiffWithLabels
+                                        : dateExecutionDiffWithLabels(fim_programado, execucoes[execucoes.length - 1].fim_execucao, true); // Se fim_real for "N/D", mostra "Execução Parcial"
 
                                     mappedData.push({
                                         projeto_nome,
