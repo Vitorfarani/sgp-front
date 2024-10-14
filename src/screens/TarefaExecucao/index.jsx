@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import { FiEdit, FiPlus, FiTrash } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import { formatForm } from "@/utils/helpers/forms";
-import {dateEnToPtWithHour, datetimeToPt } from "@/utils/helpers/date";
+import { dateEnToPtWithHour, datetimeToPt } from "@/utils/helpers/date";
 import { createTarefaExecucao, deleteTarefaExecucao, listColaboradorTarefaPorExecucao, listProjetosColaborador, listTarefaExecucao, listTarefasColaborador, updateTarefaExecucao } from "@/services/tarefa/tarefaExecucao";
 import { tarefaExecucaoSchema } from "./validations";
 import { listColaboradores } from "@/services/colaborador/colaboradores";
@@ -46,7 +46,7 @@ export default function TarefaExecucao() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { callGlobalDialog, handleGlobalLoading, callGlobalAlert, callGlobalNotify } = useTheme();
-  const userAccessLevel = user?.nivel_acesso; 
+  const userAccessLevel = user?.nivel_acesso;
 
 
   const {
@@ -59,14 +59,7 @@ export default function TarefaExecucao() {
     resetFilters,
     isEmpty,
   } = useTable(columnsFields,
-    async (filters) => {
-      if (userAccessLevel === 1) {
-        const colaboradorId = user.colaborador_id; 
-        return await listColaboradorTarefaPorExecucao({ colaboradorId, ...filters });
-      } else {
-        return await listColaboradorTarefaPorExecucao(filters);
-      }
-    },
+    listColaboradorTarefaPorExecucao,
     basefilters,
     (results) => {
       if (!results || Object.keys(results).length === 0) {
@@ -110,19 +103,24 @@ export default function TarefaExecucao() {
 
 
 
-  function callModalCadastro(data = {}) {
-    const colaboradorId = 39;
-    const colaboradorNome = "Wesley Braga de Faria";
-
-    //const { id: colaboradorId, nome: colaboradorNome } = user?.colaborador || {};
+  function callModalCadastro(data = {}, tarefa) {
+    const { id: colaboradorId, nome: colaboradorNome } = user?.colaborador || {};
 
     const initialData = {
       colaborador: colaboradorId ? { id: colaboradorId, nome: colaboradorNome } : null,
-      finalizar_tarefa: false, 
+      finalizar_tarefa: false,
       ...data,
     };
 
-    console.log('listTarefas:', listTarefas);
+    console.log("Data:", data)
+
+    // Tentando capturar o ID corretamente
+    const tarefaEditadaId = data?.tarefa_id || data?.id || null;
+
+    // Exibir o ID da tarefa para verificar se está sendo capturado corretamente
+    console.log("Tarefa sendo editada (ID):", tarefaEditadaId);
+
+
 
     callGlobalDialog({
       title: 'Registrar Execução de Tarefa',
@@ -136,6 +134,7 @@ export default function TarefaExecucao() {
           loadOptions: listColaboradores,
           required: true,
           formatOptionLabel: option => `${option.nome}`,
+          isDisabled: true, // Adiciona esta linha para desativar o campo
         },
         {
           name: 'projeto',
@@ -143,21 +142,29 @@ export default function TarefaExecucao() {
           type: 'selectAsync',
           isClearable: true,
           loadOptions: async () => {
-            // Define diretamente o ID do colaborador
             const colaboradorSelecionado = colaboradorId;
 
             if (colaboradorSelecionado) {
               try {
-                // Obtém as tarefas do colaborador
                 const tarefas = await listTarefasColaborador();
-
                 const tarefasFiltradas = tarefas.filter(tarefa =>
                   tarefa.tarefa_colaborador.some(tc => tc.colaborador_id === colaboradorSelecionado) &&
-                  tarefa.data_fim_real === null
+                  tarefa.data_fim_real === null && tarefa.data_inicio_real != null
                 );
 
-                // Obtém IDs dos projetos das tarefas filtradas
                 const projetosIds = [...new Set(tarefasFiltradas.map(tarefa => tarefa.projeto_id))];
+
+                // Adiciona a tarefa sendo editada, se estiver definida
+                if (tarefaEditadaId) {
+                  const tarefaAtual = tarefas.find(tarefa => tarefa.id === tarefaEditadaId);
+
+                  if (tarefaAtual) {
+                    const projetoId = tarefaAtual.projeto_id;
+                    if (!projetosIds.includes(projetoId)) {
+                      projetosIds.push(projetoId); // Adiciona o projeto da tarefa atual se não estiver na lista
+                    }
+                  }
+                }
 
                 if (projetosIds.length > 0) {
                   const todosProjetos = await listProjetosColaborador();
@@ -175,24 +182,38 @@ export default function TarefaExecucao() {
             return [];
           },
           required: true,
-          formatOptionLabel: option => `${option.nome}`, 
+          formatOptionLabel: option => `${option.nome}`,
         },
         {
           name: 'tarefa',
           label: 'Tarefa',
           type: 'selectAsync',
           loadOptions: async (inputValue, formValues) => {
-            // Use diretamente o ID do colaborador
             const colaboradorSelecionado = colaboradorId;
-
+        
             if (colaboradorSelecionado) {
               try {
                 const tarefas = await listTarefasColaborador();
-
-                const tarefasFiltradas = tarefas.filter(tarefa =>
+        
+                // Filtro normal de tarefas não finalizadas
+                let tarefasFiltradas = tarefas.filter(tarefa =>
                   tarefa.tarefa_colaborador.some(tc => tc.colaborador_id === colaboradorSelecionado) &&
-                  tarefa.data_fim_real === null
+                  tarefa.data_fim_real === null && tarefa.data_inicio_real != null
                 );
+                console.log("Tarefas filtradas (não finalizadas) para select:", tarefasFiltradas); // Log das tarefas filtradas no select
+        
+                // Se estiver editando uma tarefa, adicione-a manualmente na lista, se ainda não estiver presente
+                if (tarefaEditadaId) {
+                  const tarefaAtual = tarefas.find(tarefa => tarefa.id === tarefaEditadaId);
+                  console.log("Tarefa atual encontrada:", tarefaAtual); // Log da tarefa atual sendo editada
+        
+                  if (tarefaAtual && !tarefasFiltradas.some(tarefa => tarefa.id === tarefaAtual.id)) {
+                    // Se a tarefa não estiver já na lista, adicione-a
+                    tarefasFiltradas = [...tarefasFiltradas, tarefaAtual];
+                    console.log("Tarefa adicionada à lista:", tarefaAtual); // Log da tarefa adicionada
+                  }
+                }
+        
                 return tarefasFiltradas;
               } catch (error) {
                 console.error('Error fetching tarefas:', error);
@@ -233,28 +254,43 @@ export default function TarefaExecucao() {
       labelCancel: 'Cancelar',
     })
       .then((result) => {
+        console.log('Result:', result)
         const formattedResult = formatForm(result).rebaseIds(['projeto', 'colaborador', 'tarefa']).getResult();
         console.log('Resultado formatado:', formattedResult);
 
+        // // Certifique-se de que o ID da tarefa está sendo passado corretamente
+        // if (tarefaEditadaId) {
+        //   formattedResult.id = tarefaEditadaId; // Adiciona o ID da tarefa editada ao resultado formatado
+        // }
+
         if (formattedResult.execucao_id) {
           formattedResult.id = formattedResult.execucao_id;
-          delete formattedResult.execucao_id;
+          // delete formattedResult.execucao_id;
         }
+        // // Verifica se a resposta contém a execução e captura o execucao_id
+        // if (result.tarefa_execucao && result.tarefa_execucao.id) {
+        //   formattedResult.execucao_id = result.tarefa_execucao.id; // Adiciona o execucao_id ao resultado
+        // }
+
 
         return formattedResult;
       })
       .then(async (result) => {
         handleGlobalLoading.show();
-      
+
         const shouldFinalizeTask = result.finalizar_tarefa;
-        console.log(shouldFinalizeTask)
-      
+        console.log(shouldFinalizeTask);
+
+        // Define o status da tarefa com base na seleção
         if (shouldFinalizeTask) {
-          result.status = 'finalizada'; 
+          result.finalizar_tarefa = 'true';
         }
-      
-        const method = result.id ? updateTarefaExecucao : createTarefaExecucao;
-      
+        // Verifique se o execucao_id está presente para determinar o método correto
+        const method = result.execucao_id ? updateTarefaExecucao : createTarefaExecucao;
+
+        // Exibe o execucao_id para depuração
+        console.log('Execucao ID:', result.execucao_id); // Mudei aqui para acessar formattedResult.execucao_id
+
         try {
           const res = await method(result);
           callGlobalNotify({ message: res.message, variant: 'success' });
@@ -262,7 +298,7 @@ export default function TarefaExecucao() {
         } catch (error) {
           const errorMessage = `Erro: ${error.message}`;
           const additionalMessage = "Por favor, verifique os dados e tente novamente.";
-      
+
           callGlobalAlert({
             message: `${errorMessage} ${additionalMessage}`,
             variant: 'danger'
@@ -271,7 +307,6 @@ export default function TarefaExecucao() {
           handleGlobalLoading.hide();
         }
       })
-      
       .catch(console.log);
   }
 
@@ -359,18 +394,19 @@ export default function TarefaExecucao() {
             {
               label: 'Editar',
               onClick: (row) => {
-                callModalCadastro(row);
+                console.log('ID da tarefa:', row.tarefa_id);  // Verifica se o ID está acessível
+                callModalCadastro({
+                  tarefa_id: row.tarefa_id,
+                  colaborador_id: row.colaborador_id,
+                  colaborador_nome: row.colaborador_nome,
+                  tarefa_nome: row.tarefa_nome,
+                  execucao_id: row.execucao_id,
+                })
               },
               icon: FiEdit,
             },
-            // {
-            //   label: 'Excluir',
-            //   onClick: (row) => {
-            //     handleDelete(row);
-            //   },
-            //   icon: FiTrash,
-            // },
           ]}
+
 
         />
       </Section>
