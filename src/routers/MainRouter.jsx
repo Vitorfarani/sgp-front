@@ -16,6 +16,11 @@ import {
   ConsultaTarefasPorColaborador,
   ConsultaQuantidadeTarefa,
   ConsultaHorasTrabalhadas,
+
+  ConsultaTarefasPorColaboradorTeste,
+  ConsultaColaboradoresPorTarefaTeste,
+  ConsultaHorasTrabalhadasTeste,
+  
   NotFound,
   Projeto,
   Projetos,
@@ -33,6 +38,7 @@ import {
   TarefaStatus,
   TarefaBase,
   TarefaClasse,
+  TarefaExecucao,
   AfastamentoTipos,
   Afastamentos,
   Funcoes,
@@ -91,7 +97,11 @@ const MainRouter = () => {
         <Route path="consultas/tarefasPorAgrupamento" Component={ConsultaQuantidadeTarefa}/>
         <Route path="consultas/colaboradorHorasTrabalhadas" Component={ConsultaHorasTrabalhadas}/>
 
+        <Route path="consultasteste/tarefasPorColaboradorTeste" Component={ConsultaTarefasPorColaboradorTeste}/>
+        <Route path="consultasteste/colaboradoresPorTarefaTeste" Component={ConsultaColaboradoresPorTarefaTeste}/>
+        <Route path="consultasteste/colaboradorHorasTrabalhadasTeste" Component={ConsultaHorasTrabalhadasTeste}/>
 
+        
         <Route path="colaboradores" Component={Colaboradores}/>
         <Route path="colaboradores/cadastrar" Component={CadastrarColaborador}/>
         <Route path="colaboradores/editar/:id" Component={CadastrarColaborador}/>
@@ -108,6 +118,7 @@ const MainRouter = () => {
         <Route path="projetos/visualizar/:id" Component={Projeto}/>
         <Route path="projetos/editar/:id" Component={CadastrarProjeto}/>
 
+        <Route path="tarefas/execucao" Component={TarefaExecucao}/>
 
         <Route path="tarefas" Component={Tarefas}/>
         <Route path="tarefas/status" Component={TarefaStatus}/>

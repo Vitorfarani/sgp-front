@@ -1,6 +1,8 @@
 import { FiBarChart, FiBookmark, FiGrid, FiPieChart, FiUsers, FiBriefcase, FiBookOpen } from "react-icons/fi";
 import { FaSearch, FaUserClock, FaLayerGroup, FaArchive, FaBalanceScale, FaBity, FaBrain, FaBuilding, FaClock, FaFlag, FaIdCard, FaLevelUpAlt, FaListAlt, FaMarkdown, FaPeopleCarry, FaStopCircle, FaStopwatch, FaTasks, FaUserSlash, FaSnowboarding} from "react-icons/fa";
 import { PiUserList } from "react-icons/pi";
+import { BiTask } from "react-icons/bi";
+import { VscSearchStop } from "react-icons/vsc";
 
 export default [
   {
@@ -71,6 +73,39 @@ export default [
         nivel_acesso: 2,
         icon: FaLayerGroup,
         path: 'consultas/tarefasPorAgrupamento',
+        rolesPermited: [],
+        childrens: []
+      },
+    ]
+  },
+  {
+    nome: 'Consultas em Andamento',
+    nivel_acesso: 1,
+    icon: VscSearchStop,
+    path: '',
+    rolesPermited: [],
+    childrens: [
+      {
+        nome: 'Tarefas/Colaborador',
+        nivel_acesso: 1,
+        icon: FaTasks,
+        path: 'consultasteste/tarefasPorColaboradorTeste',
+        rolesPermited: [],
+        childrens: []
+      },
+      {
+        nome: 'Colaboradores/Tarefa',
+        nivel_acesso: 1,
+        icon: PiUserList,
+        path: 'consultasteste/colaboradoresPorTarefaTeste',
+        rolesPermited: [],
+        childrens: []
+      },
+      {
+        nome: 'Horas Trabalhadas',
+        nivel_acesso: 1,
+        icon: FaUserClock,
+        path: 'consultasteste/colaboradorHorasTrabalhadasTeste',
         rolesPermited: [],
         childrens: []
       },
@@ -157,6 +192,14 @@ export default [
         childrens: []
       },
     ]
+  },
+  {
+    nome: 'Execução de Tarefas',
+    nivel_acesso: 1,
+    icon: BiTask,
+    path: 'tarefas/execucao',
+    rolesPermited: [],
+    childrens: []
   },
 
   {
