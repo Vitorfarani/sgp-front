@@ -14,6 +14,8 @@ import { listTarefas } from "@/services/tarefa/tarefas";
 import orderBy from 'lodash/orderBy';
 import { Col } from "react-bootstrap";
 import moment from "moment";
+import { listSetores } from "@/services/setores";
+import { listProjetos } from "@/services/projeto/projetos";
 
 const basefilters = {
   search: '',
@@ -47,6 +49,7 @@ export default function TarefaExecucao() {
   const { user } = useAuth();
   const { callGlobalDialog, handleGlobalLoading, callGlobalAlert, callGlobalNotify } = useTheme();
   const userAccessLevel = user?.nivel_acesso;
+  const [formData, setFormData] = useState({});
 
 
   const {
@@ -120,7 +123,7 @@ export default function TarefaExecucao() {
     // Exibir o ID da tarefa para verificar se está sendo capturado corretamente
     console.log("Tarefa sendo editada (ID):", tarefaEditadaId);
 
-
+    
 
     callGlobalDialog({
       title: 'Registrar Execução de Tarefa',
@@ -149,7 +152,7 @@ export default function TarefaExecucao() {
                 const tarefas = await listTarefasColaborador();
                 const tarefasFiltradas = tarefas.filter(tarefa =>
                   tarefa.tarefa_colaborador.some(tc => tc.colaborador_id === colaboradorSelecionado) &&
-                  tarefa.data_fim_real === null && tarefa.data_inicio_real != null
+                  tarefa.data_fim_real === null && (tarefa.data_inicio_real != null || tarefa.data_inicio_real === null) 
                 );
 
                 const projetosIds = [...new Set(tarefasFiltradas.map(tarefa => tarefa.projeto_id))];
@@ -190,30 +193,30 @@ export default function TarefaExecucao() {
           type: 'selectAsync',
           loadOptions: async (inputValue, formValues) => {
             const colaboradorSelecionado = colaboradorId;
-        
+
             if (colaboradorSelecionado) {
               try {
                 const tarefas = await listTarefasColaborador();
-        
+
                 // Filtro normal de tarefas não finalizadas
                 let tarefasFiltradas = tarefas.filter(tarefa =>
                   tarefa.tarefa_colaborador.some(tc => tc.colaborador_id === colaboradorSelecionado) &&
-                  tarefa.data_fim_real === null && tarefa.data_inicio_real != null
+                  tarefa.data_fim_real === null && (tarefa.data_inicio_real != null || tarefa.data_inicio_real === null) 
                 );
                 console.log("Tarefas filtradas (não finalizadas) para select:", tarefasFiltradas); // Log das tarefas filtradas no select
-        
+
                 // Se estiver editando uma tarefa, adicione-a manualmente na lista, se ainda não estiver presente
                 if (tarefaEditadaId) {
                   const tarefaAtual = tarefas.find(tarefa => tarefa.id === tarefaEditadaId);
                   console.log("Tarefa atual encontrada:", tarefaAtual); // Log da tarefa atual sendo editada
-        
+
                   if (tarefaAtual && !tarefasFiltradas.some(tarefa => tarefa.id === tarefaAtual.id)) {
                     // Se a tarefa não estiver já na lista, adicione-a
                     tarefasFiltradas = [...tarefasFiltradas, tarefaAtual];
                     console.log("Tarefa adicionada à lista:", tarefaAtual); // Log da tarefa adicionada
                   }
                 }
-        
+
                 return tarefasFiltradas;
               } catch (error) {
                 console.error('Error fetching tarefas:', error);
@@ -313,7 +316,7 @@ export default function TarefaExecucao() {
   useEffect(() => {
     handleChangeFilters('search', basefilters.search);
 
-    handleChangeFilters('data_inicio', dataInicio)
+    handleChangeFilters('data_inicio_execucao', dataInicio)
     handleChangeFilters('data_fim', dataFim)
 
     load();
@@ -352,43 +355,65 @@ export default function TarefaExecucao() {
           filtersState={filtersState}
           //searchPlaceholder="Buscar Tarefas"
           searchOffiline
-          // filtersComponentes={
-          //   <>
-          //     <Col md={2} >
-          //       <SelectAsync
-          //         placeholder="Filtrar por Colaborador"
-          //         loadOptions={(search) => listColaboradores('?search=' + search)}
-          //         getOptionLabel={(option) => option.nome}
-          //         onChange={(colaborador) => {
-          //           handleChangeFilters('colaborador_id', colaborador ? colaborador.id : null);
-          //         }}
-          //         isClearable
-          //       />
-          //     </Col>
-          //     <Col md={2}>
-          //       <DateTest
-          //         id="dataFim"
-          //         value={dataFim}
-          //         label="Fim:"
-          //         onChange={(date) => {
-          //           setDataFim(date);
-          //           handleChangeFilters('data_fim', date);
-          //         }}
-          //       />
-          //     </Col>
-          //     <Col md={2}>
-          //       <DateTest
-          //         id="dataInicio"
-          //         value={dataInicio}
-          //         label="Início:"
-          //         onChange={(date) => {
-          //           setDataInicio(date);
-          //           handleChangeFilters('data_inicio', date);
-          //         }}
-          //       />
-          //     </Col>
-          //   </>
-          // }
+          filtersComponentes={
+            <>
+              <Col md={2} >
+                <SelectAsync
+                  placeholder="Filtrar por Colaborador"
+                  loadOptions={(search) => listColaboradores('?search=' + search)}
+                  getOptionLabel={(option) => option.nome}
+                  onChange={(colaborador) => {
+                    handleChangeFilters('colaborador_id', colaborador ? colaborador.id : null);
+                  }}
+                  isClearable
+                />
+              </Col>
+              <Col md={2}>
+                <SelectAsync
+                  placeholder="Filtrar por Projeto"
+                  loadOptions={(search) => listProjetos('?search=' + search)}
+                  getOptionLabel={(option) => option.nome}
+                  onChange={(projeto) => {
+                    handleChangeFilters('projeto_id', projeto ? projeto.id : null);
+                  }}
+                  isClearable
+                />
+              </Col>
+              <Col md={2}>
+                <SelectAsync
+                  placeholder="Filtrar por Setor"
+                  loadOptions={(search) => listSetores('?search=' + search)}
+                  getOptionLabel={(option) => option.sigla + ' - ' + option.nome}
+                  onChange={(setor) => {
+                    handleChangeFilters('setor_id', setor ? setor.id : null);
+                  }}
+                  isClearable
+                />
+              </Col>
+              <Col md={2}>
+                <DateTest
+                  id="dataFim"
+                  value={dataFim}
+                  label="Fim:"
+                  onChange={(date) => {
+                    setDataFim(date);
+                    handleChangeFilters('data_fim_execucao', date);
+                  }}
+                />
+              </Col>
+              <Col md={2}>
+                <DateTest
+                  id="dataInicio"
+                  value={dataInicio}
+                  label="Início:"
+                  onChange={(date) => {
+                    setDataInicio(date);
+                    handleChangeFilters('data_inicio_execucao', date);
+                  }}
+                />
+              </Col>
+            </>
+          }
           handleFilters={handleChangeFilters}
           actions={[
             {
