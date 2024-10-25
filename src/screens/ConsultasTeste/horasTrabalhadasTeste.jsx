@@ -153,6 +153,14 @@ const columnsFields = [
     }
 ];
 
+// Função para converter horas em formato decimal para HH:MM
+const converterHoras = (horas) => {
+    const totalMinutos = Math.round(horas * 60); // Convertendo horas para minutos
+    const h = Math.floor(totalMinutos / 60); // Extraindo horas
+    const m = totalMinutos % 60; // Extraindo minutos
+    return `${h}:${m < 10 ? '0' : ''}${m}`; // Formatando para HH:MM
+};
+
 export default function ConsultaHorasTrabalhadasTeste() {
     const { user } = useAuth();
     const [dataInicio, setDataInicio] = useState(moment().format('YYYY-MM-01'));
