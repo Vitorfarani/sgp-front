@@ -174,54 +174,51 @@ const ModalTarefa = forwardRef(({
   }
 
   function apresentarTarefasConflituosas(conflitos, tipo_conflito) {
-    let mensagem, titulo, cor
-
+    let mensagem, titulo, cor;
+  
     if (tipo_conflito === 'programado') {
-      titulo = 'Aviso sobre período programado'
-
+      titulo = 'Aviso sobre período programado';
       mensagem = `
-        <div style="color: var(--bs-primary)">
-        Colaborador${conflitos.length > 1 ? 'es' : ''} 
-        adicionad${conflitos.length > 1 ? 'os' : 'o'} nessa tarefa,
-        embora exista(m) tarefa(s) programada(s) durante esse período:
-      `
-      cor = 'var(--bs-primary)'
+        <div style="background-color: var(--bs-light); color: var(--bs-dark); padding: 1rem; border-radius: 5px;">
+          Colaborador${conflitos.length > 1 ? 'es' : ''} 
+          adicionad${conflitos.length > 1 ? 'os' : 'o'} nessa tarefa,
+          embora exista(m) tarefa(s) programada(s) durante esse período:
+      `;
+      cor = 'var(--bs-primary)';
     } else {
-      titulo = 'Erro ao adicionar tarefa'
+      titulo = 'Erro ao adicionar tarefa';
       mensagem = `
-        <div style="color: var(--bs-primary)">
-        Colaborador${conflitos.length > 1 ? 'es' : ''} 
-        possu${conflitos.length > 1 ? 'em' : 'i'} 
-        tarefa(s) em execução no mesmo período de execução
-        dessa tarefa:
-      `
-
-      cor = 'var(--bs-danger)'
+        <div style="background-color: var(--bs-danger); color: white; padding: 1rem; border-radius: 5px;">
+          Colaborador${conflitos.length > 1 ? 'es' : ''} 
+          possu${conflitos.length > 1 ? 'em' : 'i'} 
+          tarefa(s) em execução no mesmo período de execução
+          dessa tarefa:
+      `;
+      cor = 'var(--bs-danger)';
     }
-
+  
     conflitos.forEach(conflito => {
-
       const texto_inicial = typeof conflito.colaborador === 'undefined' ? '<hr/>' : `
         <hr/>
         <p style="font-size: 1.2rem; border-bottom: 1px dashed; padding-bottom: 1rem;">
           <strong>Colaborador(a): </strong>
           <span>${conflito.colaborador.nome}</span>
         </p>
-      `
-
+      `;
+  
       const mensagemColaborador = conflito.tarefas.reduce((prev, curr, index, arr) => {
-        let data_inicio, data_fim, tipo
-
+        let data_inicio, data_fim, tipo;
+  
         if (tipo_conflito === 'programado') {
-          data_inicio = curr.data_inicio_programado
-          data_fim = curr.data_fim_programado
-          tipo = 'Programada'
+          data_inicio = curr.data_inicio_programado;
+          data_fim = curr.data_fim_programado;
+          tipo = 'Programada';
         } else {
-          data_inicio = curr.data_inicio_real
-          data_fim = curr.data_fim_real
-          tipo = 'Real'
+          data_inicio = curr.data_inicio_real;
+          data_fim = curr.data_fim_real;
+          tipo = 'Real';
         }
-
+  
         return `
           ${prev}
           <b>Tarefa:</b> ${curr.nome}<br/>
@@ -229,24 +226,23 @@ const ModalTarefa = forwardRef(({
           ${data_inicio ? datetimeToPt(data_inicio, false) : '(não iniciada)'}
           - 
           ${data_fim ? datetimeToPt(data_fim, false) : 'até o momento'}<br/>
-          <a href="/projetos/visualizar/${curr.projeto_id}?tarefa=${curr.id}" target="_blank">
+          <a href="/projetos/visualizar/${curr.projeto_id}?tarefa=${curr.id}" target="_blank" style="color: var(--bs-link);">
             Ir para tarefa
           </a> 
           ${index < arr.length - 1 ? '<br/><br/>' : ''}
-        
-        `
-      }, texto_inicial)
-
-      mensagem += mensagemColaborador
-    })
-
-    mensagem += '</div>'
-
+        `;
+      }, texto_inicial);
+  
+      mensagem += mensagemColaborador;
+    });
+  
+    mensagem += '</div>';
+  
     callGlobalAlert({
       title: titulo,
       message: mensagem,
       color: cor
-    })
+    });
   }
 
   function removeTarefaColaborador(tarefa_colaborador) {
@@ -713,9 +709,9 @@ const ModalTarefa = forwardRef(({
                 <FeedbackError error={errors.data_inicio_real} />
               </Form.Group>
 
-              <Button onClick={handleToggleExecutions} className='mb-2'>
+              {/* <Button onClick={handleToggleExecutions} className='mb-2'>
                 {showExecutions ? 'Ocultar Execuções' : 'Ver Execuções'}
-              </Button>
+              </Button> */}
 
               {/* {showExecutions && (
                 <ShowExecucoes
