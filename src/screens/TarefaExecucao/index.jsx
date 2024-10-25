@@ -254,6 +254,24 @@ export default function TarefaExecucao() {
                   }
                 }
 
+                // Obter os IDs dos projetos relacionados
+                const projetosIds = [...new Set(tarefasFiltradas.map(tarefa => tarefa.projeto_id))];
+
+                // Filtrar os projetos para incluir apenas os relacionados às tarefas
+                if (projetosIds.length > 0) {
+                  const todosProjetos = await listProjetosColaborador();
+                  const projetosFiltradosPorId = todosProjetos.filter(projeto => projetosIds.includes(projeto.id));
+
+                  // Mapeando as tarefas para incluir o nome do projeto
+                  tarefasFiltradas = tarefasFiltradas.map(tarefa => {
+                    const projeto = projetosFiltradosPorId.find(proj => proj.id === tarefa.projeto_id);
+                    return {
+                      ...tarefa,
+                      projeto: projeto ? { nome: projeto.nome } : { nome: 'Projeto não encontrado' } 
+                    };
+                  });
+                }
+
                 return tarefasFiltradas;
 
               } catch (error) {
@@ -264,7 +282,7 @@ export default function TarefaExecucao() {
             return [];
           },
           required: true,
-          formatOptionLabel: option => `${option.nome}`,
+          formatOptionLabel: option => `${option.nome} - ${option.projeto.nome}`,
         },
         {
           name: 'data_inicio_execucao',
@@ -391,7 +409,7 @@ export default function TarefaExecucao() {
           searchOffiline
           filtersComponentes={
             <>
-              <Col md={2} >
+              {user.nivel_acesso === 2 && (<Col md={2} >
                 <SelectAsync
                   placeholder="Filtrar por Colaborador"
                   loadOptions={(search) => listColaboradores('?search=' + search)}
@@ -402,6 +420,7 @@ export default function TarefaExecucao() {
                   isClearable
                 />
               </Col>
+              )}
               <Col md={2}>
                 <SelectAsync
                   placeholder="Filtrar por Projeto"
@@ -413,17 +432,19 @@ export default function TarefaExecucao() {
                   isClearable
                 />
               </Col>
-              <Col md={2}>
-                <SelectAsync
-                  placeholder="Filtrar por Setor"
-                  loadOptions={(search) => listSetores('?search=' + search)}
-                  getOptionLabel={(option) => option.sigla + ' - ' + option.nome}
-                  onChange={(setor) => {
-                    handleChangeFilters('setor_id', setor ? setor.id : null);
-                  }}
-                  isClearable
-                />
-              </Col>
+              {user.nivel_acesso === 2 && (
+                <Col md={2}>
+                  <SelectAsync
+                    placeholder="Filtrar por Setor"
+                    loadOptions={(search) => listSetores('?search=' + search)}
+                    getOptionLabel={(option) => option.sigla + ' - ' + option.nome}
+                    onChange={(setor) => {
+                      handleChangeFilters('setor_id', setor ? setor.id : null);
+                    }}
+                    isClearable
+                  />
+                </Col>
+              )}
               <Col md={2}>
                 <DateTest
                   id="dataFim"
@@ -453,7 +474,7 @@ export default function TarefaExecucao() {
             {
               label: 'Editar',
               onClick: (row) => {
-                console.log('ID da tarefa:', row.tarefa_id);  // Verifica se o ID está acessível
+                console.log('ID da tarefa:', row.tarefa_id); 
                 callModalCadastro({
                   tarefa_id: row.tarefa_id,
                   colaborador_id: row.colaborador_id,
