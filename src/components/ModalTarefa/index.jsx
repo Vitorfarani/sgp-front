@@ -184,7 +184,7 @@ const ModalTarefa = forwardRef(({
           adicionad${conflitos.length > 1 ? 'os' : 'o'} nessa tarefa,
           embora exista(m) tarefa(s) programada(s) durante esse período:
       `;
-      cor = 'var(--bs-primary)';
+      cor = 'var(--bs-light)'
     } else {
       titulo = 'Erro ao adicionar tarefa';
       mensagem = `
