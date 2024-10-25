@@ -2,7 +2,6 @@ import { Background, HeaderTitle, Section, SelectAsync, Table } from "@/componen
 import useTable from "@/utils/hooks/useTable";
 import { useEffect, useState, useMemo } from "react";
 import { listColaboradores } from "@/services/colaborador/colaboradores";
-import { listColaboradorProjetosTarefa } from "@/services/consultas/consultas";
 import { Col } from "react-bootstrap";
 import { dateDiffWithLabels, dateEnToPtWithHour, dateExecutionDiffWithLabels } from '@/utils/helpers/date';
 import { TooltipPrazo } from "@/components/index";
@@ -13,6 +12,10 @@ import { listProjetos } from "@/services/projeto/projetos";
 import moment from "moment";
 import { listColaboradorProjetosTarefatTeste } from "@/services/consultasTeste/consultasteste";
 import { useAuth } from "@/utils/context/AuthProvider";
+import jsPDF from "jspdf";
+import "jspdf-autotable";
+import { FaFilePdf } from "react-icons/fa";
+
 
 const basefilters = {
     search: '',
@@ -24,12 +27,64 @@ const basefilters = {
     sortOrder: 'asc',
 };
 
+const exportToPDF = (data, dataInicio, dataFim) => {
+    const doc = new jsPDF();
+
+    console.log("data:", data)
+
+    const title = `Tarefa Por Colaborador - Relatório (${moment(dataInicio).format('DD/MM/YYYY')} a ${moment(dataFim).format('DD/MM/YYYY')})`;
+    doc.setFontSize(14);
+    doc.text(title, 14, 22); 
+    
+    const startY = 30; 
+    doc.autoTable({
+        startY: startY,
+        head: [[
+            'Colaborador',
+            'Projeto', 
+            'Tarefa', 
+            'Status Tarefa', 
+            'Inicio Prog.', 
+            'Fim Prog.', 
+            'Início Real', 
+            'Fim Real',
+            'Situação'
+        ]],
+        body: data.map(item => ([
+            item.colaborador_nome || '', 
+            item.projeto_nome || '',
+            item.tarefa_nome || '',
+            item.tarefa_status || '',
+            item.inicio_programado || '',
+            item.fim_programado || '',
+            item.inicio_real || '',
+            item.fim_real || '',
+            item.prazo_label.label || ''
+        ])),
+        theme: 'grid', 
+        styles: {
+            cellPadding: 3, 
+            fontSize: 6,
+            halign: 'center' 
+        },
+        headStyles: {
+            fillColor: [52, 84, 143],
+            textColor: [255, 255, 255], 
+            fontSize: 6
+        },
+        margin: { top: startY }
+    });
+
+    const fileName = `relatorio_tarefa_colaborador_${moment(dataInicio).format('DD-MM-YYYY')}_a_${moment(dataFim).format('DD-MM-YYYY')}.pdf`;
+    doc.save(fileName);
+};
+
 const columnsFields = [
     { field: 'colaborador_nome', label: 'Colaborador', enabledOrder: true },
     { field: 'projeto_nome', label: 'Projeto', enabledOrder: true },
-    { field: 'projeto_status', label: 'Status do Projeto', enabledOrder: true },
+    { field: 'projeto_status', label: 'Status Projeto', enabledOrder: true },
     { field: 'tarefa_nome', label: 'Tarefa', enabledOrder: true },
-    { field: 'tarefa_status', label: 'Status da Tarefa', enabledOrder: true },
+    { field: 'tarefa_status', label: 'Status Tarefa', enabledOrder: true },
     { field: 'inicio_programado', label: 'Início Programado', enabledOrder: true },
     { field: 'fim_programado', label: 'Fim Programado', enabledOrder: true },
     { field: 'inicio_real', label: 'Início Real', enabledOrder: true },
@@ -195,19 +250,20 @@ export default function ConsultaTarefasPorColaboradorTeste() {
         handleChangeFilters('data_inicio', dataInicio)
         handleChangeFilters('data_fim', dataFim)
         load();
-        // if (dataInicio && dataFim) {
-        //     handleChangeFilters('data_inicio', dataInicio);
-        //     handleChangeFilters('data_fim', dataFim);
-        // } else if (!dataInicio && !dataFim) {
-        //     handleChangeFilters('data_inicio', null);
-        //     handleChangeFilters('data_fim', null);
-        // }
     }, [basefilters.search, dataInicio, dataFim]);
 
     return (
         <Background>
             <HeaderTitle
-                title="Consultar Tarefas Por Colaborador" />
+                title="Consultar Tarefas Por Colaborador"
+                optionsButtons={user.nivel_acesso === 2 ? [ // Condicional para exibir o botão apenas se o nível de acesso for 2
+                    {
+                        label: 'Exportar como PDF',
+                        onClick: () => exportToPDF(rows, dataInicio, dataFim), // Pass dataInicio and dataFim
+                        icon: FaFilePdf
+                    }
+                ] : []} // Caso contrário, o array de botões será vazio
+            />
             <Section>
                 <Table
                     columns={columns}
@@ -217,7 +273,7 @@ export default function ConsultaTarefasPorColaboradorTeste() {
                     //searchPlaceholder="Consultar Projetos"
                     filtersComponentes={
                         <>
-                            {user.nivel_acesso === 2 && ( // Verificação do nível de acesso
+                            {user.nivel_acesso === 2 && (
                                 <Col md={2}>
                                     <SelectAsync
                                         placeholder="Filtrar por Colaborador"
@@ -241,17 +297,19 @@ export default function ConsultaTarefasPorColaboradorTeste() {
                                     isClearable
                                 />
                             </Col>
-                            <Col md={2}>
-                                <SelectAsync
-                                    placeholder="Filtrar por Setor"
-                                    loadOptions={(search) => listSetores('?search=' + search)}
-                                    getOptionLabel={(option) => option.nome}
-                                    onChange={(setor) => {
-                                        handleChangeFilters('setor_id', setor ? setor.id : null);
-                                    }}
-                                    isClearable
-                                />
-                            </Col>
+                            {user.nivel_acesso === 2 && (
+                                <Col md={2}>
+                                    <SelectAsync
+                                        placeholder="Filtrar por Setor"
+                                        loadOptions={(search) => listSetores('?search=' + search)}
+                                        getOptionLabel={(option) => option.sigla + ' - ' + option.nome}
+                                        onChange={(setor) => {
+                                            handleChangeFilters('setor_id', setor ? setor.id : null);
+                                        }}
+                                        isClearable
+                                    />
+                                </Col>
+                            )}
                             <Col md={2}>
                                 <DateTest
                                     id="dataFim"

@@ -16,6 +16,9 @@ import { Col } from "react-bootstrap";
 import moment from "moment";
 import { listSetores } from "@/services/setores";
 import { listProjetos } from "@/services/projeto/projetos";
+import { FaFilePdf } from "react-icons/fa";
+import jsPDF from "jspdf";
+import "jspdf-autotable";
 
 const basefilters = {
   search: '',
@@ -26,8 +29,52 @@ const basefilters = {
   sortOrder: 'asc',
 };
 
+const exportToPDF = (data, dataInicio, dataFim) => {
+  const doc = new jsPDF();
+
+  const title = `Execução de Tarefas - Relatório (${moment(dataInicio).format('DD/MM/YYYY')} a ${moment(dataFim).format('DD/MM/YYYY')})`;
+  doc.setFontSize(14);
+  doc.text(title, 14, 22); 
+
+
+  const startY = 30;
+  doc.autoTable({
+      startY: startY,
+      head: [[
+          'Colaborador', 
+          'Projeto', 
+          'Tarefa', 
+          'Inicio Execução', 
+          'Fim Execução'
+      ]],
+      body: data.map(item => ([
+          item.colaborador_nome || '',
+          item.projeto_nome || '',
+          item.tarefa_nome || '',
+          item.data_inicio_execucao || '',
+          item.data_fim_execucao || '',
+      ])),
+      theme: 'grid',
+      styles: {
+          cellPadding: 3,
+          fontSize: 7,
+          halign: 'center'
+      },
+      headStyles: {
+          fillColor: [52, 84, 143],
+          textColor: [255, 255, 255],
+          fontSize: 6
+      },
+      margin: { top: startY }
+  });
+
+  const fileName = `relatorio_execução_tarefas_${moment(dataInicio).format('DD-MM-YYYY')}_a_${moment(dataFim).format('DD-MM-YYYY')}.pdf`;
+  doc.save(fileName);
+};
+
 const columnsFields = [
   { field: 'colaborador_nome', label: 'Colaborador', enabledOrder: true },
+  { field: 'projeto_nome', label: 'Projeto', enabledOrder: true },
   { field: 'tarefa_nome', label: 'Tarefa', enabledOrder: true },
   { field: 'data_inicio_execucao', label: 'Início da Execução', enabledOrder: true },
   { field: 'data_fim_execucao', label: 'Fim da Execução', enabledOrder: true },
@@ -90,6 +137,7 @@ export default function TarefaExecucao() {
             colaborador_id: colaboradorId,
             colaborador_nome: colaborador_nome || "",
             tarefa_id: tarefa.tarefa_id || 0,
+            projeto_nome: tarefa.projeto_nome || "",
             tarefa_nome: tarefa.tarefa_nome || "",
             execucao_id: tarefa.execucao_id || 0,
             data_inicio_execucao: inicio_execucao_pt,
@@ -115,15 +163,9 @@ export default function TarefaExecucao() {
       ...data,
     };
 
-    console.log("Data:", data)
 
     // Tentando capturar o ID corretamente
     const tarefaEditadaId = data?.tarefa_id || data?.id || null;
-
-    // Exibir o ID da tarefa para verificar se está sendo capturado corretamente
-    console.log("Tarefa sendo editada (ID):", tarefaEditadaId);
-
-    
 
     callGlobalDialog({
       title: 'Registrar Execução de Tarefa',
@@ -139,54 +181,54 @@ export default function TarefaExecucao() {
           formatOptionLabel: option => `${option.nome}`,
           isDisabled: true, // Adiciona esta linha para desativar o campo
         },
-        {
-          name: 'projeto',
-          label: 'Projeto',
-          type: 'selectAsync',
-          isClearable: true,
-          loadOptions: async () => {
-            const colaboradorSelecionado = colaboradorId;
+        // {
+        //   name: 'projeto',
+        //   label: 'Projeto',
+        //   type: 'selectAsync',
+        //   isClearable: true,
+        //   loadOptions: async () => {
+        //     const colaboradorSelecionado = colaboradorId;
 
-            if (colaboradorSelecionado) {
-              try {
-                const tarefas = await listTarefasColaborador();
-                const tarefasFiltradas = tarefas.filter(tarefa =>
-                  tarefa.tarefa_colaborador.some(tc => tc.colaborador_id === colaboradorSelecionado) &&
-                  tarefa.data_fim_real === null && (tarefa.data_inicio_real != null || tarefa.data_inicio_real === null) 
-                );
+        //     if (colaboradorSelecionado) {
+        //       try {
+        //         const tarefas = await listTarefasColaborador();
+        //         const tarefasFiltradas = tarefas.filter(tarefa =>
+        //           tarefa.tarefa_colaborador.some(tc => tc.colaborador_id === colaboradorSelecionado) &&
+        //           tarefa.data_fim_real === null && (tarefa.data_inicio_real != null || tarefa.data_inicio_real === null) 
+        //         );
 
-                const projetosIds = [...new Set(tarefasFiltradas.map(tarefa => tarefa.projeto_id))];
+        //         const projetosIds = [...new Set(tarefasFiltradas.map(tarefa => tarefa.projeto_id))];
 
-                // Adiciona a tarefa sendo editada, se estiver definida
-                if (tarefaEditadaId) {
-                  const tarefaAtual = tarefas.find(tarefa => tarefa.id === tarefaEditadaId);
+        //         // Adiciona a tarefa sendo editada, se estiver definida
+        //         if (tarefaEditadaId) {
+        //           const tarefaAtual = tarefas.find(tarefa => tarefa.id === tarefaEditadaId);
 
-                  if (tarefaAtual) {
-                    const projetoId = tarefaAtual.projeto_id;
-                    if (!projetosIds.includes(projetoId)) {
-                      projetosIds.push(projetoId); // Adiciona o projeto da tarefa atual se não estiver na lista
-                    }
-                  }
-                }
+        //           if (tarefaAtual) {
+        //             const projetoId = tarefaAtual.projeto_id;
+        //             if (!projetosIds.includes(projetoId)) {
+        //               projetosIds.push(projetoId); // Adiciona o projeto da tarefa atual se não estiver na lista
+        //             }
+        //           }
+        //         }
 
-                if (projetosIds.length > 0) {
-                  const todosProjetos = await listProjetosColaborador();
-                  const projetosFiltradosPorId = todosProjetos.filter(projeto => projetosIds.includes(projeto.id));
+        //         if (projetosIds.length > 0) {
+        //           const todosProjetos = await listProjetosColaborador();
+        //           const projetosFiltradosPorId = todosProjetos.filter(projeto => projetosIds.includes(projeto.id));
 
-                  return projetosFiltradosPorId;
-                } else {
-                  return [];
-                }
-              } catch (error) {
-                console.error('Error fetching projetos:', error);
-                return [];
-              }
-            }
-            return [];
-          },
-          required: true,
-          formatOptionLabel: option => `${option.nome}`,
-        },
+        //           return projetosFiltradosPorId;
+        //         } else {
+        //           return [];
+        //         }
+        //       } catch (error) {
+        //         console.error('Error fetching projetos:', error);
+        //         return [];
+        //       }
+        //     }
+        //     return [];
+        //   },
+        //   required: true,
+        //   formatOptionLabel: option => `${option.nome}`,
+        // },
         {
           name: 'tarefa',
           label: 'Tarefa',
@@ -201,23 +243,19 @@ export default function TarefaExecucao() {
                 // Filtro normal de tarefas não finalizadas
                 let tarefasFiltradas = tarefas.filter(tarefa =>
                   tarefa.tarefa_colaborador.some(tc => tc.colaborador_id === colaboradorSelecionado) &&
-                  tarefa.data_fim_real === null && (tarefa.data_inicio_real != null || tarefa.data_inicio_real === null) 
+                  tarefa.data_fim_real === null && (tarefa.data_inicio_real != null || tarefa.data_inicio_real === null)
                 );
-                console.log("Tarefas filtradas (não finalizadas) para select:", tarefasFiltradas); // Log das tarefas filtradas no select
 
                 // Se estiver editando uma tarefa, adicione-a manualmente na lista, se ainda não estiver presente
                 if (tarefaEditadaId) {
                   const tarefaAtual = tarefas.find(tarefa => tarefa.id === tarefaEditadaId);
-                  console.log("Tarefa atual encontrada:", tarefaAtual); // Log da tarefa atual sendo editada
-
                   if (tarefaAtual && !tarefasFiltradas.some(tarefa => tarefa.id === tarefaAtual.id)) {
-                    // Se a tarefa não estiver já na lista, adicione-a
                     tarefasFiltradas = [...tarefasFiltradas, tarefaAtual];
-                    console.log("Tarefa adicionada à lista:", tarefaAtual); // Log da tarefa adicionada
                   }
                 }
 
                 return tarefasFiltradas;
+
               } catch (error) {
                 console.error('Error fetching tarefas:', error);
                 return [];
@@ -261,19 +299,9 @@ export default function TarefaExecucao() {
         const formattedResult = formatForm(result).rebaseIds(['projeto', 'colaborador', 'tarefa']).getResult();
         console.log('Resultado formatado:', formattedResult);
 
-        // // Certifique-se de que o ID da tarefa está sendo passado corretamente
-        // if (tarefaEditadaId) {
-        //   formattedResult.id = tarefaEditadaId; // Adiciona o ID da tarefa editada ao resultado formatado
-        // }
-
         if (formattedResult.execucao_id) {
           formattedResult.id = formattedResult.execucao_id;
-          // delete formattedResult.execucao_id;
         }
-        // // Verifica se a resposta contém a execução e captura o execucao_id
-        // if (result.tarefa_execucao && result.tarefa_execucao.id) {
-        //   formattedResult.execucao_id = result.tarefa_execucao.id; // Adiciona o execucao_id ao resultado
-        // }
 
 
         return formattedResult;
@@ -284,15 +312,14 @@ export default function TarefaExecucao() {
         const shouldFinalizeTask = result.finalizar_tarefa;
         console.log(shouldFinalizeTask);
 
-        // Define o status da tarefa com base na seleção
         if (shouldFinalizeTask) {
           result.finalizar_tarefa = 'true';
         }
-        // Verifique se o execucao_id está presente para determinar o método correto
+
         const method = result.execucao_id ? updateTarefaExecucao : createTarefaExecucao;
 
         // Exibe o execucao_id para depuração
-        console.log('Execucao ID:', result.execucao_id); // Mudei aqui para acessar formattedResult.execucao_id
+        console.log('Execucao ID:', result.execucao_id); 
 
         try {
           const res = await method(result);
@@ -345,6 +372,13 @@ export default function TarefaExecucao() {
             onClick: () => callModalCadastro(cadastroInitialValue),
             icon: FiPlus,
           },
+          ...(user.nivel_acesso === 2 ? [ 
+            {
+              label: 'Exportar como PDF',
+              onClick: () => exportToPDF(rows, dataInicio, dataFim), 
+              icon: FaFilePdf
+            }
+          ] : []),
         ]}
       />
       <Section>
