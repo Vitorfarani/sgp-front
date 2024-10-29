@@ -15,7 +15,7 @@ export default [
   },
   {
     nome: 'Consultas',
-    nivel_acesso: 2,
+    nivel_acesso: 1,
     icon: FaSearch,
     path: '',
     rolesPermited: [],
@@ -38,66 +38,25 @@ export default [
       },
       {
         nome: 'Colaboradores/Tarefa',
-        nivel_acesso: 2,
-        icon: PiUserList,
-        path: 'consultas/colaboradoresPorTarefa',
-        rolesPermited: [],
-        childrens: []
-      },
-      {
-        nome: 'Colaborador/Projeto',
-        nivel_acesso: 2,
-        icon: FaLayerGroup,
-        path: 'consultas/colaboradorPorProjeto',
-        rolesPermited: [],
-        childrens: []
-      },
-      {
-        nome: 'Horas Trabalhadas',
-        nivel_acesso: 2,
-        icon: FaUserClock,
-        path: 'consultas/colaboradorHorasTrabalhadas',
-        rolesPermited: [],
-        childrens: []
-      },
-      {
-        nome: 'Tarefas/Colaborador',
-        nivel_acesso: 2,
-        icon: FaTasks,
-        path: 'consultas/tarefasPorColaborador',
-        rolesPermited: [],
-        childrens: []
-      },
-      {
-        nome: 'Tarefas/Agrupamento',
-        nivel_acesso: 2,
-        icon: FaLayerGroup,
-        path: 'consultas/tarefasPorAgrupamento',
-        rolesPermited: [],
-        childrens: []
-      },
-    ]
-  },
-  {
-    nome: 'Consultas em Andamento',
-    nivel_acesso: 1,
-    icon: VscSearchStop,
-    path: '',
-    rolesPermited: [],
-    childrens: [
-      {
-        nome: 'Tarefas/Colaborador',
-        nivel_acesso: 1,
-        icon: FaTasks,
-        path: 'consultasteste/tarefasPorColaboradorTeste',
-        rolesPermited: [],
-        childrens: []
-      },
-      {
-        nome: 'Colaboradores/Tarefa',
         nivel_acesso: 1,
         icon: PiUserList,
         path: 'consultasteste/colaboradoresPorTarefaTeste',
+        rolesPermited: [],
+        childrens: []
+      },
+      // {
+      //   nome: 'Colaboradores/Tarefa',
+      //   nivel_acesso: 2,
+      //   icon: PiUserList,
+      //   path: 'consultas/colaboradoresPorTarefa',
+      //   rolesPermited: [],
+      //   childrens: []
+      // },
+      {
+        nome: 'Colaborador/Projeto',
+        nivel_acesso: 1,
+        icon: FaLayerGroup,
+        path: 'consultas/colaboradorPorProjeto',
         rolesPermited: [],
         childrens: []
       },
@@ -109,8 +68,73 @@ export default [
         rolesPermited: [],
         childrens: []
       },
+      {
+        nome: 'Tarefas/Colaborador',
+        nivel_acesso: 1,
+        icon: FaTasks,
+        path: 'consultasteste/tarefasPorColaboradorTeste',
+        rolesPermited: [],
+        childrens: []
+      },
+      // {
+      //   nome: 'Horas Trabalhadas',
+      //   nivel_acesso: 2,
+      //   icon: FaUserClock,
+      //   path: 'consultas/colaboradorHorasTrabalhadas',
+      //   rolesPermited: [],
+      //   childrens: []
+      // },
+      // {
+      //   nome: 'Tarefas/Colaborador',
+      //   nivel_acesso: 2,
+      //   icon: FaTasks,
+      //   path: 'consultas/tarefasPorColaborador',
+      //   rolesPermited: [],
+      //   childrens: []
+      // },
+      {
+        nome: 'Tarefas/Agrupamento',
+        nivel_acesso: 1,
+        icon: FaLayerGroup,
+        path: 'consultas/tarefasPorAgrupamento',
+        rolesPermited: [],
+        childrens: []
+      },
     ]
   },
+  // {
+  //   nome: 'Consultas em Andamento',
+  //   nivel_acesso: 1,
+  //   icon: VscSearchStop,
+  //   path: '',
+  //   rolesPermited: [],
+  //   childrens: [
+  //     {
+  //       nome: 'Tarefas/Colaborador',
+  //       nivel_acesso: 1,
+  //       icon: FaTasks,
+  //       path: 'consultasteste/tarefasPorColaboradorTeste',
+  //       rolesPermited: [],
+  //       childrens: []
+  //     },
+  //     {
+  //       nome: 'Colaboradores/Tarefa',
+  //       nivel_acesso: 1,
+  //       icon: PiUserList,
+  //       path: 'consultasteste/colaboradoresPorTarefaTeste',
+  //       rolesPermited: [],
+  //       childrens: []
+  //     },
+  //     {
+  //       nome: 'Horas Trabalhadas',
+  //       nivel_acesso: 1,
+  //       icon: FaUserClock,
+  //       path: 'consultasteste/colaboradorHorasTrabalhadasTeste',
+  //       rolesPermited: [],
+  //       childrens: []
+  //     },
+  //   ]
+  // },
   {
     nome: 'Colaboradores',
     nivel_acesso: 2,

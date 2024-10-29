@@ -12,6 +12,7 @@ import { FaAlignLeft, FaBrain, FaCheckSquare, FaComment, FaTasks, FaTextWidth, F
 import SideButtons from './SideButtons';
 import { useProjetoContext } from '@/screens/Projetos/ProjetoContext';
 import ColaboradoresSelecteds from './ColaboradoresSelecteds';
+import ShowExecucoes from './ShowExecucoes';
 import { createTarefaColaborador, deleteTarefaColaborador, updateTarefaColaborador } from '@/services/tarefa/tarefaColaborador';
 import { useTheme } from '@/utils/context/ThemeProvider';
 import { listTarefaBase } from '@/services/tarefa/tarefaBase';
@@ -23,6 +24,7 @@ import { listConhecimentos } from '@/services/conhecimento/conhecimentos';
 import { createTarefaConhecimento, deleteTarefaConhecimento } from '@/services/tarefa/tarefaConhecimento';
 import { createTarefa, deleteTarefa, interromperTarefa, restoreTarefa, showTarefa, updateTarefa } from '@/services/tarefa/tarefas';
 import { createTarefaObservacao, deleteTarefaObservacao } from '@/services/tarefa/tarefaObservacao';
+import { listColaboradorTarefaPorExecucao } from '@/services/tarefa/tarefaExecucao';
 
 
 const ModalTarefa = forwardRef(({
@@ -61,6 +63,13 @@ const ModalTarefa = forwardRef(({
     return diffDatetimesHumanized(formData.data_inicio_real, formData.data_fim_real)
   }, [formData.data_inicio_real, formData.data_fim_real]);
 
+
+  const [showExecutions, setShowExecutions] = useState(false);
+
+  const handleToggleExecutions = () => {
+    setShowExecutions(prev => !prev);
+  };
+
   useEffect(() => {
     if (!isShow) {
       hide()
@@ -84,7 +93,7 @@ const ModalTarefa = forwardRef(({
   function show(data) {
     setIsShow(true)
     if (!data.id) {
-      
+
       setFormData(data)
     } else {
       load(data.id)
@@ -125,7 +134,7 @@ const ModalTarefa = forwardRef(({
 
 
   function addTarefaColaborador(colaborador) {
-    
+
     if (!formData.id) {
       setFormData((prevState) => ({
         ...prevState,
@@ -140,7 +149,7 @@ const ModalTarefa = forwardRef(({
       handleGlobalLoading.show();
       createTarefaColaborador(data)
         .then((result) => {
-          if(result.conflitos)
+          if (result.conflitos)
             apresentarTarefasConflituosas(result.conflitos, result.tipo_conflito)
 
           callGlobalNotify({ message: result.message, variant: 'success' })
@@ -154,7 +163,7 @@ const ModalTarefa = forwardRef(({
           handleGlobalLoading.hide()
         })
         .catch((error) => {
-          if(typeof error.data.tipo_conflito !== 'undefined')
+          if (typeof error.data.tipo_conflito !== 'undefined')
             apresentarTarefasConflituosas(error.data.conflitos, error.data.tipo_conflito)
           else
             callGlobalAlert(error)
@@ -165,54 +174,51 @@ const ModalTarefa = forwardRef(({
   }
 
   function apresentarTarefasConflituosas(conflitos, tipo_conflito) {
-    let mensagem, titulo, cor
-
-    if(tipo_conflito === 'programado') {
-      titulo = 'Aviso sobre período programado'
-
+    let mensagem, titulo, cor;
+  
+    if (tipo_conflito === 'programado') {
+      titulo = 'Aviso sobre período programado';
       mensagem = `
-        <div style="color: var(--bs-primary)">
-        Colaborador${conflitos.length > 1 ? 'es' : ''} 
-        adicionad${conflitos.length > 1 ? 'os' : 'o'} nessa tarefa,
-        embora exista(m) tarefa(s) programada(s) durante esse período:
-      `
-      cor = 'var(--bs-primary)'
+        <div style="background-color: var(--bs-light); color: var(--bs-dark); padding: 1rem; border-radius: 5px;">
+          Colaborador${conflitos.length > 1 ? 'es' : ''} 
+          adicionad${conflitos.length > 1 ? 'os' : 'o'} nessa tarefa,
+          embora exista(m) tarefa(s) programada(s) durante esse período:
+      `;
+      cor = 'var(--bs-light)'
     } else {
-      titulo = 'Erro ao adicionar tarefa'
+      titulo = 'Erro ao adicionar tarefa';
       mensagem = `
-        <div style="color: var(--bs-primary)">
-        Colaborador${conflitos.length > 1 ? 'es' : ''} 
-        possu${conflitos.length > 1 ? 'em' : 'i'} 
-        tarefa(s) em execução no mesmo período de execução
-        dessa tarefa:
-      `
-
-      cor = 'var(--bs-danger)'
+        <div style="background-color: var(--bs-danger); color: white; padding: 1rem; border-radius: 5px;">
+          Colaborador${conflitos.length > 1 ? 'es' : ''} 
+          possu${conflitos.length > 1 ? 'em' : 'i'} 
+          tarefa(s) em execução no mesmo período de execução
+          dessa tarefa:
+      `;
+      cor = 'var(--bs-danger)';
     }
-
+  
     conflitos.forEach(conflito => {
-
       const texto_inicial = typeof conflito.colaborador === 'undefined' ? '<hr/>' : `
         <hr/>
         <p style="font-size: 1.2rem; border-bottom: 1px dashed; padding-bottom: 1rem;">
           <strong>Colaborador(a): </strong>
           <span>${conflito.colaborador.nome}</span>
         </p>
-      `
-
+      `;
+  
       const mensagemColaborador = conflito.tarefas.reduce((prev, curr, index, arr) => {
-        let data_inicio, data_fim, tipo
-
-        if(tipo_conflito === 'programado') {
-          data_inicio = curr.data_inicio_programado
-          data_fim = curr.data_fim_programado
-          tipo = 'Programada'
+        let data_inicio, data_fim, tipo;
+  
+        if (tipo_conflito === 'programado') {
+          data_inicio = curr.data_inicio_programado;
+          data_fim = curr.data_fim_programado;
+          tipo = 'Programada';
         } else {
-          data_inicio = curr.data_inicio_real
-          data_fim = curr.data_fim_real
-          tipo = 'Real'
-        } 
-
+          data_inicio = curr.data_inicio_real;
+          data_fim = curr.data_fim_real;
+          tipo = 'Real';
+        }
+  
         return `
           ${prev}
           <b>Tarefa:</b> ${curr.nome}<br/>
@@ -220,24 +226,23 @@ const ModalTarefa = forwardRef(({
           ${data_inicio ? datetimeToPt(data_inicio, false) : '(não iniciada)'}
           - 
           ${data_fim ? datetimeToPt(data_fim, false) : 'até o momento'}<br/>
-          <a href="/projetos/visualizar/${curr.projeto_id}?tarefa=${curr.id}" target="_blank">
+          <a href="/projetos/visualizar/${curr.projeto_id}?tarefa=${curr.id}" target="_blank" style="color: var(--bs-link);">
             Ir para tarefa
           </a> 
           ${index < arr.length - 1 ? '<br/><br/>' : ''}
-        
-        `
-      }, texto_inicial)
-
-      mensagem += mensagemColaborador
-    })
-
-    mensagem += '</div>'
-
-    callGlobalAlert({ 
-      title: titulo, 
-      message: mensagem, 
+        `;
+      }, texto_inicial);
+  
+      mensagem += mensagemColaborador;
+    });
+  
+    mensagem += '</div>';
+  
+    callGlobalAlert({
+      title: titulo,
+      message: mensagem,
       color: cor
-    })
+    });
   }
 
   function removeTarefaColaborador(tarefa_colaborador) {
@@ -483,13 +488,13 @@ const ModalTarefa = forwardRef(({
   }
   function save() {
     let data = beforeSave(formData)
-    
+
     if (!data) return
     handleGlobalLoading.show()
     let method = !data.id ? createTarefa : updateTarefa;
     method(data)
       .then((res) => {
-        if(res.conflitos)
+        if (res.conflitos)
           apresentarTarefasConflituosas(res.conflitos, res.tipo_conflito)
 
         callGlobalNotify({ message: res.message, variant: 'success' })
@@ -499,7 +504,7 @@ const ModalTarefa = forwardRef(({
 
       })
       .catch((error) => {
-        if(typeof error.data.tipo_conflito !== 'undefined')
+        if (typeof error.data.tipo_conflito !== 'undefined')
           apresentarTarefasConflituosas(error.data.conflitos, error.data.tipo_conflito)
         else
           callGlobalAlert(error)
@@ -508,7 +513,7 @@ const ModalTarefa = forwardRef(({
       })
   }
   function onSubmited(event) {
-    
+
     if (formData.data_fim_programado == '') {
       formData.data_fim_programado = null
     }
@@ -527,7 +532,7 @@ const ModalTarefa = forwardRef(({
         save()
       })
       .catch((errors) => {
-        
+
         setErrors(errors)
       })
     event.preventDefault();
@@ -666,7 +671,7 @@ const ModalTarefa = forwardRef(({
                   isInvalid={!!errors.tarefa_base}
                   onChange={(tarefa_base) => handleForm('tarefa_base', tarefa_base)} />
               </Form.Group>
-              
+
               <Form.Group className='mb-4'>
                 <Form.Label>Inicio estimado</Form.Label>
                 <DateInput
@@ -693,7 +698,7 @@ const ModalTarefa = forwardRef(({
                 onStart={() => handleForm('data_inicio_real', new Date().toISOString().slice(0, 16))}
                 onEnd={() => handleForm('data_fim_real', new Date().toISOString().slice(0, 16))}
                 addTarefaColaborador={addTarefaColaborador} />
-             
+
               <Form.Group className='mb-4 mt-4'>
                 <Form.Label>Iniciado em</Form.Label>
                 <DateInput
@@ -703,6 +708,17 @@ const ModalTarefa = forwardRef(({
                   onChangeValid={date => handleForm('data_inicio_real', date)} />
                 <FeedbackError error={errors.data_inicio_real} />
               </Form.Group>
+
+              {/* <Button onClick={handleToggleExecutions} className='mb-2'>
+                {showExecutions ? 'Ocultar Execuções' : 'Ver Execuções'}
+              </Button> */}
+
+              {/* {showExecutions && (
+                <ShowExecucoes
+                  listColaboradorTarefaPorExecucao={listColaboradorTarefaPorExecucao}
+                  formData={formData.tarefa}
+                />
+              )} */}
               <Form.Group className='mb-4'>
                 <Form.Label>Finalizado em <strong className='diffPrazos'> {diffReal}</strong></Form.Label>
                 <DateInput

@@ -12,6 +12,10 @@ import { listSetores } from "@/services/setores";
 import moment from "moment";
 import { listProjetoColaboradoresTarefaTeste } from "@/services/consultasTeste/consultasteste";
 import { useAuth } from "@/utils/context/AuthProvider";
+import jsPDF from "jspdf";
+import "jspdf-autotable";
+import { FaFilePdf } from "react-icons/fa";
+
 
 const basefilters = {
     search: '',
@@ -23,18 +27,70 @@ const basefilters = {
     sortOrder: 'asc',
 };
 
+const exportToPDF = (data, dataInicio, dataFim) => {
+    const doc = new jsPDF();
+
+    console.log("data:", data)
+
+    const title = `Colaboradores Por Tarefa - Relatório (${moment(dataInicio).format('DD/MM/YYYY')} a ${moment(dataFim).format('DD/MM/YYYY')})`;
+    doc.setFontSize(14);
+    doc.text(title, 14, 22); 
+
+    const startY = 30; 
+    doc.autoTable({
+        startY: startY,
+        head: [[
+            'Projeto', 
+            'Tarefa', 
+            'Status Tarefa', 
+            'Inicio Prog.', 
+            'Fim Prog.', 
+            'Início Real', 
+            'Fim Real',
+            'Colaborador(es)',  
+            'Situação'
+        ]],
+        body: data.map(item => ([
+            item.projeto_nome || '', 
+            item.tarefa_nome || '',
+            item.tarefa_status || '',
+            item.inicio_programado || '',
+            item.fim_programado || '',
+            item.inicio_real || '',
+            item.fim_real || '',
+            item.tarefa_colaborador || '',
+            item.prazo_label.label || ''
+        ])),
+        theme: 'grid', 
+        styles: {
+            cellPadding: 3, 
+            fontSize: 6,
+            halign: 'center'
+        },
+        headStyles: {
+            fillColor: [52, 84, 143],
+            textColor: [255, 255, 255], // Texto branco
+            fontSize: 6
+        },
+        margin: { top: startY }
+    });
+
+    const fileName = `relatorio_colaboradores_tarefa_${moment(dataInicio).format('DD-MM-YYYY')}_a_${moment(dataFim).format('DD-MM-YYYY')}.pdf`;
+    doc.save(fileName);
+};
+
 const columnsFields = [
     { field: 'projeto_nome', label: 'Projeto', enabledOrder: true },
-    { field: 'projeto_status', label: 'Status do Projeto', enabledOrder: true },
-    { field: 'projeto_fase', label: 'Fase do Projeto', enabledOrder: true },
-    { field: 'projeto_setor', label: 'Setor do Projeto', enabledOrder: true },
+    { field: 'projeto_status', label: 'Status Projeto', enabledOrder: true },
+    { field: 'projeto_fase', label: 'Fase Projeto', enabledOrder: true },
+    { field: 'projeto_setor', label: 'Setor Projeto', enabledOrder: true },
     { field: 'tarefa_nome', label: 'Tarefa', enabledOrder: true },
-    { field: 'tarefa_status', label: 'Status da Tarefa', enabledOrder: true },
+    { field: 'tarefa_status', label: 'Status Tarefa', enabledOrder: true },
     { field: 'inicio_programado', label: 'Inicio Programado', enabledOrder: true },
-    { field: 'fim_programado', label: 'Término Programado', enabledOrder: true },
+    { field: 'fim_programado', label: 'Fim Programado', enabledOrder: true },
     { field: 'inicio_real', label: 'Inicio Real', enabledOrder: true },
-    { field: 'fim_real', label: 'Término Real', enabledOrder: true },
-    { field: 'tarefa_colaborador', label: 'Colaborador(es) da Tarefa', enabledOrder: true },
+    { field: 'fim_real', label: 'Fim Real', enabledOrder: true },
+    { field: 'tarefa_colaborador', label: 'Colaborador(es)', enabledOrder: true },
     {
         field: 'prazo', label: 'Situação', enabledOrder: false, piper: (value, row) => {
             const { prazo_label } = row;
@@ -208,7 +264,16 @@ export default function ConsultaColaboradoresPorTarefaTeste() {
     return (
         <Background>
             <HeaderTitle
-                title="Consultar Tarefas dos Projetos por Colaborador" />
+                title="Consultar Tarefas dos Projetos por Colaborador"
+                optionsButtons={user.nivel_acesso === 2 ? [ 
+                    {
+                        label: 'Exportar como PDF',
+                        onClick: () => exportToPDF(rows, dataInicio, dataFim), 
+                        icon: FaFilePdf
+                    }
+                ] : []} 
+            />
+                
             <Section>
                 <Table
                     columns={columns}
@@ -218,7 +283,7 @@ export default function ConsultaColaboradoresPorTarefaTeste() {
                     //searchPlaceholder="Consultar Projetos"
                     filtersComponentes={
                         <>
-                            {user.nivel_acesso === 2 && ( // Verificação do nível de acesso
+                            {user.nivel_acesso === 2 && ( 
                                 <Col md={2}>
                                     <SelectAsync
                                         placeholder="Filtrar por Colaborador"
@@ -242,17 +307,19 @@ export default function ConsultaColaboradoresPorTarefaTeste() {
                                     isClearable
                                 />
                             </Col>
-                            <Col md={2} >
-                                <SelectAsync
-                                    placeholder="Filtrar por Setor"
-                                    loadOptions={(search) => listSetores('?search=' + search)}
-                                    getOptionLabel={(option) => option.sigla + " - " + option.nome}
-                                    onChange={(setor) => {
-                                        handleChangeFilters('setor_id', setor ? setor.id : null);
-                                    }}
-                                    isClearable
-                                />
-                            </Col>
+                            {user.nivel_acesso === 2 && (
+                                <Col md={2}>
+                                    <SelectAsync
+                                        placeholder="Filtrar por Setor"
+                                        loadOptions={(search) => listSetores('?search=' + search)}
+                                        getOptionLabel={(option) => option.sigla + ' - ' + option.nome}
+                                        onChange={(setor) => {
+                                            handleChangeFilters('setor_id', setor ? setor.id : null);
+                                        }}
+                                        isClearable
+                                    />
+                                </Col>
+                            )}
                             <Col md={2}>
                                 <DateTest
                                     id="dataFim"

@@ -10,9 +10,9 @@ export const tarefaExecucaoSchema = Yup.object().shape({
   tarefa: Yup.object()
     .required('Tarefa é obrigatória')
     .nonNullable(yupRequired('Tarefa')),
-  projeto: Yup.object()
-    .required('Projeto é obrigatório')
-    .nonNullable(yupRequired('Projeto')),
+  // projeto: Yup.object()
+  //   .required('Projeto é obrigatório')
+  //   .nonNullable(yupRequired('Projeto')),
   data_inicio_execucao: Yup
     .string()
     .matches(

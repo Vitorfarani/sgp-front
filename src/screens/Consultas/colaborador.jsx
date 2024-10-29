@@ -9,6 +9,10 @@ import { listConhecimentos } from "@/services/conhecimento/conhecimentos";
 import { listSetores } from "@/services/setores";
 import { Col } from "react-bootstrap";
 import { listColaboradores } from "@/services/colaborador/colaboradores";
+import jsPDF from "jspdf";
+import "jspdf-autotable";
+import { FaFilePdf } from "react-icons/fa";
+import { useAuth } from "@/utils/context/AuthProvider";
 
 const basefilters = {
   search: '',
@@ -21,6 +25,48 @@ const basefilters = {
 };
 
 
+const exportToPDF = (data, filteredKnowledge) => {
+  const doc = new jsPDF();
+  
+  // Utilize o conhecimento filtrado no título
+  const title = `Conhecimento por Colaborador - Relatório${filteredKnowledge ? `: ${filteredKnowledge}` : ''}`;
+  doc.setFontSize(14);
+  doc.text(title, 14, 22);
+
+  const startY = 30;
+  doc.autoTable({
+    startY: startY,
+    head: [[
+      'Colaborador',
+      'Conhecimento',
+      'Nível',
+      'Setor',
+    ]],
+    body: data.map(item => ([
+      item.colaborador || '',
+      item.nome || '',
+      item.grau || '',
+      item.sigla || '',
+    ])),
+    theme: 'grid',
+    styles: {
+      cellPadding: 3,
+      fontSize: 7,
+      halign: 'center'
+    },
+    headStyles: {
+      fillColor: [52, 84, 143],
+      textColor: [255, 255, 255],
+      fontSize: 6
+    },
+    margin: { top: startY }
+  });
+
+  const fileName = `relatorio_conhecimento_colaborador${filteredKnowledge ? `_${filteredKnowledge}` : ''}.pdf`;
+  doc.save(fileName);
+};
+
+
 const columnsFields = [
   { field: 'colaborador', label: 'Colaborador', enabledOrder: true, style: { width: 100 } },
   { field: 'nome', label: 'Conhecimento', enabledOrder: true },
@@ -29,6 +75,10 @@ const columnsFields = [
 ];
 
 export default function ConsultarColaborador() {
+
+  const { user } = useAuth();
+  const [filteredKnowledge, setFilteredKnowledge] = useState(null); // Estado para o conhecimento filtrado
+
   const {
     rows,
     columns,
@@ -95,7 +145,16 @@ export default function ConsultarColaborador() {
   return (
     <Background>
       <HeaderTitle
-        title="Consultar Colaboradores" />
+        title="Consultar Colaboradores"
+        optionsButtons={user.nivel_acesso === 2 ? [ // Condicional para exibir o botão apenas se o nível de acesso for 2
+          {
+            label: 'Exportar como PDF',
+            onClick: () => exportToPDF(rows, filteredKnowledge), // Pass dataInicio and dataFim
+            icon: FaFilePdf
+
+          }
+        ] : []} // Caso contrário, o array de botões será vazio
+      />
       <Section>
         <Table
           columns={columns}
@@ -135,6 +194,7 @@ export default function ConsultarColaborador() {
                   getOptionLabel={(option) => option.nome}
                   onChange={(conhecimento) => {
                     handleChangeFilters('conhecimento_id', conhecimento ? conhecimento.id : "");
+                    setFilteredKnowledge(conhecimento ? conhecimento.nome : null); // Atualiza o estado com o nome do conhecimento filtrado
                   }}
                   isClearable
                 />
