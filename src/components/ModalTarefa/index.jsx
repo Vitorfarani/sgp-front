@@ -695,8 +695,8 @@ const ModalTarefa = forwardRef(({
                 onCreateChecklist={() => enabledChecklist()}
                 onInterruption={onInterruption}
                 onRestore={onRestore}
-                onStart={() => handleForm('data_inicio_real', new Date().toISOString().slice(0, 16))}
-                onEnd={() => handleForm('data_fim_real', new Date().toISOString().slice(0, 16))}
+                // onStart={() => handleForm('data_inicio_real', new Date().toISOString().slice(0, 16))}
+                // onEnd={() => handleForm('data_fim_real', new Date().toISOString().slice(0, 16))}
                 addTarefaColaborador={addTarefaColaborador} />
 
               <Form.Group className='mb-4 mt-4'>
