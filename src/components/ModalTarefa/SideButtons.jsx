@@ -131,7 +131,7 @@ const SideButtons = ({ tarefa, addTarefaColaborador, onStart, onEnd, onCreateChe
       {!tarefa.deleted_at ? (
         <>
           <Executores />
-          {!!!tarefa.data_inicio_real && (
+          {/* {!!!tarefa.data_inicio_real && (
             <Button variant="warning" onClick={onStart}>
               <FaStopwatch />
               Iniciar
@@ -142,7 +142,7 @@ const SideButtons = ({ tarefa, addTarefaColaborador, onStart, onEnd, onCreateChe
               <FiDroplet />
               Entregar
             </Button>
-          )}
+          )} */}
           {!!!tarefa.checklist && (
             <Button variant="primary" onClick={onCreateChecklist}>
               <FaCheckSquare />
