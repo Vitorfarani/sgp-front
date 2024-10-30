@@ -394,11 +394,13 @@ export default function TarefaExecucao() {
       <HeaderTitle
         title="Execução de Tarefas"
         optionsButtons={[
-          {
-            label: 'Registrar Execução',
-            onClick: () => callModalCadastro(cadastroInitialValue),
-            icon: FiPlus,
-          },
+          ...(user.nivel_acesso !== 5 ? [
+            {
+              label: 'Registrar Execução',
+              onClick: () => callModalCadastro(cadastroInitialValue),
+              icon: FiPlus,
+            }
+          ] : []),
           ...(user.nivel_acesso === 2 ? [
             {
               label: 'Exportar como PDF',
@@ -408,6 +410,7 @@ export default function TarefaExecucao() {
           ] : []),
         ]}
       />
+
       <Section>
         <Table
           columns={columns}
@@ -479,24 +482,27 @@ export default function TarefaExecucao() {
             </>
           }
           handleFilters={handleChangeFilters}
-          actions={[
-            {
-              label: 'Editar',
-              onClick: (row) => {
-                console.log('ID da tarefa:', row.tarefa_id);
-                callModalCadastro({
-                  tarefa_id: row.tarefa_id,
-                  colaborador_id: row.colaborador_id,
-                  colaborador_nome: row.colaborador_nome,
-                  tarefa_nome: row.tarefa_nome,
-                  execucao_id: row.execucao_id,
-                })
-              },
-              icon: FiEdit,
-            },
-          ]}
-
-
+          // Aqui é onde fazemos a verificação do nível de acesso
+          actions={
+            user.nivel_acesso !== 5
+              ? [
+                {
+                  label: 'Editar',
+                  onClick: (row) => {
+                    console.log('ID da tarefa:', row.tarefa_id);
+                    callModalCadastro({
+                      tarefa_id: row.tarefa_id,
+                      colaborador_id: row.colaborador_id,
+                      colaborador_nome: row.colaborador_nome,
+                      tarefa_nome: row.tarefa_nome,
+                      execucao_id: row.execucao_id,
+                    });
+                  },
+                  icon: FiEdit,
+                },
+              ]
+              : []
+          }
         />
       </Section>
     </Background>
