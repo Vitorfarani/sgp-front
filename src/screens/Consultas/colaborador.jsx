@@ -11,8 +11,9 @@ import { Col } from "react-bootstrap";
 import { listColaboradores } from "@/services/colaborador/colaboradores";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
-import { FaFilePdf } from "react-icons/fa";
 import { useAuth } from "@/utils/context/AuthProvider";
+import { FaFilePdf, FaFileCsv, FaFileExcel } from "react-icons/fa";
+import * as XLSX from 'xlsx';
 
 const basefilters = {
   search: '',
@@ -28,7 +29,6 @@ const basefilters = {
 const exportToPDF = (data, filteredKnowledge) => {
   const doc = new jsPDF();
   
-  // Utilize o conhecimento filtrado no título
   const title = `Conhecimento por Colaborador - Relatório${filteredKnowledge ? `: ${filteredKnowledge}` : ''}`;
   doc.setFontSize(14);
   doc.text(title, 14, 22);
@@ -65,6 +65,68 @@ const exportToPDF = (data, filteredKnowledge) => {
   const fileName = `relatorio_conhecimento_colaborador${filteredKnowledge ? `_${filteredKnowledge}` : ''}.pdf`;
   doc.save(fileName);
 };
+
+
+
+const exportToCSV = (data, filteredKnowledge) => {
+
+    const orderedColumns = [
+        { field: 'colaborador', label: 'Colaborador' },
+        { field: 'nome', label: 'Conhecimento' },
+        { field: 'grau', label: 'Nivel' },
+        { field: 'sigla', label: 'Setor' },
+    ];
+
+
+    const csvData = data.map(item => {
+        const orderedItem = {};
+        orderedColumns.forEach(col => {
+            orderedItem[col.label] = item[col.field] || ''; 
+        });
+        return orderedItem;
+    });
+
+
+    const csvContent = [
+        orderedColumns.map(col => col.label).join(','), // Cabeçalhos
+        ...csvData.map(row => orderedColumns.map(col => row[col.label]).join(',')) // Dados
+    ].join('\n');
+
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const fileName = `relatorio_conhecimento_colaborador${filteredKnowledge ? `_${filteredKnowledge}` : ''}.csv`;
+    link.href = URL.createObjectURL(blob);
+    link.download = fileName;
+    link.click();
+};
+
+const exportToXLSX = (data, filteredKnowledge) => {
+
+    const orderedColumns = [
+        { field: 'colaborador', label: 'Colaborador' },
+        { field: 'nome', label: 'Conhecimento' },
+        { field: 'grau', label: 'Nivel' },
+        { field: 'sigla', label: 'Setor' },
+    ];
+
+
+    const xlsxData = data.map(item => {
+        const orderedItem = {};
+        orderedColumns.forEach(col => {
+            orderedItem[col.label] = item[col.field] || ''; 
+        });
+        return orderedItem;
+    });
+
+    const worksheet = XLSX.utils.json_to_sheet(xlsxData);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Relatório Conhecimento');
+
+    const fileName = `relatorio_conhecimento_colaborador${filteredKnowledge ? `_${filteredKnowledge}` : ''}.xlsx`;
+    XLSX.writeFile(workbook, fileName);
+};
+
 
 
 const columnsFields = [
@@ -146,14 +208,23 @@ export default function ConsultarColaborador() {
     <Background>
       <HeaderTitle
         title="Consultar Colaboradores"
-        optionsButtons={user.nivel_acesso === 2 ? [ // Condicional para exibir o botão apenas se o nível de acesso for 2
+        optionsButtons={user.nivel_acesso === 2 ? [
           {
             label: 'Exportar como PDF',
-            onClick: () => exportToPDF(rows, filteredKnowledge), // Pass dataInicio and dataFim
+            onClick: () => exportToPDF(rows, filteredKnowledge), 
             icon: FaFilePdf
-
-          }
-        ] : []} // Caso contrário, o array de botões será vazio
+          },
+          {
+            label: 'Exportar como CSV',
+            onClick: () => exportToCSV(rows, filteredKnowledge),
+            icon: FaFileCsv
+        },
+        {
+            label: 'Exportar como XLSX',
+            onClick: () => exportToXLSX(rows, filteredKnowledge),
+            icon: FaFileExcel
+        }
+        ] : []} 
       />
       <Section>
         <Table

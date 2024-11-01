@@ -16,9 +16,10 @@ import { Col } from "react-bootstrap";
 import moment from "moment";
 import { listSetores } from "@/services/setores";
 import { listProjetos } from "@/services/projeto/projetos";
-import { FaFilePdf } from "react-icons/fa";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
+import { FaFilePdf, FaFileCsv, FaFileExcel } from "react-icons/fa";
+import * as XLSX from 'xlsx';
 
 const basefilters = {
   search: '',
@@ -71,6 +72,66 @@ const exportToPDF = (data, dataInicio, dataFim) => {
   const fileName = `relatorio_execução_tarefas_${moment(dataInicio).format('DD-MM-YYYY')}_a_${moment(dataFim).format('DD-MM-YYYY')}.pdf`;
   doc.save(fileName);
 };
+
+const exportToCSV = (data, dataInicio, dataFim) => {
+  const csvRows = [];
+
+  const headers = [
+      'Colaborador',
+      'Projeto',
+      'Tarefa',
+      'Inicio Execução',
+      'Fim Execução'
+  ];
+  csvRows.push(headers.join(','));
+
+  data.forEach(item => {
+      const row = [
+          item.colaborador_nome || '',
+          item.projeto_nome || '',
+          item.tarefa_nome || '',
+          item.data_inicio_execucao || '',
+          item.data_fim_execucao || ''
+      ];
+      csvRows.push(row.join(','));
+  });
+
+  const csvContent = csvRows.join('\n');
+  const blob = new Blob([csvContent], { type: 'text/csv' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = `relatorio_execucao_tarefas_${moment(dataInicio).format('DD-MM-YYYY')}_a_${moment(dataFim).format('DD-MM-YYYY')}.csv`;
+  link.click();
+  URL.revokeObjectURL(url);
+};
+
+const exportToXLSX = (data, dataInicio, dataFim) => {
+  const orderedColumns = [
+      { field: 'colaborador_nome', header: 'Colaborador' },
+      { field: 'projeto_nome', header: 'Projeto' },
+      { field: 'tarefa_nome', header: 'Tarefa' },
+      { field: 'data_inicio_execucao', header: 'Inicio Execução' },
+      { field: 'data_fim_execucao', header: 'Fim Execução' }
+  ];
+
+  const formattedData = data.map(item => {
+      const orderedData = {};
+      orderedColumns.forEach(col => {
+          orderedData[col.header] = item[col.field] || ''; 
+      });
+      return orderedData;
+  });
+
+  const worksheet = XLSX.utils.json_to_sheet(formattedData);
+  const workbook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(workbook, worksheet, 'Relatório');
+
+  const fileName = `relatorio_execucao_tarefas_${moment(dataInicio).format('DD-MM-YYYY')}_a_${moment(dataFim).format('DD-MM-YYYY')}.xlsx`;
+  XLSX.writeFile(workbook, fileName);
+};
+
+
 
 const columnsFields = [
   { field: 'colaborador_nome', label: 'Colaborador', enabledOrder: true },
@@ -406,7 +467,17 @@ export default function TarefaExecucao() {
               label: 'Exportar como PDF',
               onClick: () => exportToPDF(rows, dataInicio, dataFim),
               icon: FaFilePdf
-            }
+            },
+            {
+              label: 'Exportar como CSV',
+              onClick: () => exportToCSV(rows, dataInicio, dataFim),
+              icon: FaFileCsv
+          },
+          {
+              label: 'Exportar como XLSX',
+              onClick: () => exportToXLSX(rows, dataInicio, dataFim),
+              icon: FaFileExcel
+          }
           ] : []),
         ]}
       />
