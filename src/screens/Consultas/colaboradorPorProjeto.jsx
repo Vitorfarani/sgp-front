@@ -8,7 +8,11 @@ import { listColaboradores } from "@/services/colaborador/colaboradores";
 import { listSetores } from "@/services/setores";
 import orderBy from 'lodash/orderBy';
 import moment from "moment";
-
+import { FaFileCsv, FaFileExcel, FaFilePdf } from "react-icons/fa";
+import { useAuth } from "@/utils/context/AuthProvider";
+import jsPDF from "jspdf";
+import "jspdf-autotable";
+import * as XLSX from 'xlsx';
 
 const basefilters = {
     search: '',
@@ -81,11 +85,164 @@ const columnsFields = [
     ]}
 ];
 
+
+const exportToPDF = (data, dataInicio, dataFim) => {
+    const doc = new jsPDF();
+    const title = `Colaborador por Projeto - Relatório (${moment(dataInicio).format('DD/MM/YYYY')} a ${moment(dataFim).format('DD/MM/YYYY')})`;
+    
+    doc.setFontSize(14);
+    doc.text(title, 14, 22);
+  
+    const startY = 30;
+  
+    const head = [
+      [
+        { content: 'Colaborador', rowSpan: 3, styles: { fillColor: '#435678', textColor: '#FFFFFF' } },
+        { content: 'Projeto', rowSpan: 3, styles: { fillColor: '#5a6d90', textColor: '#FFFFFF' } },
+        { content: 'Tarefas', colSpan: 6, styles: { fillColor: '#18304a', textColor: '#FFFFFF' } }
+      ],
+      [
+        { content: 'Entregues', colSpan: 2, styles: { fillColor: '#18304a', textColor: '#FFFFFF' } },
+        { content: 'Em Desenvolvimento', colSpan: 2, styles: { fillColor: '#18304a', textColor: '#FFFFFF' } },
+        { content: 'Não Iniciada', colSpan: 2, styles: { fillColor: '#18304a', textColor: '#FFFFFF' } }
+      ],
+      [
+        { content: 'Prazo', styles: { fillColor: '#00780e', textColor: 'white', cellPadding: 3, fontSize: 8 } },
+        { content: 'Atrasado', styles: { fillColor: '#a30019', textColor: 'white', cellPadding: 3, fontSize: 8 } },
+        { content: 'Prazo', styles: { fillColor: '#00780e', textColor: 'white', cellPadding: 3, fontSize: 8 } },
+        { content: 'Atrasado', styles: { fillColor: '#a30019', textColor: 'white', cellPadding: 3, fontSize: 8 } },
+        { content: 'Prazo', styles: { fillColor: '#00780e', textColor: 'white', cellPadding: 3, fontSize: 8 } },
+        { content: 'Atrasado', styles: { fillColor: '#a30019', textColor: 'white', cellPadding: 3, fontSize: 8 } }
+      ]
+    ];
+  
+    const body = data.map(item => [
+      item.colaborador_nome || '',
+      item.projeto_nome || '',
+      item.total_entregues_prazo || 0,
+      item.total_entregues_atraso || 0,
+      item.total_desenvolvimento_prazo || 0,
+      item.total_desenvolvimento_atraso || 0,
+      item.total_nao_iniciadas_prazo || 0,
+      item.total_nao_iniciadas_atraso || 0,
+    ]);
+  
+
+    doc.autoTable({
+      startY: startY,
+      head: head,
+      body: body,
+      theme: 'grid',
+      styles: { fontSize: 7, halign: 'center' },
+      headStyles: { fillColor: [52, 84, 143], textColor: [255, 255, 255], fontSize: 6 },
+      margin: { top: startY },
+    });
+  
+    const fileName = `relatorio_colaborador_por_projeto_${moment(dataInicio).format('DD-MM-YYYY')}_a_${moment(dataFim).format('DD-MM-YYYY')}.pdf`;
+    doc.save(fileName);
+  };
+
+  const exportToCSV = (data, dataInicio, dataFim) => {
+    // Título do relatório
+    const title = `Colaborador por Projeto - Relatório (${moment(dataInicio).format('DD/MM/YYYY')} a ${moment(dataFim).format('DD/MM/YYYY')})\n`;
+    
+    // Cabeçalhos com subcolunas em formato CSV
+    const headers = [
+      ['Colaborador', 'Projeto', 'Entregues', '', 'Em Desenvolvimento', '', 'Não Iniciada', ''],
+      ['', '', 'Prazo', 'Atrasado', 'Prazo', 'Atrasado', 'Prazo', 'Atrasado']
+    ];
+    
+    // Mapeia os dados para as colunas
+    const body = data.map(item => [
+      item.colaborador_nome || '',
+      item.projeto_nome || '',
+      item.total_entregues_prazo || 0,
+      item.total_entregues_atraso || 0,
+      item.total_desenvolvimento_prazo || 0,
+      item.total_desenvolvimento_atraso || 0,
+      item.total_nao_iniciadas_prazo || 0,
+      item.total_nao_iniciadas_atraso || 0,
+    ]);
+  
+    // Converte os cabeçalhos e dados para o formato CSV
+    let csvContent = title;
+    csvContent += headers.map(row => row.join(',')).join('\n') + '\n';
+    csvContent += body.map(row => row.join(',')).join('\n');
+    
+    // Cria o blob e inicia o download do arquivo CSV
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement("a");
+    const fileName = `relatorio_colaborador_por_projeto_${moment(dataInicio).format('DD-MM-YYYY')}_a_${moment(dataFim).format('DD-MM-YYYY')}.csv`;
+    
+    if (navigator.msSaveBlob) {
+      navigator.msSaveBlob(blob, fileName);
+    } else {
+      link.href = URL.createObjectURL(blob);
+      link.setAttribute("download", fileName);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+  };
+  
+
+  const exportToXLSX = (data, dataInicio, dataFim) => {
+
+    const title = `Colaborador por Projeto - Relatório (${moment(dataInicio).format('DD/MM/YYYY')} a ${moment(dataFim).format('DD/MM/YYYY')})`;
+    
+
+    const headers = [
+      ['Colaborador', 'Projeto', 'Entregues', '', 'Em Desenvolvimento', '', 'Não Iniciada', ''],
+      ['', '', 'Prazo', 'Atrasado', 'Prazo', 'Atrasado', 'Prazo', 'Atrasado']
+    ];
+    
+    const body = data.map(item => [
+      item.colaborador_nome || '',
+      item.projeto_nome || '',
+      item.total_entregues_prazo || 0,
+      item.total_entregues_atraso || 0,
+      item.total_desenvolvimento_prazo || 0,
+      item.total_desenvolvimento_atraso || 0,
+      item.total_nao_iniciadas_prazo || 0,
+      item.total_nao_iniciadas_atraso || 0,
+    ]);
+    
+
+    const worksheetData = [
+      [title],      
+      ...headers,   
+      ...body        
+    ];
+  
+    const worksheet = XLSX.utils.aoa_to_sheet(worksheetData);
+  
+
+    worksheet['!merges'] = [
+      { s: { r: 0, c: 0 }, e: { r: 0, c: 7 } },  
+      { s: { r: 1, c: 2 }, e: { r: 1, c: 3 } },  
+      { s: { r: 1, c: 4 }, e: { r: 1, c: 5 } },  
+      { s: { r: 1, c: 6 }, e: { r: 1, c: 7 } }   
+    ];
+  
+    // Cria o workbook e adiciona a planilha
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Relatório");
+  
+    // Gera o arquivo e baixa
+    const fileName = `relatorio_colaborador_por_projeto_${moment(dataInicio).format('DD-MM-YYYY')}_a_${moment(dataFim).format('DD-MM-YYYY')}.xlsx`;
+    XLSX.writeFile(workbook, fileName);
+  };
+
+  
+  
+  
+
 export default function ConsultaColaboradorPorProjeto() {
-    // const [dataInicio, setDataInicio] = useState(moment().format('YYYY-MM-01'));
-    // const [dataFim, setDataFim] = useState(moment().format('YYYY-MM-DD'));
-    const [dataInicio, setDataInicio] = useState('');
-    const [dataFim, setDataFim] = useState('');
+    const [dataInicio, setDataInicio] = useState(moment().format('YYYY-MM-01'));
+    const [dataFim, setDataFim] = useState(moment().format('YYYY-MM-DD'));
+    const { user } = useAuth();
+    // const [dataInicio, setDataInicio] = useState('');
+    // const [dataFim, setDataFim] = useState('');
 
     const {
         rows,
@@ -177,15 +334,33 @@ export default function ConsultaColaboradorPorProjeto() {
 
     useEffect(() => {
         handleChangeFilters('search', basefilters.search);
-        // handleChangeFilters('data_inicio', dataInicio)
-        // handleChangeFilters('data_fim', dataFim)
+        handleChangeFilters('data_inicio', dataInicio)
+        handleChangeFilters('data_fim', dataFim)
         load();
     }, [basefilters.search]);
 
     return (
         <Background>
             <HeaderTitle
-                title="Consultar Colaborador Por Projeto" />
+                title="Consultar Colaborador Por Projeto"
+                optionsButtons={user.nivel_acesso === 2 ? [ 
+                    {
+                        label: 'Exportar como PDF',
+                        onClick: () => exportToPDF(rows, dataInicio, dataFim),
+                        icon: FaFilePdf
+                    },
+                    {
+                        label: 'Exportar como CSV',
+                        onClick: () => exportToCSV(rows, dataInicio, dataFim),
+                        icon: FaFileCsv
+                    },
+                    {
+                        label: 'Exportar como XLSX',
+                        onClick: () => exportToXLSX(rows, dataInicio, dataFim),
+                        icon: FaFileExcel
+                    }
+                ] : []} 
+                     />
             <Section>
                 <Table
                     columns={columns}

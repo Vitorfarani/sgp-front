@@ -6,6 +6,11 @@ import { listClientes } from "@/services/clientes";
 import { listProjetoBySetorCliente } from "@/services/consultas/consultas";
 import { Col } from "react-bootstrap";
 import { FcClearFilters } from "react-icons/fc";
+import { FaFilePdf, FaFileCsv, FaFileExcel } from "react-icons/fa";
+import jsPDF from "jspdf";
+import "jspdf-autotable";
+import * as XLSX from 'xlsx';
+import { useAuth } from "@/utils/context/AuthProvider";
 
 const basefilters = {
   search: '',
@@ -24,7 +29,76 @@ const columnsFields = [
   { field: 'setor', label: 'Setor Responsável', enabledOrder: true }
 ];
 
+
+const exportToPDF = (data) => {
+  const doc = new jsPDF();
+  const title = 'Relatório de Projetos';
+  
+  doc.setFontSize(14);
+  doc.text(title, 14, 22);
+
+  const startY = 30;
+  doc.autoTable({
+    startY: startY,
+    head: [[
+      'Projeto',
+      'Cliente',
+      'Setor do Cliente',
+      'Setor Responsável',
+    ]],
+    body: data.map(item => ([
+      item.projeto || '',
+      item.cliente || '',
+      item.cliente_setor || '',
+      item.setor || '',
+    ])),
+    theme: 'grid',
+    styles: {
+      cellPadding: 3,
+      fontSize: 7,
+      halign: 'center'
+    },
+    headStyles: {
+      fillColor: [52, 84, 143],
+      textColor: [255, 255, 255],
+      fontSize: 6
+    },
+    margin: { top: startY }
+  });
+
+  doc.save('relatorio_projetos.pdf');
+};
+
+const exportToCSV = (data) => {
+  const csvContent = [
+    ["Projeto", "Cliente", "Setor do Cliente", "Setor Responsável"],
+    ...data.map(item => [
+      item.projeto,
+      item.cliente,
+      item.cliente_setor,
+      item.setor
+    ])
+  ].map(e => e.join(",")).join("\n");
+
+  const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(blob);
+  link.setAttribute("download", "relatorio_projetos.csv");
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+};
+
+const exportToXLSX = (data) => {
+  const worksheet = XLSX.utils.json_to_sheet(data);
+  const workbook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(workbook, worksheet, "Projetos");
+
+  XLSX.writeFile(workbook, "relatorio_projetos.xlsx");
+};
+
 export default function ConsultaProjeto() {
+  const { user } = useAuth();
 
   const {
     rows,
@@ -106,7 +180,25 @@ export default function ConsultaProjeto() {
   return (
     <Background>
       <HeaderTitle
-        title="Consultar Projetos"/>
+        title="Consultar Projetos"
+        optionsButtons={user.nivel_acesso === 2 ? [ 
+          {
+              label: 'Exportar como PDF',
+              onClick: () => exportToPDF(rows),
+              icon: FaFilePdf
+          },
+          {
+              label: 'Exportar como CSV',
+              onClick: () => exportToCSV(rows),
+              icon: FaFileCsv
+          },
+          {
+              label: 'Exportar como XLSX',
+              onClick: () => exportToXLSX(rows),
+              icon: FaFileExcel
+          }
+      ] : []} 
+  />
       <Section>
         <Table
           columns={columns}

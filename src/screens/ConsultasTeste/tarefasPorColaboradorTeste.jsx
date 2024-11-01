@@ -14,7 +14,8 @@ import { listColaboradorProjetosTarefatTeste } from "@/services/consultasTeste/c
 import { useAuth } from "@/utils/context/AuthProvider";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
-import { FaFilePdf } from "react-icons/fa";
+import { FaFilePdf, FaFileCsv, FaFileExcel } from "react-icons/fa";
+import * as XLSX from 'xlsx';
 
 
 const basefilters = {
@@ -29,8 +30,6 @@ const basefilters = {
 
 const exportToPDF = (data, dataInicio, dataFim) => {
     const doc = new jsPDF();
-
-    console.log("data:", data)
 
     const title = `Tarefa Por Colaborador - Relatório (${moment(dataInicio).format('DD/MM/YYYY')} a ${moment(dataFim).format('DD/MM/YYYY')})`;
     doc.setFontSize(14);
@@ -78,6 +77,85 @@ const exportToPDF = (data, dataInicio, dataFim) => {
     const fileName = `relatorio_tarefa_colaborador_${moment(dataInicio).format('DD-MM-YYYY')}_a_${moment(dataFim).format('DD-MM-YYYY')}.pdf`;
     doc.save(fileName);
 };
+
+const exportToCSV = (data, dataInicio, dataFim)=> {
+    const csvRows = [];
+
+    const headers = [
+
+        'Colaborador',
+        'Projeto',
+        'Tarefa',
+        'Status Tarefa',
+        'Inicio Prog.',
+        'Fim Prog.',
+        'Início Real',
+        'Fim Real',
+        'Situação'
+    ];
+
+    csvRows.push(headers.join(','));
+
+
+    data.forEach(item => {
+        const row = [
+            item.colaborador_nome || '',
+            item.projeto_nome || '',
+            item.tarefa_nome || '',
+            item.tarefa_status || '',
+            item.inicio_programado || '',
+            item.fim_programado || '',
+            item.inicio_real || '',
+            item.fim_real || '',
+            item.prazo_label.label || ''
+        ];
+        csvRows.push(row.join(','));
+    });
+
+    const csvContent = csvRows.join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+
+    link.download = `relatorio_tarefa_colaborador_${moment(dataInicio).format('DD-MM-YYYY')}_a_${moment(dataFim).format('DD-MM-YYYY')}.csv`;
+    link.click();
+    URL.revokeObjectURL(url);
+};
+
+
+const exportToXLSX = (data, dataInicio, dataFim) => {
+    const orderedColumns = [
+        { field: 'colaborador_nome', header: 'Colaborador' },
+        { field: 'projeto_nome', header: 'Projeto' },
+        { field: 'projeto_status', header: 'Status Projeto' },
+        { field: 'tarefa_nome', header: 'Tarefa' },
+        { field: 'tarefa_status', header: 'Status Tarefa' },
+        { field: 'inicio_programado', header: 'Início Programado' },
+        { field: 'fim_programado', header: 'Fim Programado' },
+        { field: 'inicio_real', header: 'Início Real' },
+        { field: 'fim_real', header: 'Fim Real' },
+        { field: 'prazo_label', header: 'Situação' }  
+    ];
+
+    const formattedData = data.map(item => {
+        const orderedData = {};
+        orderedColumns.forEach(col => {
+            orderedData[col.header] = col.field === 'prazo_label'
+                ? item.prazo_label.label || ''
+                : item[col.field] || ''; 
+        });    console.log(orderedData)
+
+        return orderedData;
+    });
+  
+    const worksheet = XLSX.utils.json_to_sheet(formattedData);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Relatório');
+    
+    const fileName = `relatorio_tarefa_colaborador_${moment(dataInicio).format('DD-MM-YYYY')}_a_${moment(dataFim).format('DD-MM-YYYY')}.xlsx`;
+    XLSX.writeFile(workbook, fileName);
+  };
 
 const columnsFields = [
     { field: 'colaborador_nome', label: 'Colaborador', enabledOrder: true },
@@ -256,13 +334,23 @@ export default function ConsultaTarefasPorColaboradorTeste() {
         <Background>
             <HeaderTitle
                 title="Consultar Tarefas Por Colaborador"
-                optionsButtons={user.nivel_acesso === 2 ? [ // Condicional para exibir o botão apenas se o nível de acesso for 2
+                optionsButtons={user.nivel_acesso === 2 ? [ 
                     {
                         label: 'Exportar como PDF',
-                        onClick: () => exportToPDF(rows, dataInicio, dataFim), // Pass dataInicio and dataFim
+                        onClick: () => exportToPDF(rows, dataInicio, dataFim), 
                         icon: FaFilePdf
+                    },
+                    {
+                        label: 'Exportar como CSV',
+                        onClick: () => exportToCSV(rows, dataInicio, dataFim),
+                        icon: FaFileCsv
+                    },
+                    {
+                        label: 'Exportar como XLSX',
+                        onClick: () => exportToXLSX(rows, dataInicio, dataFim),
+                        icon: FaFileExcel
                     }
-                ] : []} // Caso contrário, o array de botões será vazio
+                ] : []} 
             />
             <Section>
                 <Table
