@@ -84,7 +84,7 @@ const cadastroInitialValue = {
   tarefa_id: '',
   colaborador_id: '',
   data_inicio_execucao: '',
-  data_fim_execucao: '',
+  data_fim_execucao: '' ,
 };
 
 export default function TarefaExecucao() {
@@ -303,7 +303,7 @@ export default function TarefaExecucao() {
           name: 'data_fim_execucao',
           label: 'Fim da Execução',
           type: 'datetime-local',
-          required: true,
+          //required: true,
         },
         {
           name: 'finalizar_tarefa',
@@ -330,7 +330,10 @@ export default function TarefaExecucao() {
           formattedResult.id = formattedResult.execucao_id;
         }
 
-
+        if (!formattedResult.data_fim_execucao) {
+          formattedResult.data_fim_execucao = null;  // Garantindo que seja null, se não preenchido
+        }
+        
         return formattedResult;
       })
       .then(async (result) => {
