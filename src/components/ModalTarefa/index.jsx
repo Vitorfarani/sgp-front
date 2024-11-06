@@ -16,7 +16,7 @@ import ShowExecucoes from './ShowExecucoes';
 import { createTarefaColaborador, deleteTarefaColaborador, updateTarefaColaborador } from '@/services/tarefa/tarefaColaborador';
 import { useTheme } from '@/utils/context/ThemeProvider';
 import { listTarefaBase } from '@/services/tarefa/tarefaBase';
-import { dateDiffWithLabels, datetimeToPt, diffDatetimes, diffDatetimesHumanized } from '@/utils/helpers/date';
+import { dateDiffWithLabels, dateEnToPt, datePtToEn, datetimeToPt, diffDatetimes, diffDatetimesHumanized } from '@/utils/helpers/date';
 import Checklist from '../Checklist';
 import { useAuth } from '@/utils/context/AuthProvider';
 import { formatForm } from '@/utils/helpers/forms';
@@ -25,6 +25,7 @@ import { createTarefaConhecimento, deleteTarefaConhecimento } from '@/services/t
 import { createTarefa, deleteTarefa, interromperTarefa, restoreTarefa, showTarefa, updateTarefa } from '@/services/tarefa/tarefas';
 import { createTarefaObservacao, deleteTarefaObservacao } from '@/services/tarefa/tarefaObservacao';
 import { listColaboradorTarefaPorExecucao } from '@/services/tarefa/tarefaExecucao';
+import { listDiasNaoUteis, listFeriados } from '@/services/feriados';
 
 
 const ModalTarefa = forwardRef(({
@@ -140,51 +141,141 @@ const ModalTarefa = forwardRef(({
         ...prevState,
         ['tarefa_colaborador']: [...prevState['tarefa_colaborador'], { colaborador_id: colaborador.id, colaborador }]
       }));
-
     } else {
       let data = {
         tarefa_id: formData.id,
         colaborador_id: colaborador.id,
-      }
+      };
       handleGlobalLoading.show();
       createTarefaColaborador(data)
         .then((result) => {
           if (result.conflitos)
             apresentarTarefasConflituosas(result.conflitos, result.tipo_conflito)
 
-          callGlobalNotify({ message: result.message, variant: 'success' })
+          callGlobalNotify({ message: result.message, variant: 'success' });
           setFormData((prevState) => ({
             ...prevState,
             ['tarefa_colaborador']: [...prevState.tarefa_colaborador, result.tarefa_colaborador]
           }));
-          sethaveUpdate(true)
-
-          // load(formData.id)
-          handleGlobalLoading.hide()
+          sethaveUpdate(true);
+          handleGlobalLoading.hide();
         })
         .catch((error) => {
-          if (typeof error.data.tipo_conflito !== 'undefined')
-            apresentarTarefasConflituosas(error.data.conflitos, error.data.tipo_conflito)
-          else
-            callGlobalAlert(error)
+          if (typeof error.data.tipo_conflito !== 'undefined') {
+            apresentarTarefasConflituosas(error.data.conflitos, error.data.tipo_conflito);
+          } else {
+            callGlobalAlert(error);
+          }
 
-          handleGlobalLoading.hide()
-        })
+          handleGlobalLoading.hide();
+        });
+    }
+  };
+
+
+
+  async function apresentarDatasConflituosas() {
+
+    try {
+      // Zera as datas se estiverem vazias
+      formData.data_inicio_real = formData.data_inicio_real === '' ? null : (formData.data_inicio_real);
+      formData.data_inicio_programado = formData.data_inicio_programado === '' ? null : formData.data_inicio_programado;
+      formData.data_fim_programado = formData.data_fim_programado === '' ? null : (formData.data_fim_programado);
+      formData.data_fim_real = formData.data_fim_real === '' ? null : formData.data_fim_real;
+
+      // Recupera os feriados e dias não úteis
+      const feriados = await listFeriados();
+      const diasNaoUteisProgramadosResponse = await listDiasNaoUteis(`?data_inicio=${formData.data_inicio_programado}&data_fim=${formData.data_fim_programado}`);
+      const diasNaoUteisReaisResponse = await listDiasNaoUteis(`?data_inicio=${formData.data_inicio_real}&data_fim=${formData.data_fim_real}`);
+
+      if (diasNaoUteisProgramadosResponse.error || diasNaoUteisReaisResponse.error) {
+        throw new Error("Erro ao buscar dias não úteis: " + (diasNaoUteisProgramadosResponse.message || diasNaoUteisReaisResponse.message));
+      }
+
+      const feriadosSet = new Set(feriados.map(item => item.data));
+      const diasNaoUteisMapProgramados = new Map(diasNaoUteisProgramadosResponse.map(item => [item.data, item.tipo]));
+      const diasNaoUteisMapReais = new Map(diasNaoUteisReaisResponse.map(item => [item.data, item.tipo]));
+
+      const validateDates = (date, diasNaoUteisMap) => {
+        const formattedDate = new Date(date).toISOString().slice(0, 10);
+        return diasNaoUteisMap.has(formattedDate) || feriadosSet.has(formattedDate);
+      };
+
+      let hasConflicts = false;
+      let mensagensConflitos = [];
+
+
+      // Verifica datas programadas
+      const datesToCheckProgramados = [formData.data_inicio_programado, formData.data_fim_programado];
+      for (const date of datesToCheckProgramados) {
+        if (date) {
+          const formattedDate = new Date(date);
+          if (isNaN(formattedDate)) {
+            console.error(`Data inválida para data programada: ${date}`);
+            continue; // Pula para a próxima iteração se a data for inválida
+          }
+
+          const formattedDateString = formattedDate.toISOString().slice(0, 10);
+          if (validateDates(date, diasNaoUteisMapProgramados)) {
+            const tipoConflito = diasNaoUteisMapProgramados.get(formattedDateString) || 'feriado'; // Padrão 'feriado' se não encontrado no map
+            mensagensConflitos.push(`<li>${dateEnToPt(formattedDateString)} (data programada) (${tipoConflito})</li>`);
+            hasConflicts = true;
+          }
+        }
+      }
+
+      // Verifica datas reais
+      const datesToCheckReais = [formData.data_inicio_real, formData.data_fim_real];
+
+      for (const date of datesToCheckReais) {
+        if (date) {
+          const formattedDate = new Date(date);
+          if (isNaN(formattedDate)) {
+            console.error(`Data inválida para data real: ${date}`);
+            continue; // Pula para a próxima iteração se a data for inválida
+          }
+
+          const formattedDateString = formattedDate.toISOString().slice(0, 10);
+          if (validateDates(date, diasNaoUteisMapReais)) {
+            const tipoConflito = diasNaoUteisMapReais.get(formattedDateString) || 'feriado'; // Padrão 'feriado' se não encontrado no map
+            mensagensConflitos.push(`<li>${dateEnToPt(formattedDateString)} (data real) (${tipoConflito})</li>`);
+            hasConflicts = true;
+          }
+        }
+      }
+
+      // Se houver conflitos, cria a mensagem
+      let mensagem = null;
+      if (hasConflicts) {
+        mensagem = `
+          <div style="background-color: #FFA500; color: white; padding: 1rem; border-radius: 5px;">
+            As seguintes datas caem em dias não úteis ou feriados: 
+            <strong> <ul>${mensagensConflitos.join('')} </strong></ul>
+          </div>
+        `;
+      }
+
+      return { hasConflicts, mensagem }; // Retorna um objeto com a informação de conflitos e a mensagem
+    } catch (error) {
+      console.error("Erro ao verificar datas conflituosas:", error);
+      throw error; // Lança o erro para ser tratado pela função chamadora
     }
   }
 
+
+
   function apresentarTarefasConflituosas(conflitos, tipo_conflito) {
     let mensagem, titulo, cor;
-  
+
     if (tipo_conflito === 'programado') {
       titulo = 'Aviso sobre período programado';
       mensagem = `
-        <div style="background-color: var(--bs-light); color: var(--bs-dark); padding: 1rem; border-radius: 5px;">
+        <div style="background-color: #4A90E2; color: white; padding: 1rem; border-radius: 5px;">
           Colaborador${conflitos.length > 1 ? 'es' : ''} 
           adicionad${conflitos.length > 1 ? 'os' : 'o'} nessa tarefa,
           embora exista(m) tarefa(s) programada(s) durante esse período:
       `;
-      cor = 'var(--bs-light)'
+      cor = '#4A90E2'
     } else {
       titulo = 'Erro ao adicionar tarefa';
       mensagem = `
@@ -196,7 +287,7 @@ const ModalTarefa = forwardRef(({
       `;
       cor = 'var(--bs-danger)';
     }
-  
+
     conflitos.forEach(conflito => {
       const texto_inicial = typeof conflito.colaborador === 'undefined' ? '<hr/>' : `
         <hr/>
@@ -205,10 +296,10 @@ const ModalTarefa = forwardRef(({
           <span>${conflito.colaborador.nome}</span>
         </p>
       `;
-  
+
       const mensagemColaborador = conflito.tarefas.reduce((prev, curr, index, arr) => {
         let data_inicio, data_fim, tipo;
-  
+
         if (tipo_conflito === 'programado') {
           data_inicio = curr.data_inicio_programado;
           data_fim = curr.data_fim_programado;
@@ -218,7 +309,7 @@ const ModalTarefa = forwardRef(({
           data_fim = curr.data_fim_real;
           tipo = 'Real';
         }
-  
+
         return `
           ${prev}
           <b>Tarefa:</b> ${curr.nome}<br/>
@@ -232,12 +323,12 @@ const ModalTarefa = forwardRef(({
           ${index < arr.length - 1 ? '<br/><br/>' : ''}
         `;
       }, texto_inicial);
-  
+
       mensagem += mensagemColaborador;
     });
-  
+
     mensagem += '</div>';
-  
+
     callGlobalAlert({
       title: titulo,
       message: mensagem,
@@ -512,31 +603,55 @@ const ModalTarefa = forwardRef(({
         handleGlobalLoading.hide()
       })
   }
-  function onSubmited(event) {
+
+  async function onSubmited(event) {
+    event.preventDefault(); // Impede o comportamento padrão do formulário
+    event.stopPropagation(); // Para a propagação do evento
 
     if (formData.data_fim_programado == '') {
-      formData.data_fim_programado = null
+      formData.data_fim_programado = null;
     }
     if (formData.data_fim_real == '') {
-      formData.data_fim_real = null
+      formData.data_fim_real = null;
     }
     if (formData.data_inicio_real == '') {
-      formData.data_inicio_real = null
+      formData.data_inicio_real = null;
     }
     if (formData.data_inicio_programado == '') {
-      formData.data_inicio_programado = null
+      formData.data_inicio_programado = null;
     }
-    validateSchema(tarefaSchema, formData)
-      .then(() => {
-        setErrors(true)
-        save()
-      })
-      .catch((errors) => {
 
-        setErrors(errors)
-      })
-    event.preventDefault();
-    event.stopPropagation();
+    // Primeiro, verifica se há datas conflituosas
+    try {
+      const { hasConflicts, mensagem } = await apresentarDatasConflituosas();
+      if (hasConflicts) {
+        // Se houver conflitos, exibe a mensagem formatada
+        callGlobalAlert({
+          title: 'Erro: Data em feriado ou dia não útil',
+          message: mensagem, // Exibe a mensagem retornada
+          color: '#FFA500', // Pode ser ajustado conforme necessário
+        });
+        return;
+      }
+
+      validateSchema(tarefaSchema, formData)
+        .then(() => {
+          setErrors(true)
+          save()
+        })
+        .catch((errors) => {
+
+          setErrors(errors)
+        })
+
+    } catch (error) {
+      // Exibe a mensagem de erro detalhada
+      callGlobalAlert({
+        title: 'Erro ao submeter',
+        message: error.message, // Captura a mensagem de erro lançada
+        variant: 'error'
+      });
+    }
   }
 
   if (!projeto) return null

@@ -11,9 +11,10 @@ import TooltipHorario from "@/components/TooltipHorario";
 import moment from "moment";
 import { listColaboradorHorasTrabalhadasTeste } from "@/services/consultasTeste/consultasteste";
 import { useAuth } from "@/utils/context/AuthProvider";
-import { FaFilePdf } from "react-icons/fa6";
+import { FaFilePdf, FaFileCsv, FaFileExcel } from "react-icons/fa";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
+import * as XLSX from 'xlsx';
 
 
 
@@ -97,6 +98,83 @@ const exportToPDF = (data, dataInicio, dataFim) => {
 
     const fileName = `relatorio_horas_trabalhadas_${moment(dataInicio).format('DD-MM-YYYY')}_a_${moment(dataFim).format('DD-MM-YYYY')}.pdf`;
     doc.save(fileName);
+};
+
+const exportToCSV = (data, dataInicio, dataFim) => {
+    const csvRows = [];
+
+    const headers = [
+        'Colaborador',
+        'Carga Horária',
+        'Horas Trabalhadas',
+        'Horas Afastado',
+        'Horas Max. Permitidas',
+        'Banco de Horas',
+        'Tarefas no Prazo',
+        'Tarefas Atrasadas',
+        'Total Tarefas',
+        'Dias Trabalhados',
+        'Situação'
+    ];
+    csvRows.push(headers.join(','));
+
+    data.forEach(item => {
+        const row = [
+            item.colaborador_nome || '',
+            item.carga_horaria || '',
+            item.horas_trabalhadas || '',
+            item.horas_afastado || '',
+            item.horas_maximas_permitidas || '',
+            item.banco_horas || '',
+            item.total_tarefas_no_prazo || '',
+            item.total_tarefas_atrasado || '',
+            item.total_tarefas || '',
+            item.dias_trabalhados || '',
+            item.situacao || ''
+        ];
+        csvRows.push(row.join(','));
+    });
+
+    const csvContent = csvRows.join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `relatorio_horas_trabalhadas_${moment(dataInicio).format('DD-MM-YYYY')}_a_${moment(dataFim).format('DD-MM-YYYY')}.csv`;
+    link.click();
+    URL.revokeObjectURL(url);
+};
+
+const exportToXLSX = (data, dataInicio, dataFim) => {
+    const orderedColumns = [
+        { field: 'colaborador_nome', header: 'Colaborador' },
+        { field: 'carga_horaria', header: 'Carga Horária' },
+        { field: 'horas_trabalhadas', header: 'Horas Trabalhadas' },
+        { field: 'horas_afastado', header: 'Horas Afastado' },
+        { field: 'horas_maximas_permitidas', header: 'Horas Max. Permitidas' },
+        { field: 'banco_horas', header: 'Banco de Horas' },
+        { field: 'total_tarefas_no_prazo', header: 'Tarefas no Prazo' },
+        { field: 'total_tarefas_atrasado', header: 'Tarefas Atrasadas' },
+        { field: 'total_tarefas', header: 'Total Tarefas' },
+        { field: 'dias_trabalhados', header: 'Dias Trabalhados' },
+        { field: 'situacao', header: 'Situação' },
+    ];
+
+    const formattedData = data.map(item => {
+        const orderedData = {};
+        orderedColumns.forEach(col => {
+            orderedData[col.header] = item[col.field] || ''; 
+        });
+        return orderedData;
+    });
+
+    const worksheet = XLSX.utils.json_to_sheet(formattedData);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Horas Trabalhadas');
+
+
+    const fileName = `relatorio_horas_trabalhadas_${moment(dataInicio).format('DD-MM-YYYY')}_a_${moment(dataFim).format('DD-MM-YYYY')}.xlsx`;
+    XLSX.writeFile(workbook, fileName);
 };
 
 
@@ -282,6 +360,16 @@ export default function ConsultaHorasTrabalhadasTeste() {
                         label: 'Exportar como PDF',
                         onClick: () => exportToPDF(rows, dataInicio, dataFim),
                         icon: FaFilePdf
+                    },
+                    {
+                        label: 'Exportar como CSV',
+                        onClick: () => exportToCSV(rows, dataInicio, dataFim),
+                        icon: FaFileCsv
+                    },
+                    {
+                        label: 'Exportar como XLSX',
+                        onClick: () => exportToXLSX(rows, dataInicio, dataFim),
+                        icon: FaFileExcel
                     }
                 ] : []} 
             />
