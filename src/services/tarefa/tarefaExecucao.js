@@ -31,8 +31,8 @@ export const listColaboradorTarefaPorExecucao = async (params = "") => {
   return _get(url);
 }
 
-export const listTarefasColaborador = async (colaboradorId) => {
-  const url = colaboradorId ? `tarefa?colaboradorId=${colaboradorId}` : 'tarefa';
+export const listTarefasColaborador = async (projetoId) => {
+  const url = projetoId ? `tarefa?projeto_id=${projetoId}` : 'tarefa';
   
   try {
     const response = await _get(url);
@@ -43,8 +43,8 @@ export const listTarefasColaborador = async (colaboradorId) => {
   }
 };
 
-export const listProjetosColaborador = async (projetoId) => {
-  const url = projetoId ? `projeto?projetoId=${projetoId}` : 'projeto';
+export const listProjetosColaborador = async (colaboradorId) => {
+  const url = colaboradorId ? `projeto?colaborador_id=${colaboradorId}` : 'projeto';
   
   try {
     const response = await _get(url);
