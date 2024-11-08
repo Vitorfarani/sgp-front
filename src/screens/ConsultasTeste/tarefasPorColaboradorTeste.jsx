@@ -26,6 +26,7 @@ const basefilters = {
     sortedColumn: 'id',
     colaborador: null,
     sortOrder: 'asc',
+    setor_id: null,
 };
 
 const exportToPDF = (data, dataInicio, dataFim) => {
@@ -178,6 +179,9 @@ export default function ConsultaTarefasPorColaboradorTeste() {
     const { user } = useAuth();
     const [dataInicio, setDataInicio] = useState(moment().format('YYYY-MM-01'));
     const [dataFim, setDataFim] = useState(moment().format('YYYY-MM-DD'));
+    const [projetoFilter, setProjetoFilter] = useState()
+
+
 
     const abreviarStatus = (status, tipo) => {
         const mapeamentoStatus = {
@@ -213,7 +217,14 @@ export default function ConsultaTarefasPorColaboradorTeste() {
         handleChangeFilters,
         resetFilters,
         isEmpty,
-    } = useTable(columnsFields, listColaboradorProjetosTarefatTeste, basefilters, (results) => {
+    } = useTable(
+        columnsFields,
+        listColaboradorProjetosTarefatTeste,
+        {
+            ...basefilters,
+            setor_id : user.nivel_acesso !== 2 ? user.colaborador.setor_id : null
+        },
+        (results) => {
         if (!results || Object.keys(results).length === 0) {
             return [];
         }
@@ -253,10 +264,14 @@ export default function ConsultaTarefasPorColaboradorTeste() {
                         execucoes = [] // Pega o array de execuções ou um array vazio
                     } = tarefa;
 
+                    let ultimoFimExecucaoPt = null; // Variável para armazenar o último fim_execucao_pt
+                    let ultimoFimReal = null; // Variável para armazenar o último fim_real de outras tarefas
+
+
                     if (execucoes.length > 0) {
                         execucoes.forEach(execucao => {
                             const { inicio_execucao, fim_execucao } = execucao;
-                    
+
                             // Converte datas para o formato desejado
                             const inicio_programado_pt = inicio_programado !== "N/D" ? dateEnToPtWithHour(inicio_programado) : inicio_programado;
                             const fim_programado_pt = fim_programado !== "N/D" ? dateEnToPtWithHour(fim_programado) : fim_programado;
@@ -264,20 +279,23 @@ export default function ConsultaTarefasPorColaboradorTeste() {
                             const fim_execucao_pt = fim_execucao !== "N/D" ? dateEnToPtWithHour(fim_execucao) : fim_execucao;
                             const inicio_real_pt = inicio_real !== "N/D" ? dateEnToPtWithHour(inicio_real) : inicio_real;
                             const fim_real_pt = fim_real !== "N/D" ? dateEnToPtWithHour(fim_real) : fim_real;
-                    
+
                             const projeto_status_abreviado = abreviarStatus(projeto_status, "projeto");
                             const tarefa_status_abreviado = abreviarStatus(tarefa_status, "tarefa");
-                    
+
+                            // Armazena o último fim_execucao_pt
+                            ultimoFimExecucaoPt = fim_execucao_pt;
+
                             // Exibe a execução parcial somente se as datas de execução não coincidirem com as datas reais
                             if (inicio_execucao_pt !== inicio_real_pt || fim_execucao_pt !== fim_real_pt) {
-                                const prazoExecucaoParcial = !fim_real 
+                                const prazoExecucaoParcial = !fim_real
                                     ? dateExecutionDiffWithLabels(fim_programado, fim_real, fim_real === execucoes[execucoes.length - 1].fim_execucao)
                                     : dateExecutionDiffWithLabels(fim_programado, execucoes[execucoes.length - 1].fim_execucao, true);
-                    
+
                                 mappedData.push({
                                     colaborador_nome: colaborador_nome || "",
                                     projeto_nome: projeto_nome || "",
-                                    projeto_status: projeto_status_abreviado || "",
+                                    projeto_status: projeto_status_abreviado,
                                     projeto_fase: projeto_fase || "",
                                     tarefa_nome: tarefa_nome || "",
                                     inicio_programado: inicio_programado_pt || "",
@@ -290,16 +308,19 @@ export default function ConsultaTarefasPorColaboradorTeste() {
                             }
                         });
 
+                        // Após o loop, defina os valores para o prazo total
                         const inicio_programado_pt = inicio_programado !== "N/D" ? dateEnToPtWithHour(inicio_programado) : inicio_programado;
                         const fim_programado_pt = fim_programado !== "N/D" ? dateEnToPtWithHour(fim_programado) : fim_programado;
-                        const inicio_real_pt = inicio_real !== "N/D" ? dateEnToPtWithHour(inicio_real) : inicio_real;
+                        const inicio_real_pt = execucoes.length === 1
+                            ? (inicio_real !== "N/D" ? dateEnToPtWithHour(inicio_real) : inicio_real) // Considera o inicio_real se há apenas uma execução
+                            : (ultimoFimExecucaoPt || (inicio_real !== "N/D" ? dateEnToPtWithHour(inicio_real) : inicio_real)); // Caso contrário, considera o último fim_execucao_pt
                         const fim_real_pt = fim_real !== "N/D" ? dateEnToPtWithHour(fim_real) : fim_real;
-                        
+
                         // Exibe o prazo total da tarefa como uma entrada separada
-                        const prazoTotal = fim_real && fim_real !== "N/D" 
-                            ? dateDiffWithLabels(fim_programado, fim_real)
+                        const prazoTotal = fim_real && fim_real !== "N/D"
+                            ? dateDiffWithLabels(fim_programado, fim_real_pt) // Usa o fim_real_pt que agora é o último fim_execucao_pt
                             : dateDiffWithLabels(fim_programado, "N/D");
-                    
+
                         mappedData.push({
                             colaborador_nome: colaborador_nome || "",
                             projeto_nome: projeto_nome || "",
@@ -308,19 +329,19 @@ export default function ConsultaTarefasPorColaboradorTeste() {
                             tarefa_nome: tarefa_nome || "",
                             inicio_programado: inicio_programado_pt || "",
                             fim_programado: fim_programado_pt || "",
-                            inicio_real: inicio_real_pt || "",
+                            inicio_real: inicio_real_pt,
                             fim_real: fim_real_pt,
                             tarefa_status: abreviarStatus(tarefa_status, "tarefa") || "",
                             prazo_label: prazoTotal,
                         });
-                    }  else {
+                    } else {
                         // Caso não haja execuções, exibe normalmente a data de prazo da tarefa
                         const prazoLabels = dateDiffWithLabels(fim_programado, fim_real);
                         const inicio_programado_pt = inicio_programado !== "N/D" ? dateEnToPtWithHour(inicio_programado) : inicio_programado;
                         const fim_programado_pt = fim_programado !== "N/D" ? dateEnToPtWithHour(fim_programado) : fim_programado;
                         const inicio_real_pt = inicio_real !== "N/D" ? dateEnToPtWithHour(inicio_real) : inicio_real;
                         const fim_real_pt = fim_real !== "N/D" ? dateEnToPtWithHour(fim_real) : fim_real;
-                    
+
                         mappedData.push({
                             colaborador_nome: colaborador_nome || "",
                             projeto_nome: projeto_nome || "",
@@ -390,6 +411,12 @@ export default function ConsultaTarefasPorColaboradorTeste() {
                                         placeholder="Filtrar por Colaborador"
                                         loadOptions={(search) => listColaboradores('?search=' + search)}
                                         getOptionLabel={(option) => option.nome}
+                                        filterOption={( {data} ) => {
+                                            if(!projetoFilter) return true
+
+                                            return projetoFilter.projeto_responsavel.some(pr => pr.colaborador_id === data.id)
+
+                                        }}
                                         onChange={(colaborador) => {
                                             handleChangeFilters('colaborador_id', colaborador ? colaborador.id : null);
                                         }}
@@ -404,6 +431,7 @@ export default function ConsultaTarefasPorColaboradorTeste() {
                                     getOptionLabel={(option) => option.nome}
                                     onChange={(projeto) => {
                                         handleChangeFilters('projeto_id', projeto ? projeto.id : null);
+                                        setProjetoFilter(projeto)
                                     }}
                                     isClearable
                                 />
@@ -413,13 +441,20 @@ export default function ConsultaTarefasPorColaboradorTeste() {
                                     <SelectAsync
                                         placeholder="Filtrar por Setor"
                                         loadOptions={(search) => listSetores('?search=' + search)}
-                                        getOptionLabel={(option) => option.sigla + ' - ' + option.nome}
+                                        filterOption={( {data} ) => {
+
+                                            return data.id === user.colaborador.setor_id;
+
+                                        }}
+                                        getOptionLabel={(option) => option.nome}
                                         onChange={(setor) => {
                                             handleChangeFilters('setor_id', setor ? setor.id : null);
                                         }}
                                         isClearable
+
                                     />
                                 </Col>
+
                             )}
                             <Col md={2}>
                                 <DateTest
