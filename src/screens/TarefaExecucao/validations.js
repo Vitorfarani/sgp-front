@@ -10,9 +10,6 @@ export const tarefaExecucaoSchema = Yup.object().shape({
   tarefa: Yup.object()
     .required('Tarefa é obrigatória')
     .nonNullable(yupRequired('Tarefa')),
-  // projeto: Yup.object()
-  //   .required('Projeto é obrigatório')
-  //   .nonNullable(yupRequired('Projeto')),
   data_inicio_execucao: Yup
     .string()
     .matches(
@@ -23,14 +20,15 @@ export const tarefaExecucaoSchema = Yup.object().shape({
     .test('not-in-future', 'A data e hora de início não pode estar no futuro.', value => {
       return new Date(value) <= currentDate;
     }),
-  data_fim_execucao: Yup
+    data_fim_execucao: Yup
     .string()
-    .matches(
-      /^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2})$/,
-      'A data e hora de fim deve estar no formato YYYY-MM-DDTHH:mm.'
-    )
-    .required('O fim da execução é obrigatório.')
+    .nullable() // Permite valores nulos
+    .transform((value, originalValue) => originalValue.trim() === '' ? null : value) // Converte strings vazias em null
+    .test('format', 'A data e hora de fim deve estar no formato YYYY-MM-DDTHH:mm.', value => {
+      return !value || /^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2})$/.test(value);
+    })
     .test('not-in-future', 'A data e hora de fim não pode estar no futuro.', value => {
-      return new Date(value) <= currentDate;
+      return !value || Date.parse(value) <= Date.now();
     }),
+  
 });

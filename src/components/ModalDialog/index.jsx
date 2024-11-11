@@ -171,6 +171,7 @@ const ModalDialog = forwardRef(({
                     <SelectAsync
                       value={formData[form.name]}
                       {...form}
+                      filterOption= {form.filterOption ? (data) => form.filterOption(data, formData) : undefined}
                       loadOptions={(search) => form.loadOptions('?search=' + search)}
                       isInvalid={!!errors[form.name]}
                       onChange={value => {

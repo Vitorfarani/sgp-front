@@ -149,9 +149,9 @@ const SideButtons = ({ tarefa, addTarefaColaborador, onStart, onEnd, onCreateChe
               Checklist
             </Button>
           )}
-          {!!tarefa.id && (
+          {/* {!!tarefa.id && (
             <Interromper />
-          )}
+          )} */}
         </>
       ) : !!tarefa.id && (
         // <Button variant="success" onClick={onRestore}>

@@ -26,6 +26,7 @@ const basefilters = {
     sortedColumn: 'id',
     colaborador: null,
     sortOrder: 'asc',
+    setor_id: null,
 };
 
 const exportToPDF = (data, dataInicio, dataFim) => {
@@ -33,24 +34,24 @@ const exportToPDF = (data, dataInicio, dataFim) => {
 
     const title = `Tarefa Por Colaborador - Relatório (${moment(dataInicio).format('DD/MM/YYYY')} a ${moment(dataFim).format('DD/MM/YYYY')})`;
     doc.setFontSize(14);
-    doc.text(title, 14, 22); 
-    
-    const startY = 30; 
+    doc.text(title, 14, 22);
+
+    const startY = 30;
     doc.autoTable({
         startY: startY,
         head: [[
             'Colaborador',
-            'Projeto', 
-            'Tarefa', 
-            'Status Tarefa', 
-            'Inicio Prog.', 
-            'Fim Prog.', 
-            'Início Real', 
+            'Projeto',
+            'Tarefa',
+            'Status Tarefa',
+            'Inicio Prog.',
+            'Fim Prog.',
+            'Início Real',
             'Fim Real',
             'Situação'
         ]],
         body: data.map(item => ([
-            item.colaborador_nome || '', 
+            item.colaborador_nome || '',
             item.projeto_nome || '',
             item.tarefa_nome || '',
             item.tarefa_status || '',
@@ -60,15 +61,15 @@ const exportToPDF = (data, dataInicio, dataFim) => {
             item.fim_real || '',
             item.prazo_label.label || ''
         ])),
-        theme: 'grid', 
+        theme: 'grid',
         styles: {
-            cellPadding: 3, 
+            cellPadding: 3,
             fontSize: 6,
-            halign: 'center' 
+            halign: 'center'
         },
         headStyles: {
             fillColor: [52, 84, 143],
-            textColor: [255, 255, 255], 
+            textColor: [255, 255, 255],
             fontSize: 6
         },
         margin: { top: startY }
@@ -78,7 +79,7 @@ const exportToPDF = (data, dataInicio, dataFim) => {
     doc.save(fileName);
 };
 
-const exportToCSV = (data, dataInicio, dataFim)=> {
+const exportToCSV = (data, dataInicio, dataFim) => {
     const csvRows = [];
 
     const headers = [
@@ -135,7 +136,7 @@ const exportToXLSX = (data, dataInicio, dataFim) => {
         { field: 'fim_programado', header: 'Fim Programado' },
         { field: 'inicio_real', header: 'Início Real' },
         { field: 'fim_real', header: 'Fim Real' },
-        { field: 'prazo_label', header: 'Situação' }  
+        { field: 'prazo_label', header: 'Situação' }
     ];
 
     const formattedData = data.map(item => {
@@ -143,19 +144,19 @@ const exportToXLSX = (data, dataInicio, dataFim) => {
         orderedColumns.forEach(col => {
             orderedData[col.header] = col.field === 'prazo_label'
                 ? item.prazo_label.label || ''
-                : item[col.field] || ''; 
-        });    console.log(orderedData)
+                : item[col.field] || '';
+        }); console.log(orderedData)
 
         return orderedData;
     });
-  
+
     const worksheet = XLSX.utils.json_to_sheet(formattedData);
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, 'Relatório');
-    
+
     const fileName = `relatorio_tarefa_colaborador_${moment(dataInicio).format('DD-MM-YYYY')}_a_${moment(dataFim).format('DD-MM-YYYY')}.xlsx`;
     XLSX.writeFile(workbook, fileName);
-  };
+};
 
 const columnsFields = [
     { field: 'colaborador_nome', label: 'Colaborador', enabledOrder: true },
@@ -178,6 +179,9 @@ export default function ConsultaTarefasPorColaboradorTeste() {
     const { user } = useAuth();
     const [dataInicio, setDataInicio] = useState(moment().format('YYYY-MM-01'));
     const [dataFim, setDataFim] = useState(moment().format('YYYY-MM-DD'));
+    const [projetoFilter, setProjetoFilter] = useState()
+
+
 
     const abreviarStatus = (status, tipo) => {
         const mapeamentoStatus = {
@@ -213,62 +217,104 @@ export default function ConsultaTarefasPorColaboradorTeste() {
         handleChangeFilters,
         resetFilters,
         isEmpty,
-    } = useTable(columnsFields, listColaboradorProjetosTarefatTeste, basefilters, (results) => {
-        if (!results || Object.keys(results).length === 0) {
-            return [];
-        }
+    } = useTable(
+        columnsFields,
+        listColaboradorProjetosTarefatTeste,
+        {
+            ...basefilters,
+            setor_id: user.nivel_acesso !== 2 ? user.colaborador.setor_id : null
+        },
+        (results) => {
+            if (!results || Object.keys(results).length === 0) {
+                return [];
+            }
 
-        const mappedData = [];
+            const mappedData = [];
 
-        Object.keys(results).forEach(key => {
-            const colaboradorData = results[key];
-            if (!colaboradorData) return;
+            Object.keys(results).forEach(key => {
+                const colaboradorData = results[key];
+                if (!colaboradorData) return;
 
-            const { colaborador_nome, projetos } = colaboradorData;
-            if (!projetos || typeof projetos !== 'object') return;
+                const { colaborador_nome, projetos } = colaboradorData;
+                if (!projetos || typeof projetos !== 'object') return;
 
-            Object.keys(projetos).forEach(projetoKey => {
-                const projeto = projetos[projetoKey];
-                if (!projeto) return;
-
-                const {
-                    projeto_nome,
-                    projeto_status,
-                    projeto_fase,
-                    tarefas,
-                } = projeto;
-
-                if (!Array.isArray(tarefas) || tarefas.length === 0) return;
-
-                tarefas.forEach(tarefa => {
-                    if (!tarefa) return;
+                Object.keys(projetos).forEach(projetoKey => {
+                    const projeto = projetos[projetoKey];
+                    if (!projeto) return;
 
                     const {
-                        tarefa_nome,
-                        inicio_programado,
-                        fim_programado,
-                        inicio_real,
-                        fim_real,
-                        tarefa_status,
-                        execucoes = [] // Pega o array de execuções ou um array vazio
-                    } = tarefa;
+                        projeto_nome,
+                        projeto_status,
+                        projeto_fase,
+                        tarefas,
+                    } = projeto;
 
-                    // Se houver execuções, mapeia cada execução
-                    if (execucoes.length > 0) {
-                        execucoes.forEach(execucao => {
-                            const { inicio_execucao, fim_execucao } = execucao;
+                    if (!Array.isArray(tarefas) || tarefas.length === 0) return;
 
-                            // Verifica se fim_execucao é igual a fim_real ou se fim_real está indefinido (N/D)
-                            const prazoLabels = fim_real && fim_real !== "N/D"
-                                ? fim_execucao === fim_real
-                                    ? dateDiffWithLabels(fim_programado, fim_real) // Se forem iguais, usa dateDiffWithLabels
-                                    : dateExecutionDiffWithLabels(fim_programado, fim_real, fim_real === execucoes[execucoes.length - 1].fim_execucao) // Caso contrário, usa dateExecutionDiffWithLabels
-                                : dateExecutionDiffWithLabels(fim_programado, execucoes[execucoes.length - 1].fim_execucao, true); // Se fim_real for "N/D", mostra "Execução Parcial"
+                    tarefas.forEach(tarefa => {
+                        if (!tarefa) return;
 
+                        const {
+                            tarefa_nome,
+                            inicio_programado,
+                            fim_programado,
+                            inicio_real,
+                            fim_real,
+                            tarefa_status,
+                            execucoes = [] // Pega o array de execuções ou um array vazio
+                        } = tarefa;
+
+                        let ultimoFimExecucaoPt = null; // Variável para armazenar o último fim_execucao_pt
+
+
+                        // Se houver execuções, mapeia cada execução
+                        if (execucoes.length > 0) {
+
+
+                            execucoes.forEach(execucao => {
+                                const { inicio_execucao, fim_execucao } = execucao;
+
+                                const prazoLabels = fim_real && fim_real !== "N/D"
+                                    ? fim_execucao === fim_real
+                                        ? dateDiffWithLabels(fim_programado, fim_real) // Se forem iguais, usa dateDiffWithLabels
+                                        : dateExecutionDiffWithLabels(fim_programado, fim_real, fim_real === execucoes[execucoes.length - 1].fim_execucao) // Caso contrário, usa dateExecutionDiffWithLabels
+                                    : dateExecutionDiffWithLabels(fim_programado, execucoes[execucoes.length - 1].fim_execucao, true); // Se fim_real for "N/D", mostra "Execução Parcial"
+
+                                const inicio_programado_pt = inicio_programado !== "N/D" ? dateEnToPtWithHour(inicio_programado) : inicio_programado;
+                                const fim_programado_pt = fim_programado !== "N/D" ? dateEnToPtWithHour(fim_programado) : fim_programado;
+                                const inicio_execucao_pt = inicio_execucao !== "N/D" ? dateEnToPtWithHour(inicio_execucao) : inicio_execucao;
+                                const fim_execucao_pt = fim_execucao !== "N/D" ? dateEnToPtWithHour(fim_execucao) : fim_execucao;
+
+                                const projeto_status_abreviado = abreviarStatus(projeto_status, "projeto");
+                                const tarefa_status_abreviado = abreviarStatus(tarefa_status, "tarefa");
+
+                                ultimoFimExecucaoPt = fim_execucao_pt;
+
+                                mappedData.push({
+                                    colaborador_nome: colaborador_nome || "",
+                                    projeto_nome: projeto_nome || "",
+                                    projeto_status: projeto_status_abreviado || "",
+                                    projeto_fase: projeto_fase || "",
+                                    tarefa_nome: tarefa_nome || "",
+                                    inicio_programado: inicio_programado_pt || "",
+                                    fim_programado: fim_programado_pt || "",
+                                    inicio_real: inicio_execucao_pt || "",
+                                    fim_real: fim_execucao_pt,
+                                    tarefa_status: tarefa_status_abreviado || "",
+                                    prazo_label: prazoLabels,
+                                });
+                            }
+
+                            );
+
+                        }
+                        else {
+                            // Caso não haja execuções, utiliza os dados normais da tarefa
+                            const prazoLabels = dateDiffWithLabels(fim_programado, fim_real);
                             const inicio_programado_pt = inicio_programado !== "N/D" ? dateEnToPtWithHour(inicio_programado) : inicio_programado;
                             const fim_programado_pt = fim_programado !== "N/D" ? dateEnToPtWithHour(fim_programado) : fim_programado;
-                            const inicio_execucao_pt = inicio_execucao !== "N/D" ? dateEnToPtWithHour(inicio_execucao) : inicio_execucao;
-                            const fim_execucao_pt = fim_execucao !== "N/D" ? dateEnToPtWithHour(fim_execucao) : fim_execucao;
+                            const inicio_real_pt = inicio_real !== "N/D" ? dateEnToPtWithHour(inicio_real) : inicio_real;
+                            const fim_real_pt = fim_real !== "N/D" ? dateEnToPtWithHour(fim_real) : fim_real;
 
                             const projeto_status_abreviado = abreviarStatus(projeto_status, "projeto");
                             const tarefa_status_abreviado = abreviarStatus(tarefa_status, "tarefa");
@@ -281,45 +327,52 @@ export default function ConsultaTarefasPorColaboradorTeste() {
                                 tarefa_nome: tarefa_nome || "",
                                 inicio_programado: inicio_programado_pt || "",
                                 fim_programado: fim_programado_pt || "",
-                                inicio_real: inicio_execucao_pt || "",
-                                fim_real: fim_execucao_pt,
+                                inicio_real: inicio_real_pt || "",
+                                fim_real: fim_real_pt,
                                 tarefa_status: tarefa_status_abreviado || "",
                                 prazo_label: prazoLabels,
                             });
-                        });
-                    } else {
-                        // Caso não haja execuções, utiliza os dados normais da tarefa
-                        const prazoLabels = dateDiffWithLabels(fim_programado, fim_real);
-                        const inicio_programado_pt = inicio_programado !== "N/D" ? dateEnToPtWithHour(inicio_programado) : inicio_programado;
-                        const fim_programado_pt = fim_programado !== "N/D" ? dateEnToPtWithHour(fim_programado) : fim_programado;
-                        const inicio_real_pt = inicio_real !== "N/D" ? dateEnToPtWithHour(inicio_real) : inicio_real;
-                        const fim_real_pt = fim_real !== "N/D" ? dateEnToPtWithHour(fim_real) : fim_real;
+                        }
 
-                        const projeto_status_abreviado = abreviarStatus(projeto_status, "projeto");
-                        const tarefa_status_abreviado = abreviarStatus(tarefa_status, "tarefa");
+                        if (execucoes.length > 0 && fim_real === "N/D") {
+                            // Após o loop, defina os valores para o prazo total
+                            const inicio_programado_pt = inicio_programado !== "N/D" ? dateEnToPtWithHour(inicio_programado) : inicio_programado;
+                            const fim_programado_pt = fim_programado !== "N/D" ? dateEnToPtWithHour(fim_programado) : fim_programado;
+                            // Se houver apenas uma execução, o inicio_real será o ultimoFimExecucaoPt
+                            const inicio_real_pt = execucoes.length >= 1
+                                ? ultimoFimExecucaoPt || (inicio_real !== "N/D" ? dateEnToPtWithHour(inicio_real) : inicio_real) // Caso haja uma execução, usa o último fim_execucao_pt
+                                : (inicio_real !== "N/D" ? dateEnToPtWithHour(inicio_real) : inicio_real); // Caso contrário, usa o valor de inicio_real se não for "N/D"
+                            const fim_real_pt = fim_real === "N/D" ? "N/D" : dateEnToPtWithHour(fim_real);
 
-                        mappedData.push({
-                            colaborador_nome: colaborador_nome || "",
-                            projeto_nome: projeto_nome || "",
-                            projeto_status: projeto_status_abreviado || "",
-                            projeto_fase: projeto_fase || "",
-                            tarefa_nome: tarefa_nome || "",
-                            inicio_programado: inicio_programado_pt || "",
-                            fim_programado: fim_programado_pt || "",
-                            inicio_real: inicio_real_pt || "",
-                            fim_real: fim_real_pt,
-                            tarefa_status: tarefa_status_abreviado || "",
-                            prazo_label: prazoLabels,
-                        });
-                    }
+                            // Exibe o prazo total da tarefa como uma entrada separada
+                            const prazoTotal = fim_real
+                                ? dateDiffWithLabels(fim_programado, fim_real) // Usa o fim_real_pt que agora é o último fim_execucao_pt
+                                : dateDiffWithLabels(fim_programado, "N/D");
+
+
+                            mappedData.push({
+                                colaborador_nome: colaborador_nome || "",
+                                projeto_nome: projeto_nome || "",
+                                projeto_status: abreviarStatus(projeto_status, "projeto") || "",
+                                projeto_fase: projeto_fase || "",
+                                tarefa_nome: tarefa_nome || "",
+                                inicio_programado: inicio_programado_pt || "",
+                                fim_programado: fim_programado_pt || "",
+                                inicio_real: inicio_real_pt,
+                                fim_real: fim_real_pt,
+                                tarefa_status: abreviarStatus(tarefa_status, "tarefa") || "",
+                                prazo_label: prazoTotal,
+                            });
+                        }
+
+                    });
                 });
             });
+
+            const sortedData = orderBy(mappedData, [filtersState.sortedColumn], [filtersState.sortOrder]);
+
+            return sortedData;
         });
-
-        const sortedData = orderBy(mappedData, [filtersState.sortedColumn], [filtersState.sortOrder]);
-
-        return sortedData;
-    });
 
 
 
@@ -334,10 +387,10 @@ export default function ConsultaTarefasPorColaboradorTeste() {
         <Background>
             <HeaderTitle
                 title="Consultar Tarefas Por Colaborador"
-                optionsButtons={user.nivel_acesso === 2 ? [ 
+                optionsButtons={user.nivel_acesso === 2 ? [
                     {
                         label: 'Exportar como PDF',
-                        onClick: () => exportToPDF(rows, dataInicio, dataFim), 
+                        onClick: () => exportToPDF(rows, dataInicio, dataFim),
                         icon: FaFilePdf
                     },
                     {
@@ -350,7 +403,7 @@ export default function ConsultaTarefasPorColaboradorTeste() {
                         onClick: () => exportToXLSX(rows, dataInicio, dataFim),
                         icon: FaFileExcel
                     }
-                ] : []} 
+                ] : []}
             />
             <Section>
                 <Table
@@ -367,6 +420,12 @@ export default function ConsultaTarefasPorColaboradorTeste() {
                                         placeholder="Filtrar por Colaborador"
                                         loadOptions={(search) => listColaboradores('?search=' + search)}
                                         getOptionLabel={(option) => option.nome}
+                                        filterOption={({ data }) => {
+                                            if (!projetoFilter) return true
+
+                                            return projetoFilter.projeto_responsavel.some(pr => pr.colaborador_id === data.id)
+
+                                        }}
                                         onChange={(colaborador) => {
                                             handleChangeFilters('colaborador_id', colaborador ? colaborador.id : null);
                                         }}
@@ -381,6 +440,7 @@ export default function ConsultaTarefasPorColaboradorTeste() {
                                     getOptionLabel={(option) => option.nome}
                                     onChange={(projeto) => {
                                         handleChangeFilters('projeto_id', projeto ? projeto.id : null);
+                                        setProjetoFilter(projeto)
                                     }}
                                     isClearable
                                 />
@@ -390,13 +450,20 @@ export default function ConsultaTarefasPorColaboradorTeste() {
                                     <SelectAsync
                                         placeholder="Filtrar por Setor"
                                         loadOptions={(search) => listSetores('?search=' + search)}
-                                        getOptionLabel={(option) => option.sigla + ' - ' + option.nome}
+                                        filterOption={({ data }) => {
+
+                                            return data.id === user.colaborador.setor_id;
+
+                                        }}
+                                        getOptionLabel={(option) => option.nome}
                                         onChange={(setor) => {
                                             handleChangeFilters('setor_id', setor ? setor.id : null);
                                         }}
                                         isClearable
+
                                     />
                                 </Col>
+
                             )}
                             <Col md={2}>
                                 <DateTest

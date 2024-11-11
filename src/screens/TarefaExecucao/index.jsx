@@ -133,6 +133,8 @@ const exportToXLSX = (data, dataInicio, dataFim) => {
 
 
 
+
+
 const columnsFields = [
   { field: 'colaborador_nome', label: 'Colaborador', enabledOrder: true },
   { field: 'projeto_nome', label: 'Projeto', enabledOrder: true },
@@ -145,7 +147,7 @@ const cadastroInitialValue = {
   tarefa_id: '',
   colaborador_id: '',
   data_inicio_execucao: '',
-  data_fim_execucao: '',
+  data_fim_execucao: '' ,
 };
 
 export default function TarefaExecucao() {
@@ -157,7 +159,9 @@ export default function TarefaExecucao() {
   const { user } = useAuth();
   const { callGlobalDialog, handleGlobalLoading, callGlobalAlert, callGlobalNotify } = useTheme();
   const userAccessLevel = user?.nivel_acesso;
-  const [formData, setFormData] = useState({});
+  const [formData, setFormData] = useState({ });
+  
+
 
 
   const {
@@ -213,10 +217,12 @@ export default function TarefaExecucao() {
 
     });
 
+    
 
 
-  function callModalCadastro(data = {}, tarefa) {
+  function callModalCadastro(data = {}, tarefa, formData = {}) {
     const { id: colaboradorId, nome: colaboradorNome } = user?.colaborador || {};
+
 
     const initialData = {
       colaborador: colaboradorId ? { id: colaboradorId, nome: colaboradorNome } : null,
@@ -241,62 +247,62 @@ export default function TarefaExecucao() {
           required: true,
           formatOptionLabel: option => `${option.nome}`,
           isDisabled: user?.nivel_acesso !== 2, // Desativa o campo se o nível de acesso não for 2
-
         },
-        // {
-        //   name: 'projeto',
-        //   label: 'Projeto',
-        //   type: 'selectAsync',
-        //   isClearable: true,
-        //   loadOptions: async () => {
-        //     const colaboradorSelecionado = colaboradorId;
+        {
+          name: 'projeto',
+          label: 'Projeto',
+          type: 'selectAsync',
+          isClearable: true,
+          filterOption: ({ data }, formData) => {
+            // Obtém o colaborador selecionado, que pode vir do formData ou do estado global
+            const colaboradorSelecionado = formData.colaborador?.id || colaboradorId;
+            return data.projeto_responsavel.some(pr => pr.colaborador_id === colaboradorSelecionado);
+          },
+          loadOptions: async (inputValue, formData) => {
+            const colaboradorSelecionado = colaboradorId;
+        
+            try {
+              // Se um colaborador estiver selecionado, busque apenas os projetos onde ele é responsável
+              if (colaboradorSelecionado) {
 
-        //     if (colaboradorSelecionado) {
-        //       try {
-        //         const tarefas = await listTarefasColaborador();
-        //         const tarefasFiltradas = tarefas.filter(tarefa =>
-        //           tarefa.tarefa_colaborador.some(tc => tc.colaborador_id === colaboradorSelecionado) &&
-        //           tarefa.data_fim_real === null && (tarefa.data_inicio_real != null || tarefa.data_inicio_real === null) 
-        //         );
-
-        //         const projetosIds = [...new Set(tarefasFiltradas.map(tarefa => tarefa.projeto_id))];
-
-        //         // Adiciona a tarefa sendo editada, se estiver definida
-        //         if (tarefaEditadaId) {
-        //           const tarefaAtual = tarefas.find(tarefa => tarefa.id === tarefaEditadaId);
-
-        //           if (tarefaAtual) {
-        //             const projetoId = tarefaAtual.projeto_id;
-        //             if (!projetosIds.includes(projetoId)) {
-        //               projetosIds.push(projetoId); // Adiciona o projeto da tarefa atual se não estiver na lista
-        //             }
-        //           }
-        //         }
-
-        //         if (projetosIds.length > 0) {
-        //           const todosProjetos = await listProjetosColaborador();
-        //           const projetosFiltradosPorId = todosProjetos.filter(projeto => projetosIds.includes(projeto.id));
-
-        //           return projetosFiltradosPorId;
-        //         } else {
-        //           return [];
-        //         }
-        //       } catch (error) {
-        //         console.error('Error fetching projetos:', error);
-        //         return [];
-        //       }
-        //     }
-        //     return [];
-        //   },
-        //   required: true,
-        //   formatOptionLabel: option => `${option.nome}`,
-        // },
+                
+                // Buscar todos os projetos que o colaborador é responsável
+                const projetosColaborador = await listProjetosColaborador(colaboradorSelecionado);
+        
+                return projetosColaborador;
+              } else {
+                // Se nenhum colaborador estiver selecionado, não filtra os projetos
+                return [];
+              }
+            } catch (error) {
+              console.error('Error fetching projetos:', error);
+              return [];
+            }
+          },
+          required: true,
+          formatOptionLabel: option => `${option.nome}`,
+        },           
         {
           name: 'tarefa',
           label: 'Tarefa',
           type: 'selectAsync',
+          isClearable: true,
+          filterOption: ({ data }, formData) => {
+            // Recebe o ID do colaborador filtrado
+            const colaboradorSelecionado = formData.colaborador?.id || colaboradorId;
+            const projetoSelecionado = formData.projeto?.id;
+
+            if (!projetoSelecionado) {
+              // Se não houver projeto selecionado, retorna uma lista vazia
+              return null;
+            } else{
+            // Filtra as tarefas para incluir somente aquelas relacionadas ao colaborador e ao projeto
+            return data.tarefa_colaborador.some(tc => tc.colaborador_id === colaboradorSelecionado) &&
+                   (projetoSelecionado ? data.projeto_id === projetoSelecionado : true);
+            }
+          },    
           loadOptions: async (inputValue, formValues) => {
-            const colaboradorSelecionado = colaboradorId;
+            const colaboradorSelecionado = formData.colaborador?.id || colaboradorId;
             const nivelAcesso = user?.nivel_acesso;
 
             try {
@@ -319,22 +325,6 @@ export default function TarefaExecucao() {
                   tarefasFiltradas.unshift(tarefaAtual);
                 }
               }
-              const projetosIds = [...new Set(tarefasFiltradas.map(tarefa => tarefa.projeto_id))];
-
-              if (projetosIds.length > 0) {
-                const todosProjetos = await listProjetosColaborador();
-                const projetosFiltradosPorId = todosProjetos.filter(projeto => projetosIds.includes(projeto.id));
-
-                tarefasFiltradas = tarefasFiltradas.map(tarefa => {
-                  const projeto = projetosFiltradosPorId.find(proj => proj.id === tarefa.projeto_id);
-                  const colaboradorResponsavel = tarefa.tarefa_colaborador[0]?.colaborador?.nome || 'Colaborador não encontrado';
-                  return {
-                    ...tarefa,
-                    projeto: projeto ? { nome: projeto.nome } : { nome: 'Projeto não encontrado' },
-                    colaboradorResponsavel,
-                  };
-                });
-              }
 
               return tarefasFiltradas;
 
@@ -344,15 +334,7 @@ export default function TarefaExecucao() {
             }
           },
           required: true,
-          formatOptionLabel: option => {
-            const nivelAcesso = user?.nivel_acesso; // Obtém o nível de acesso do usuário
-            if (nivelAcesso === 2) {
-              // Se o usuário for gerente, exibe o colaborador responsável
-              return `${option.nome} - ${option.projeto.nome} - ${option.colaboradorResponsavel}`;
-            }
-            // Caso contrário, exibe apenas nome e projeto
-            return `${option.nome} - ${option.projeto.nome}`;
-          },
+          formatOptionLabel: option => `${option.nome}`,
         },
         {
           name: 'data_inicio_execucao',
@@ -364,7 +346,7 @@ export default function TarefaExecucao() {
           name: 'data_fim_execucao',
           label: 'Fim da Execução',
           type: 'datetime-local',
-          required: true,
+          //required: true,
         },
         {
           name: 'finalizar_tarefa',
@@ -383,22 +365,22 @@ export default function TarefaExecucao() {
       labelCancel: 'Cancelar',
     })
       .then((result) => {
-        console.log('Result:', result)
         const formattedResult = formatForm(result).rebaseIds(['projeto', 'colaborador', 'tarefa']).getResult();
-        console.log('Resultado formatado:', formattedResult);
 
         if (formattedResult.execucao_id) {
           formattedResult.id = formattedResult.execucao_id;
         }
 
-
+        if (!formattedResult.data_fim_execucao) {
+          formattedResult.data_fim_execucao = null;  // Garantindo que seja null, se não preenchido
+        }
+        
         return formattedResult;
       })
       .then(async (result) => {
         handleGlobalLoading.show();
 
         const shouldFinalizeTask = result.finalizar_tarefa;
-        console.log(shouldFinalizeTask);
 
         if (shouldFinalizeTask) {
           result.finalizar_tarefa = 'true';
@@ -407,7 +389,6 @@ export default function TarefaExecucao() {
         const method = result.execucao_id ? updateTarefaExecucao : createTarefaExecucao;
 
         // Exibe o execucao_id para depuração
-        console.log('Execucao ID:', result.execucao_id);
 
         try {
           const res = await method(result);
@@ -560,14 +541,13 @@ export default function TarefaExecucao() {
                 {
                   label: 'Editar',
                   onClick: (row) => {
-                    console.log('ID da tarefa:', row.tarefa_id);
                     callModalCadastro({
                       tarefa_id: row.tarefa_id,
                       colaborador_id: row.colaborador_id,
                       colaborador_nome: row.colaborador_nome,
                       tarefa_nome: row.tarefa_nome,
                       execucao_id: row.execucao_id,
-                    });
+                    }, formData);
                   },
                   icon: FiEdit,
                 },

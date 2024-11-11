@@ -175,7 +175,6 @@ const ModalTarefa = forwardRef(({
 
 
   async function apresentarDatasConflituosas() {
-    console.log("Verificando datas conflituosas...");
 
     try {
       // Zera as datas se estiverem vazias
@@ -183,8 +182,6 @@ const ModalTarefa = forwardRef(({
       formData.data_inicio_programado = formData.data_inicio_programado === '' ? null : formData.data_inicio_programado;
       formData.data_fim_programado = formData.data_fim_programado === '' ? null : (formData.data_fim_programado);
       formData.data_fim_real = formData.data_fim_real === '' ? null : formData.data_fim_real;
-      console.log("inicio programado: ", formData.data_inicio_programado)
-      console.log("fim programado: ", formData.data_fim_programado)
 
       // Recupera os feriados e dias não úteis
       const feriados = await listFeriados();
@@ -229,7 +226,7 @@ const ModalTarefa = forwardRef(({
 
       // Verifica datas reais
       const datesToCheckReais = [formData.data_inicio_real, formData.data_fim_real];
-      console.log(datesToCheckReais)
+
       for (const date of datesToCheckReais) {
         if (date) {
           const formattedDate = new Date(date);
