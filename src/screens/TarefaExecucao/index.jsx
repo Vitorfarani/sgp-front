@@ -365,9 +365,7 @@ export default function TarefaExecucao() {
       labelCancel: 'Cancelar',
     })
       .then((result) => {
-        console.log('Result:', result)
         const formattedResult = formatForm(result).rebaseIds(['projeto', 'colaborador', 'tarefa']).getResult();
-        console.log('Resultado formatado:', formattedResult);
 
         if (formattedResult.execucao_id) {
           formattedResult.id = formattedResult.execucao_id;
@@ -383,7 +381,6 @@ export default function TarefaExecucao() {
         handleGlobalLoading.show();
 
         const shouldFinalizeTask = result.finalizar_tarefa;
-        console.log(shouldFinalizeTask);
 
         if (shouldFinalizeTask) {
           result.finalizar_tarefa = 'true';
@@ -392,7 +389,6 @@ export default function TarefaExecucao() {
         const method = result.execucao_id ? updateTarefaExecucao : createTarefaExecucao;
 
         // Exibe o execucao_id para depuração
-        console.log('Execucao ID:', result.execucao_id);
 
         try {
           const res = await method(result);
@@ -545,7 +541,6 @@ export default function TarefaExecucao() {
                 {
                   label: 'Editar',
                   onClick: (row) => {
-                    console.log('ID da tarefa:', row.tarefa_id);
                     callModalCadastro({
                       tarefa_id: row.tarefa_id,
                       colaborador_id: row.colaborador_id,

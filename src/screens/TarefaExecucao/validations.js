@@ -28,7 +28,7 @@ export const tarefaExecucaoSchema = Yup.object().shape({
       return !value || /^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2})$/.test(value);
     })
     .test('not-in-future', 'A data e hora de fim não pode estar no futuro.', value => {
-      return !value || new Date(value) <= currentDate;
+      return !value || Date.parse(value) <= Date.now();
     }),
   
 });
