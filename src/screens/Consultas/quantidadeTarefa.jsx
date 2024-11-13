@@ -10,6 +10,7 @@ import { listSetores } from "@/services/setores";
 import { FiEye, FiEyeOff } from 'react-icons/fi';
 import moment from "moment";
 import orderBy from 'lodash/orderBy';
+import { useAuth } from "@/utils/context/AuthProvider";
 
 
 const basefilters = {
@@ -211,6 +212,7 @@ const columnsFields = [
 ];
 
 export default function ConsultaQuantidadeTarefa() {
+  const { user } = useAuth();
   const [dataInicio, setDataInicio] = useState(moment().format('YYYY-MM-01'));
   const [dataFim, setDataFim] = useState(moment().format('YYYY-MM-DD'));
   const [visibleColumns, setVisibleColumns] = useState({
@@ -222,6 +224,8 @@ export default function ConsultaQuantidadeTarefa() {
     total: true,
     total_tarefas: true,
   });
+  const [projetoFilter, setProjetoFilter] = useState()
+
   const {
     rows,
     columns,
@@ -434,6 +438,12 @@ export default function ConsultaQuantidadeTarefa() {
                   placeholder="Filtrar por Colaborador"
                   loadOptions={(search) => listColaboradores('?search=' + search)}
                   getOptionLabel={(option) => option.nome}
+                  filterOption={({ data }) => {
+                    if (!projetoFilter) return true
+
+                    return projetoFilter.projeto_responsavel.some(pr => pr.colaborador_id === data.id)
+
+                }}
                   onChange={(colaborador) => {
                     handleChangeFilters('colaborador_id', colaborador ? colaborador.id : null);
                   }}
@@ -447,6 +457,7 @@ export default function ConsultaQuantidadeTarefa() {
                   getOptionLabel={(option) => option.nome}
                   onChange={(projeto) => {
                     handleChangeFilters('projeto_id', projeto ? projeto.id : null);
+                    setProjetoFilter(projeto)
                   }}
                   isClearable
                 />
@@ -456,6 +467,11 @@ export default function ConsultaQuantidadeTarefa() {
                   placeholder="Filtrar por Setor"
                   loadOptions={(search) => listSetores('?search=' + search)}
                   getOptionLabel={(option) => option.sigla + ' - ' + option.nome}
+                  filterOption={({ data }) => {
+
+                    return data.id === user.colaborador.setor_id;
+
+                }}
                   onChange={(setor) => {
                     handleChangeFilters('setor_id', setor ? setor.id : "");
                   }}
