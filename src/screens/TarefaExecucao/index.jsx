@@ -160,10 +160,10 @@ export default function TarefaExecucao() {
   const { callGlobalDialog, handleGlobalLoading, callGlobalAlert, callGlobalNotify } = useTheme();
   const userAccessLevel = user?.nivel_acesso;
   const [formData, setFormData] = useState({ });
+
+  const [projetoFilter, setProjetoFilter] = useState()
+
   
-
-
-
   const {
     rows,
     columns,
@@ -478,6 +478,12 @@ export default function TarefaExecucao() {
                   placeholder="Filtrar por Colaborador"
                   loadOptions={(search) => listColaboradores('?search=' + search)}
                   getOptionLabel={(option) => option.nome}
+                  filterOption={({ data }) => {
+                    if (!projetoFilter) return true
+
+                    return projetoFilter.projeto_responsavel.some(pr => pr.colaborador_id === data.id)
+
+                }}
                   onChange={(colaborador) => {
                     handleChangeFilters('colaborador_id', colaborador ? colaborador.id : null);
                   }}
@@ -492,6 +498,7 @@ export default function TarefaExecucao() {
                   getOptionLabel={(option) => option.nome}
                   onChange={(projeto) => {
                     handleChangeFilters('projeto_id', projeto ? projeto.id : null);
+                    setProjetoFilter(projeto)
                   }}
                   isClearable
                 />
@@ -502,6 +509,11 @@ export default function TarefaExecucao() {
                     placeholder="Filtrar por Setor"
                     loadOptions={(search) => listSetores('?search=' + search)}
                     getOptionLabel={(option) => option.sigla + ' - ' + option.nome}
+                    filterOption={({ data }) => {
+
+                      return data.id === user.colaborador.setor_id;
+
+                  }}
                     onChange={(setor) => {
                       handleChangeFilters('setor_id', setor ? setor.id : null);
                     }}
