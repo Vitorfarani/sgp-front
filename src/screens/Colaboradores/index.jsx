@@ -171,7 +171,7 @@ export default function Conhecimentos() {
                   getOptionLabel={(option) => option.grau}
                   onChange={(nivel) => {
                     // Resetando o filtro de nível
-                    handleChangeFilters('conhecimento_nivel', nivel ? nivel.id : "");
+                    handleChangeFilters('conhecimento_nivel', nivel ? nivel.id : null);
                   }}
                   isDisabled={filtersState.conhecimento == null} // Desabilitando o filtro de nível quando não há conhecimento
                   isClearable
