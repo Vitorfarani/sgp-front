@@ -71,6 +71,7 @@ const ModalTarefa = forwardRef(({
     setShowExecutions(prev => !prev);
   };
 
+
   useEffect(() => {
     if (!isShow) {
       hide()
@@ -812,7 +813,9 @@ const ModalTarefa = forwardRef(({
                 onRestore={onRestore}
                 // onStart={() => handleForm('data_inicio_real', new Date().toISOString().slice(0, 16))}
                 // onEnd={() => handleForm('data_fim_real', new Date().toISOString().slice(0, 16))}
-                addTarefaColaborador={addTarefaColaborador} />
+                addTarefaColaborador={addTarefaColaborador}
+                onToggleExecutions={handleToggleExecutions} // Passa a função aqui
+              />
 
               <Form.Group className='mb-4 mt-4'>
                 <Form.Label>Iniciado em</Form.Label>
@@ -824,16 +827,13 @@ const ModalTarefa = forwardRef(({
                 <FeedbackError error={errors.data_inicio_real} />
               </Form.Group>
 
-              {/* <Button onClick={handleToggleExecutions} className='mb-2'>
+              {/* <Button onClick={handleToggleExecutions} className='d-flex justify-content-center mb-3 paddin'>
                 {showExecutions ? 'Ocultar Execuções' : 'Ver Execuções'}
               </Button> */}
 
-              {/* {showExecutions && (
-                <ShowExecucoes
-                  listColaboradorTarefaPorExecucao={listColaboradorTarefaPorExecucao}
-                  formData={formData.tarefa}
-                />
-              )} */}
+              {showExecutions && (
+                <ShowExecucoes listColaboradorTarefaPorExecucao={listColaboradorTarefaPorExecucao} formData={formData} />
+              )}
               <Form.Group className='mb-4'>
                 <Form.Label>Finalizado em <strong className='diffPrazos'> {diffReal}</strong></Form.Label>
                 <DateInput

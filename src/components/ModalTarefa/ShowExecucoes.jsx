@@ -1,71 +1,76 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Form } from 'react-bootstrap'; // Certifique-se de ter esses componentes
-import {DateInput} from '..'; // Ajuste o caminho conforme necessário
+import { Form } from 'react-bootstrap'; // Certifique-se de ter esses componentes
+import { DateInput } from '..'; // Ajuste o caminho conforme necessário
+import { listColaboradorTarefaPorExecucao2 } from '@/services/tarefa/tarefaExecucao';
 
-const ShowExecucoes = ({ listColaboradorTarefaPorExecucao, formData }) => {
-    const [showExecutions, setShowExecutions] = useState(false);
-    const [execucoes, setExecucoes] = useState([]);
+const ShowExecucoes = ({ formData }) => {
+  const [execucoes, setExecucoes] = useState([]);
 
-    useEffect(() => {
-        console.log("Form Data recebido:", formData); // Log para verificar os dados da tarefa
-        if (formData.id) {
-            verificarExecucoes(formData.id); // Usar formData.id para verificar execuções
-        }
-    }, [formData]);
+  useEffect(() => {
+    if (formData && formData.id) {
+      verificarExecucoes(formData.id);
+    }
+  }, [formData]);
 
-    const verificarExecucoes = (tarefaId) => {
-        console.log("Verificando execuções para tarefa ID:", tarefaId); // Log para depuração
+  const verificarExecucoes = async (tarefaId) => {
 
-        const colaborador = Object.values(listColaboradorTarefaPorExecucao).find(colab => 
-            colab.tarefas.some(tarefa => tarefa.tarefa_id === tarefaId)
+    try {
+      // Chamada ao serviço para obter as execuções
+      const execucoesResposta = await listColaboradorTarefaPorExecucao2({ tarefa_id: tarefaId });
+
+      // Verificar se retornou execuções e filtrar as que correspondem ao tarefaId
+      const execucoesFiltradas = [];
+      for (let colaboradorId in execucoesResposta) {
+        const colaborador = execucoesResposta[colaboradorId];
+        // Filtra as execuções que correspondem ao tarefaId
+        const execucoesDoColaborador = colaborador.tarefas.filter(
+          (execucao) => execucao.tarefa_id === tarefaId
         );
+        execucoesFiltradas.push(...execucoesDoColaborador);
+      }
 
-        if (colaborador) {
-            console.log("Colaborador encontrado:", colaborador); // Log para ver o colaborador encontrado
-            const tarefaComExecucao = colaborador.tarefas.find(tarefa => tarefa.tarefa_id === tarefaId);
-            if (tarefaComExecucao) {
-                console.log("Tarefa com execução encontrada:", tarefaComExecucao); // Log para ver a tarefa com execução
-                setExecucoes([{
-                    data_inicio_execucao: tarefaComExecucao.data_inicio_execucao,
-                    data_fim_execucao: tarefaComExecucao.data_fim_execucao,
-                }]);
-            } else {
-                console.log("Nenhuma execução encontrada para esta tarefa."); // Log se nenhuma execução for encontrada
-            }
-        } else {
-            console.log("Colaborador não encontrado ou não possui tarefas."); // Log se o colaborador não for encontrado
-        }
-    };
+      // Atualiza o estado com as execuções filtradas
+      if (execucoesFiltradas.length > 0) {
+        setExecucoes(execucoesFiltradas);
+      } else {
+        setExecucoes([]); // Garantir que o estado seja limpo caso não haja execuções
+      }
+    } catch (error) {
+      setExecucoes([]); // Limpar o estado em caso de erro
+    }
+  };
 
-    return (
-        <div>
-            {execucoes.length > 0 ? (
-                execucoes.map((execucao, index) => (
-                    <div key={index}>
-                        <Form.Group className='mb-4'>
-                            <Form.Label>Data de Início da Execução</Form.Label>
-                            <DateInput
-                                type={"datetime-local"}
-                                value={execucao.data_inicio_execucao}
-                                isInvalid={!execucao.data_inicio_execucao}
-                            />
-                        </Form.Group>
+  return (
+    <div>
+      {execucoes.length > 0 ? (
+        execucoes.map((execucao, index) => (
+          <div key={index}>
+            <Form.Group className='mb-4'>
+              <Form.Label>{`Data de Início da Execução ${index + 1}`}</Form.Label>
+              <DateInput
+                type="datetime-local"
+                value={execucao.data_inicio_execucao}
+                isInvalid={!execucao.data_inicio_execucao}
+                readOnly // Impede a edição do campo
+              />
+            </Form.Group>
 
-                        <Form.Group className='mb-4'>
-                            <Form.Label>Data de Fim da Execução</Form.Label>
-                            <DateInput
-                                type={"datetime-local"}
-                                value={execucao.data_fim_execucao}
-                                isInvalid={!execucao.data_fim_execucao}
-                            />
-                        </Form.Group>
-                    </div>
-                ))
-            ) : (
-                <p>Nenhuma execução encontrada para esta tarefa.</p>
-            )}
-        </div>
-    );
+            <Form.Group className='mb-4'>
+              <Form.Label>{`Data de Fim da Execução ${index + 1}`}</Form.Label>
+              <DateInput
+                type="datetime-local"
+                value={execucao.data_fim_execucao}
+                isInvalid={!execucao.data_fim_execucao}
+                readOnly // Impede a edição do campo
+              />
+            </Form.Group>
+          </div>
+        ))
+      ) : (
+        <p>Nenhuma execução parcial encontrada para esta tarefa.</p>
+      )}
+    </div>
+  );
 };
 
 export default ShowExecucoes;
