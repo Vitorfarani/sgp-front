@@ -19,6 +19,11 @@
   color: $secondary;
 }
 
+.tempo-execucao {
+  color: #FF5733; /* Escolha a cor que preferir */
+  font-weight: bold;
+}
+
 @include color-mode(dark) {
   .diffPrazos{
     color: $secondary-light;

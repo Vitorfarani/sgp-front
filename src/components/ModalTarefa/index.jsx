@@ -831,9 +831,19 @@ const ModalTarefa = forwardRef(({
                 {showExecutions ? 'Ocultar Execuções' : 'Ver Execuções'}
               </Button> */}
 
-              {showExecutions && (
-                <ShowExecucoes listColaboradorTarefaPorExecucao={listColaboradorTarefaPorExecucao} formData={formData} />
-              )}
+<Modal show={showExecutions} onHide={handleToggleExecutions} size="lg" centered>
+        <Modal.Header closeButton>
+          <Modal.Title>Execuções da Tarefa</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <ShowExecucoes listColaboradorTarefaPorExecucao={listColaboradorTarefaPorExecucao} formData={formData} />
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleToggleExecutions}>
+            Fechar
+          </Button>
+        </Modal.Footer>
+      </Modal>
               <Form.Group className='mb-4'>
                 <Form.Label>Finalizado em <strong className='diffPrazos'> {diffReal}</strong></Form.Label>
                 <DateInput

@@ -12,7 +12,7 @@ import { useProjetoContext } from '@/screens/Projetos/projetoContext';
 import { FiClock, FiDroplet, FiPlus, FiStopCircle, FiUser, FiUsers } from 'react-icons/fi';
 import moment from 'moment';
 
-const SideButtons = ({ tarefa, addTarefaColaborador, onStart, onEnd, onCreateChecklist, onInterruption, onRestore, onToggleExecutions  }) => {
+const SideButtons = ({ tarefa, addTarefaColaborador, onStart, onEnd, onCreateChecklist, onInterruption, onRestore, onToggleExecutions }) => {
   const { projeto } = useProjetoContext();
 
   const [showExecucoes, setShowExecucoes] = useState(false); // Estado para controlar o toggle de execuções
@@ -139,9 +139,6 @@ const SideButtons = ({ tarefa, addTarefaColaborador, onStart, onEnd, onCreateChe
       {!tarefa.deleted_at ? (
         <>
           <Executores />
-          <Button variant="primary" onClick={toggleExecucoes}>
-            {showExecucoes ? 'Ocultar Execuções' : 'Ver Execuções'} {/* Alterna o texto do botão */}
-          </Button>
           {/* {!!!tarefa.data_inicio_real && (
             <Button variant="warning" onClick={onStart}>
               <FaStopwatch />
@@ -163,6 +160,10 @@ const SideButtons = ({ tarefa, addTarefaColaborador, onStart, onEnd, onCreateChe
           {/* {!!tarefa.id && (
             <Interromper />
           )} */}
+
+          <Button variant="primary" onClick={toggleExecucoes}>
+            {showExecucoes ? 'Ocultar Execuções' : 'Ver Execuções'} {/* Alterna o texto do botão */}
+          </Button>
         </>
       ) : !!tarefa.id && (
         // <Button variant="success" onClick={onRestore}>
