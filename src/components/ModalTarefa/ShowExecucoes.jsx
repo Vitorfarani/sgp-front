@@ -6,6 +6,7 @@ import { diffDatetimesHumanized } from '@/utils/helpers/date'; // Supondo que vo
 
 const ShowExecucoes = ({ formData }) => {
   const [execucoes, setExecucoes] = useState([]);
+  console.log(formData)
 
   useEffect(() => {
     if (formData && formData.id) {
@@ -33,10 +34,11 @@ const ShowExecucoes = ({ formData }) => {
   };
 
   const calcularTempoExecucao = (inicio, fim) => {
-    if (!inicio || !fim) return '';
-    return diffDatetimesHumanized(inicio, fim);
+    if (!inicio) return '';
+    const dataInicio = new Date(inicio);
+    const dataFim = fim ? new Date(fim) : new Date(); // Se `fim` estiver vazio, use a data e hora atuais
+    return diffDatetimesHumanized(dataInicio, dataFim);
   };
-
 
   return (
     <div>
