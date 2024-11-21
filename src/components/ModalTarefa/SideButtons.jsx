@@ -12,12 +12,10 @@ import { useProjetoContext } from '@/screens/Projetos/projetoContext';
 import { FiClock, FiDroplet, FiPlus, FiStopCircle, FiUser, FiUsers } from 'react-icons/fi';
 import moment from 'moment';
 
-const SideButtons = ({ tarefa, addTarefaColaborador, onStart, onEnd, onCreateChecklist, onInterruption, onRestore, onToggleExecutions }) => {
+const SideButtons = ({ tarefa, addTarefaColaborador, onStart, onEnd, onCreateChecklist, onInterruption, onRestore, handleToggleExecutions}) => {
   const { projeto } = useProjetoContext();
 
   const [showExecucoes, setShowExecucoes] = useState(false); // Estado para controlar o toggle de execuções
-
-
 
   //Ainda não selecionados
   const colaboradoresOptions = useMemo(() => projeto?.projeto_responsavel?.filter((pr, k) => {
@@ -51,10 +49,10 @@ const SideButtons = ({ tarefa, addTarefaColaborador, onStart, onEnd, onCreateChe
     </ButtonWithPopover>
   )
 
-  const toggleExecucoes = () => {
-    setShowExecucoes(prevState => !prevState); // Alterna o estado para mostrar ou ocultar as execuções
-    onToggleExecutions(); // Função passada como prop (se necessário)
-  };
+  // const toggleExecucoes = () => {
+  //   setShowExecucoes(prevState => !prevState); // Alterna o estado para mostrar ou ocultar as execuções
+  //   onToggleExecutions(); // Função passada como prop (se necessário)
+  // };
 
   const Interromper = () => {
     const [data, setData] = useState({
@@ -161,8 +159,8 @@ const SideButtons = ({ tarefa, addTarefaColaborador, onStart, onEnd, onCreateChe
             <Interromper />
           )} */}
 
-          <Button variant="primary" onClick={toggleExecucoes}>
-            {showExecucoes ? 'Ocultar Execuções' : 'Ver Execuções'} {/* Alterna o texto do botão */}
+          <Button variant="secondary" onClick={handleToggleExecutions}>
+            {showExecucoes ? 'Ocultar Execuções' : 'Ver Execuções'}
           </Button>
         </>
       ) : !!tarefa.id && (

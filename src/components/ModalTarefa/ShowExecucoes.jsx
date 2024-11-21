@@ -6,8 +6,7 @@ import { diffDatetimesHumanized } from '@/utils/helpers/date'; // Supondo que vo
 
 const ShowExecucoes = ({ formData }) => {
   const [execucoes, setExecucoes] = useState([]);
-  console.log(formData)
-
+  
   useEffect(() => {
     if (formData && formData.id) {
       verificarExecucoes(formData.id);
