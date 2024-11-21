@@ -17,7 +17,6 @@ import "jspdf-autotable";
 import { FaFilePdf, FaFileCsv, FaFileExcel } from "react-icons/fa";
 import * as XLSX from 'xlsx';
 
-
 const basefilters = {
     search: '',
     perPage: 20,
@@ -179,9 +178,10 @@ export default function ConsultaTarefasPorColaboradorTeste() {
     const { user } = useAuth();
     const [dataInicio, setDataInicio] = useState(moment().format('YYYY-MM-01'));
     const [dataFim, setDataFim] = useState(moment().format('YYYY-MM-DD'));
-    const [projetoFilter, setProjetoFilter] = useState()
-
-
+    const [projetoFilter, setProjetoFilter] = useState();
+    const [sortedData, setSortedData] = useState([]); // Estado para armazenar mappedData
+    const [filterTipoTarefa, setFilterTipoTarefa] = useState('todas'); // 'todas', 'naoIniciadas', 'iniciadas'
+    const [finalData, setFinalData] = useState([]);
 
     const abreviarStatus = (status, tipo) => {
         const mapeamentoStatus = {
@@ -219,11 +219,7 @@ export default function ConsultaTarefasPorColaboradorTeste() {
         isEmpty,
     } = useTable(
         columnsFields,
-        listColaboradorProjetosTarefatTeste,
-        {
-            ...basefilters,
-            setor_id: user.nivel_acesso !== 2 ? user.colaborador.setor_id : null
-        },
+        listColaboradorProjetosTarefatTeste, basefilters,
         (results) => {
             if (!results || Object.keys(results).length === 0) {
                 return [];
@@ -266,11 +262,8 @@ export default function ConsultaTarefasPorColaboradorTeste() {
 
                         let ultimoFimExecucaoPt = null; // Variável para armazenar o último fim_execucao_pt
 
-
                         // Se houver execuções, mapeia cada execução
                         if (execucoes.length > 0) {
-
-
                             execucoes.forEach(execucao => {
                                 const { inicio_execucao, fim_execucao } = execucao;
 
@@ -303,12 +296,8 @@ export default function ConsultaTarefasPorColaboradorTeste() {
                                     tarefa_status: tarefa_status_abreviado || "",
                                     prazo_label: prazoLabels,
                                 });
-                            }
-
-                            );
-
-                        }
-                        else {
+                            });
+                        } else {
                             // Caso não haja execuções, utiliza os dados normais da tarefa
                             const prazoLabels = dateDiffWithLabels(fim_programado, fim_real);
                             const inicio_programado_pt = inicio_programado !== "N/D" ? dateEnToPtWithHour(inicio_programado) : inicio_programado;
@@ -335,20 +324,16 @@ export default function ConsultaTarefasPorColaboradorTeste() {
                         }
 
                         if (execucoes.length > 0 && fim_real === "N/D") {
-                            // Após o loop, defina os valores para o prazo total
                             const inicio_programado_pt = inicio_programado !== "N/D" ? dateEnToPtWithHour(inicio_programado) : inicio_programado;
                             const fim_programado_pt = fim_programado !== "N/D" ? dateEnToPtWithHour(fim_programado) : fim_programado;
-                            // Se houver apenas uma execução, o inicio_real será o ultimoFimExecucaoPt
                             const inicio_real_pt = execucoes.length >= 1
-                                ? ultimoFimExecucaoPt || (inicio_real !== "N/D" ? dateEnToPtWithHour(inicio_real) : inicio_real) // Caso haja uma execução, usa o último fim_execucao_pt
-                                : (inicio_real !== "N/D" ? dateEnToPtWithHour(inicio_real) : inicio_real); // Caso contrário, usa o valor de inicio_real se não for "N/D"
+                                ? ultimoFimExecucaoPt || (inicio_real !== "N/D" ? dateEnToPtWithHour(inicio_real) : inicio_real)
+                                : (inicio_real !== "N/D" ? dateEnToPtWithHour(inicio_real) : inicio_real);
                             const fim_real_pt = fim_real === "N/D" ? "N/D" : dateEnToPtWithHour(fim_real);
 
-                            // Exibe o prazo total da tarefa como uma entrada separada
                             const prazoTotal = fim_real
-                                ? dateDiffWithLabels(fim_programado, fim_real) // Usa o fim_real_pt que agora é o último fim_execucao_pt
+                                ? dateDiffWithLabels(fim_programado, fim_real)
                                 : dateDiffWithLabels(fim_programado, "N/D");
-
 
                             mappedData.push({
                                 colaborador_nome: colaborador_nome || "",
@@ -364,24 +349,51 @@ export default function ConsultaTarefasPorColaboradorTeste() {
                                 prazo_label: prazoTotal,
                             });
                         }
-
                     });
                 });
             });
 
-            const sortedData = orderBy(mappedData, [filtersState.sortedColumn], [filtersState.sortOrder]);
+            // Lógica de filtragem no próprio método de renderização
+            let filteredData = [...mappedData];  // Cria uma cópia dos dados originais
 
-            return sortedData;
+            if (filterTipoTarefa === 'naoIniciadas') {
+                filteredData = filteredData.filter(task => !task.inicio_real || task.inicio_real === 'N/D');  // Tarefas sem inicio_real
+            } else if (filterTipoTarefa === 'iniciadas') {
+                filteredData = filteredData.filter(task => task.inicio_real && task.inicio_real !== 'N/D');  // Tarefas com inicio_real
+            }
+
+            setSortedData(filteredData);
+            setFinalData(filteredData);  // Atualiza finalData com os dados filtrados
+
+            return filteredData;
         });
 
-
-
-    useEffect(() => {
-        handleChangeFilters('search', basefilters.search);
-        handleChangeFilters('data_inicio', dataInicio)
-        handleChangeFilters('data_fim', dataFim)
-        load();
-    }, [basefilters.search, dataInicio, dataFim]);
+        useEffect(() => {
+            handleChangeFilters('search', basefilters.search);
+            handleChangeFilters('data_inicio', dataInicio)
+            handleChangeFilters('data_fim', dataFim)
+        
+            // // Filtragem de tarefas com base no tipo de tarefa selecionado
+            // let filteredData = [...sortedData];  // Cria uma cópia dos dados originais
+        
+            // // Aplica a filtragem baseada no tipo de tarefa
+            // if (filterTipoTarefa === 'naoIniciadas') {
+            //     filteredData = filteredData.filter(task => !task.inicio_real || task.inicio_real === 'N/D');  // Tarefas sem inicio_real
+            // } else if (filterTipoTarefa === 'iniciadas') {
+            //     filteredData = filteredData.filter(task => task.inicio_real && task.inicio_real !== 'N/D');  // Tarefas com inicio_real
+            // } else if (filterTipoTarefa === 'todas') {
+            //     // Não aplica filtro, mantém todas as tarefas
+            // }
+        
+            // // Aplica a ordenação após a filtragem
+            // const finalData = orderBy(filteredData, [filtersState.sortedColumn], [filtersState.sortOrder]);
+        
+            // // Atualiza o estado da tabela com os dados filtrados e ordenados
+            // setSortedData(finalData);  // Atualiza o estado com os dados filtrados e ordenados
+        
+            load(); // Se load for necessário, isso só será chamado quando finalData for atualizado
+        }, [basefilters.search, dataInicio, dataFim, filterTipoTarefa, filtersState.sortedColumn, filtersState.sortOrder]);
+        
 
     return (
         <Background>
@@ -402,19 +414,44 @@ export default function ConsultaTarefasPorColaboradorTeste() {
                         label: 'Exportar como XLSX',
                         onClick: () => exportToXLSX(rows, dataInicio, dataFim),
                         icon: FaFileExcel
+                    },
+                    // Botões de filtro
+                    {
+                        label: 'Todas as Tarefas',
+                        onClick: () => {
+                            console.log("Alterando filtro para:", 'todas'); // Depuração
+                            setFilterTipoTarefa('todas');
+                        },
+                        className: filterTipoTarefa === 'todas' ? 'active' : ''
+                    },
+                    {
+                        label: 'Tarefas Não Iniciadas',
+                        onClick: () => {
+                            console.log("Alterando filtro para:", 'naoIniciadas'); // Depuração
+                            setFilterTipoTarefa('naoIniciadas')
+                        },
+                        className: filterTipoTarefa === 'naoIniciadas' ? 'active' : ''
+                    },
+                    {
+                        label: 'Tarefas Iniciadas',
+                        onClick: () => {
+                            setFilterTipoTarefa('iniciadas'); // Removido o duplicado
+                        },
+                        className: filterTipoTarefa === 'iniciadas' ? 'active' : ''
                     }
                 ] : []}
             />
+
             <Section>
                 <Table
                     columns={columns}
-                    rows={rows}
+                    rows={finalData}
                     isLoading={isTableLoading}
                     filtersState={filtersState}
                     //searchPlaceholder="Consultar Projetos"
                     filtersComponentes={
                         <>
-                            {user.nivel_acesso === 2 && (
+                            {(user.nivel_acesso === 2 || user.nivel_acesso === 5) && (
                                 <Col md={2}>
                                     <SelectAsync
                                         placeholder="Filtrar por Colaborador"
@@ -445,7 +482,7 @@ export default function ConsultaTarefasPorColaboradorTeste() {
                                     isClearable
                                 />
                             </Col>
-                            {user.nivel_acesso === 2 && (
+                            {(user.nivel_acesso === 2 || user.nivel_acesso === 5) && (
                                 <Col md={2}>
                                     <SelectAsync
                                         placeholder="Filtrar por Setor"

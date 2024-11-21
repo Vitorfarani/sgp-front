@@ -374,7 +374,7 @@ export default function ConsultaColaboradoresPorTarefaTeste() {
                     //searchPlaceholder="Consultar Projetos"
                     filtersComponentes={
                         <>
-                            {user.nivel_acesso === 2 && ( 
+                            {(user.nivel_acesso === 2 || user.nivel_acesso === 5) && ( 
                                 <Col md={2}>
                                     <SelectAsync
                                         placeholder="Filtrar por Colaborador"
@@ -405,7 +405,7 @@ export default function ConsultaColaboradoresPorTarefaTeste() {
                                     isClearable
                                 />
                             </Col>
-                            {user.nivel_acesso === 2 && (
+                            {(user.nivel_acesso === 2 || user.nivel_acesso === 5) && (
                                 <Col md={2}>
                                     <SelectAsync
                                         placeholder="Filtrar por Setor"
