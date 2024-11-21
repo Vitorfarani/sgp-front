@@ -244,7 +244,7 @@ export default function ConsultaColaboradorPorProjeto() {
     // const [dataInicio, setDataInicio] = useState('');
     // const [dataFim, setDataFim] = useState('');
     const [projetoFilter, setProjetoFilter] = useState()
-
+    const [setorFilter, setSetorFilter] = useState()
 
     const {
         rows,
@@ -388,34 +388,46 @@ export default function ConsultaColaboradorPorProjeto() {
                                     isClearable
                                 />
                             </Col>
-                            <Col md={2} >
+                            <Col md={2}>
                                 <SelectAsync
                                     placeholder="Filtrar por Projeto"
                                     loadOptions={(search) => listProjetos('?search=' + search)}
                                     getOptionLabel={(option) => option.nome}
+                                    filterOption={({ data }) => {
+                                        // Se nenhum setor for selecionado, exibe todos os projetos
+                                        if (!setorFilter) return true;
+
+                                        // Verifica se o projeto está associado ao setor selecionado
+                                        return data.projeto_setor.some(
+                                            (setor) => setor.setor_id === setorFilter.id
+                                        );
+                                    }}
                                     onChange={(projeto) => {
                                         handleChangeFilters('projeto_id', projeto ? projeto.id : null);
-                                        setProjetoFilter(projeto)
+                                        setProjetoFilter(projeto); // Atualiza o filtro de projeto
                                     }}
                                     isClearable
                                 />
                             </Col>
-                            <Col md={2} >
-                                <SelectAsync
-                                    placeholder="Filtrar por Setor"
-                                    loadOptions={(search) => listSetores('?search=' + search)}
-                                    getOptionLabel={(option) => option.nome}
-                                    filterOption={({ data }) => {
-
-                                      return data.id === user.colaborador.setor_id;
-
-                                  }}
-                                    onChange={(setor) => {
-                                        handleChangeFilters('setor_id', setor ? setor.id : null);
-                                    }}
-                                    isClearable
-                                />
-                            </Col>
+                            {(user.nivel_acesso === 2 || user.nivel_acesso === 5) && (
+                                <Col md={2}>
+                                    <SelectAsync
+                                        placeholder="Filtrar por Setor"
+                                        loadOptions={(search) => listSetores('?search=' + search)}
+                                        getOptionLabel={(option) => `${option.sigla} - ${option.nome}`}
+                                        filterOption={
+                                            user.nivel_acesso === 2
+                                                ? ({ data }) => data.id === user.colaborador.setor_id
+                                                : null // Permite todos os setores para nivel_acesso === 5
+                                        }
+                                        onChange={(setor) => {
+                                            handleChangeFilters('setor_id', setor ? setor.id : null);
+                                            setSetorFilter(setor); // Atualiza o filtro de setor
+                                        }}
+                                        isClearable
+                                    />
+                                </Col>
+                            )}
                             <Col md={2}>
                                 <DateTest
                                     id="dataFim"

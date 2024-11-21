@@ -268,6 +268,7 @@ export default function TarefaExecucao() {
                 
                 // Buscar todos os projetos que o colaborador é responsável
                 const projetosColaborador = await listProjetosColaborador(colaboradorSelecionado);
+                console.log(projetosColaborador)
         
                 return projetosColaborador;
               } else {
