@@ -383,7 +383,7 @@ export default function ConsultaHorasTrabalhadasTeste() {
                     filtersState={filtersState}
                     filtersComponentes={
                         <>
-                            {user.nivel_acesso === 2 && ( // Verificação do nível de acesso
+                            {(user.nivel_acesso === 2 || user.nivel_acesso === 5) && ( // Verificação do nível de acesso
                                 <Col md={2}>
                                     <SelectAsync
                                         placeholder="Filtrar por Colaborador"
@@ -414,7 +414,7 @@ export default function ConsultaHorasTrabalhadasTeste() {
                                     isClearable
                                 />
                             </Col>
-                            {user.nivel_acesso === 2 && (
+                            {(user.nivel_acesso === 2 || user.nivel_acesso === 5) && (
                                 <Col md={2}>
                                     <SelectAsync
                                         placeholder="Filtrar por Setor"
