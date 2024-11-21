@@ -1,71 +1,85 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Form } from 'react-bootstrap'; // Certifique-se de ter esses componentes
-import {DateInput} from '..'; // Ajuste o caminho conforme necessário
+import { Form, Row, Col } from 'react-bootstrap';
+import { DateInput } from '..'; // Ajuste o caminho conforme necessário
+import { listColaboradorTarefaPorExecucao2 } from '@/services/tarefa/tarefaExecucao';
+import { diffDatetimesHumanized } from '@/utils/helpers/date'; // Supondo que você tenha essa função
 
-const ShowExecucoes = ({ listColaboradorTarefaPorExecucao, formData }) => {
-    const [showExecutions, setShowExecutions] = useState(false);
-    const [execucoes, setExecucoes] = useState([]);
+const ShowExecucoes = ({ formData }) => {
+  const [execucoes, setExecucoes] = useState([]);
+  
+  useEffect(() => {
+    if (formData && formData.id) {
+      verificarExecucoes(formData.id);
+    }
+  }, [formData]);
 
-    useEffect(() => {
-        console.log("Form Data recebido:", formData); // Log para verificar os dados da tarefa
-        if (formData.id) {
-            verificarExecucoes(formData.id); // Usar formData.id para verificar execuções
-        }
-    }, [formData]);
+  const verificarExecucoes = async (tarefaId) => {
+    try {
+      const execucoesResposta = await listColaboradorTarefaPorExecucao2({ tarefa_id: tarefaId });
 
-    const verificarExecucoes = (tarefaId) => {
-        console.log("Verificando execuções para tarefa ID:", tarefaId); // Log para depuração
-
-        const colaborador = Object.values(listColaboradorTarefaPorExecucao).find(colab => 
-            colab.tarefas.some(tarefa => tarefa.tarefa_id === tarefaId)
+      const execucoesFiltradas = [];
+      for (let colaboradorId in execucoesResposta) {
+        const colaborador = execucoesResposta[colaboradorId];
+        const execucoesDoColaborador = colaborador.tarefas.filter(
+          (execucao) => execucao.tarefa_id === tarefaId
         );
+        execucoesFiltradas.push(...execucoesDoColaborador);
+      }
 
-        if (colaborador) {
-            console.log("Colaborador encontrado:", colaborador); // Log para ver o colaborador encontrado
-            const tarefaComExecucao = colaborador.tarefas.find(tarefa => tarefa.tarefa_id === tarefaId);
-            if (tarefaComExecucao) {
-                console.log("Tarefa com execução encontrada:", tarefaComExecucao); // Log para ver a tarefa com execução
-                setExecucoes([{
-                    data_inicio_execucao: tarefaComExecucao.data_inicio_execucao,
-                    data_fim_execucao: tarefaComExecucao.data_fim_execucao,
-                }]);
-            } else {
-                console.log("Nenhuma execução encontrada para esta tarefa."); // Log se nenhuma execução for encontrada
-            }
-        } else {
-            console.log("Colaborador não encontrado ou não possui tarefas."); // Log se o colaborador não for encontrado
-        }
-    };
+      setExecucoes(execucoesFiltradas.length > 0 ? execucoesFiltradas : []);
+    } catch (error) {
+      setExecucoes([]);
+    }
+  };
 
-    return (
-        <div>
-            {execucoes.length > 0 ? (
-                execucoes.map((execucao, index) => (
-                    <div key={index}>
-                        <Form.Group className='mb-4'>
-                            <Form.Label>Data de Início da Execução</Form.Label>
-                            <DateInput
-                                type={"datetime-local"}
-                                value={execucao.data_inicio_execucao}
-                                isInvalid={!execucao.data_inicio_execucao}
-                            />
-                        </Form.Group>
+  const calcularTempoExecucao = (inicio, fim) => {
+    if (!inicio) return '';
+    const dataInicio = new Date(inicio);
+    const dataFim = fim ? new Date(fim) : new Date(); // Se `fim` estiver vazio, use a data e hora atuais
+    return diffDatetimesHumanized(dataInicio, dataFim);
+  };
 
-                        <Form.Group className='mb-4'>
-                            <Form.Label>Data de Fim da Execução</Form.Label>
-                            <DateInput
-                                type={"datetime-local"}
-                                value={execucao.data_fim_execucao}
-                                isInvalid={!execucao.data_fim_execucao}
-                            />
-                        </Form.Group>
-                    </div>
-                ))
-            ) : (
-                <p>Nenhuma execução encontrada para esta tarefa.</p>
-            )}
-        </div>
-    );
+  return (
+    <div>
+      {execucoes.length > 0 ? (
+        <Row>
+          {execucoes.map((execucao, index) => (
+            <Col
+              key={index}
+              md={execucoes.length === 1 ? 5 : 6} // Se houver uma execução, md={3}, se houver mais de uma execução, md={6}
+              className={`mb-4 ${execucoes.length % 2 === 1 && index === execucoes.length - 1 ? 'offset-md-3' : ''}`}
+            >
+              <Form.Group>
+                <Form.Label>{`Data de Início da Execução ${index + 1}`}</Form.Label>
+                <DateInput
+                  type="datetime-local"
+                  value={execucao.data_inicio_execucao}
+                  isInvalid={!execucao.data_inicio_execucao}
+                  readOnly
+                />
+              </Form.Group>
+
+              <Form.Group>
+                <Form.Label>{`Data de Fim da Execução ${index + 1}`}</Form.Label>
+                <DateInput
+                  type="datetime-local"
+                  value={execucao.data_fim_execucao}
+                  isInvalid={!execucao.data_fim_execucao}
+                  readOnly
+                />
+              </Form.Group>
+
+              <Form.Label>
+                Tempo de Execução: <strong style={{ color: 'pink' }}>{calcularTempoExecucao(execucao.data_inicio_execucao, execucao.data_fim_execucao)}</strong>
+              </Form.Label>
+            </Col>
+          ))}
+        </Row>
+      ) : (
+        <p>Nenhuma execução parcial encontrada para esta tarefa.</p>
+      )}
+    </div>
+  );
 };
 
 export default ShowExecucoes;

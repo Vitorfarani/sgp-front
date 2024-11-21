@@ -10,6 +10,7 @@ import { listSetores } from "@/services/setores";
 import { FiEye, FiEyeOff } from 'react-icons/fi';
 import moment from "moment";
 import orderBy from 'lodash/orderBy';
+import { useAuth } from "@/utils/context/AuthProvider";
 
 
 const basefilters = {
@@ -211,6 +212,7 @@ const columnsFields = [
 ];
 
 export default function ConsultaQuantidadeTarefa() {
+  const { user } = useAuth();
   const [dataInicio, setDataInicio] = useState(moment().format('YYYY-MM-01'));
   const [dataFim, setDataFim] = useState(moment().format('YYYY-MM-DD'));
   const [visibleColumns, setVisibleColumns] = useState({
@@ -222,6 +224,9 @@ export default function ConsultaQuantidadeTarefa() {
     total: true,
     total_tarefas: true,
   });
+  const [projetoFilter, setProjetoFilter] = useState()
+  const [setorFilter, setSetorFilter] = useState()
+
   const {
     rows,
     columns,
@@ -238,24 +243,24 @@ export default function ConsultaQuantidadeTarefa() {
 
     const mappedData = Object.keys(results).map(colaboradorId => {
       const colaborador = results[colaboradorId];
-    
+
       const abreviarNome = (nomeCompleto) => {
         const partesNome = nomeCompleto.split(' ');
-        if (partesNome.length <= 1) return nomeCompleto; 
-    
+        if (partesNome.length <= 1) return nomeCompleto;
+
         const primeiroNome = partesNome[0];
         let sobrenomesAbreviados = [];
-    
+
         for (let i = 1; i < partesNome.length; i++) {
           const nome = partesNome[i];
           if (!["DE", "DA", "DO"].includes(nome.toUpperCase())) {
             sobrenomesAbreviados.push(nome.charAt(0).toUpperCase() + '.');
           }
         }
-    
+
         return `${primeiroNome} ${sobrenomesAbreviados.join(' ')}`;
       };
-    
+
       return {
         colaborador_id: colaboradorId,
         colaborador_nome: abreviarNome(colaborador.colaborador_nome),
@@ -304,64 +309,64 @@ export default function ConsultaQuantidadeTarefa() {
         total_em_atraso: colaborador.total_em_atraso || 0,
       };
     });
-      
-        const totais = {
-          colaborador_id: 'totais',
-          colaborador_nome: 'TOTAL',
-    
-          inicio_antes_periodo_fim_antes_periodo_no_prazo: 0,
-          inicio_antes_periodo_fim_antes_periodo_em_atraso: 0,
-          inicio_antes_periodo_fim_no_periodo_no_prazo: 0,
-          inicio_antes_periodo_fim_no_periodo_em_atraso: 0,
-          inicio_antes_periodo_fim_fora_periodo_no_prazo: 0,
-          inicio_antes_periodo_fim_fora_periodo_em_atraso: 0,
-          inicio_antes_periodo_nao_finalizado_no_prazo: 0,
-          inicio_antes_periodo_nao_finalizado_em_atraso: 0,
-          inicio_antes_periodo_total_prazo: 0,
-          inicio_antes_periodo_total_atraso: 0,
-    
-          inicio_no_periodo_fim_no_periodo_no_prazo: 0,
-          inicio_no_periodo_fim_no_periodo_em_atraso: 0,
-          inicio_no_periodo_fim_fora_periodo_no_prazo: 0,
-          inicio_no_periodo_fim_fora_periodo_em_atraso: 0,
-          inicio_periodo_nao_finalizado_no_prazo: 0,
-          inicio_periodo_nao_finalizado_em_atraso: 0,
-          inicio_no_periodo_total_prazo: 0,
-          inicio_no_periodo_total_atraso: 0,
-    
-          inicio_apos_periodo_fim_apos_periodo_no_prazo: 0,
-          inicio_apos_periodo_fim_apos_periodo_em_atraso: 0,
-          inicio_apos_periodo_nao_finalizado_no_prazo: 0,
-          inicio_apos_periodo_nao_finalizado_em_atraso: 0,
-    
-          nao_iniciado_no_prazo: 0,
-          nao_iniciado_em_atraso: 0,
-    
-          total_tarefas: 0,
-          total_no_prazo: 0,
-          total_em_atraso: 0,
-        };
-    
-        mappedData.forEach(item => {
-          for (let key in totais) {
-            if (key !== 'colaborador_id' && key !== 'colaborador_nome') {
-              totais[key] += item[key];
-            }
-          }
-        });
-    
-        mappedData.push(totais);
 
-        const sortedData = orderBy(
-          mappedData.filter(item => item.colaborador_id !== 'totais'), 
-          [filtersState.sortedColumn], 
-          [filtersState.sortOrder]
-      );
-      
-      // Reinsere o item "TOTAL" no final da lista ordenada
-      sortedData.push(mappedData.find(item => item.colaborador_id === 'totais'));
-      
-      return sortedData;
+    const totais = {
+      colaborador_id: 'totais',
+      colaborador_nome: 'TOTAL',
+
+      inicio_antes_periodo_fim_antes_periodo_no_prazo: 0,
+      inicio_antes_periodo_fim_antes_periodo_em_atraso: 0,
+      inicio_antes_periodo_fim_no_periodo_no_prazo: 0,
+      inicio_antes_periodo_fim_no_periodo_em_atraso: 0,
+      inicio_antes_periodo_fim_fora_periodo_no_prazo: 0,
+      inicio_antes_periodo_fim_fora_periodo_em_atraso: 0,
+      inicio_antes_periodo_nao_finalizado_no_prazo: 0,
+      inicio_antes_periodo_nao_finalizado_em_atraso: 0,
+      inicio_antes_periodo_total_prazo: 0,
+      inicio_antes_periodo_total_atraso: 0,
+
+      inicio_no_periodo_fim_no_periodo_no_prazo: 0,
+      inicio_no_periodo_fim_no_periodo_em_atraso: 0,
+      inicio_no_periodo_fim_fora_periodo_no_prazo: 0,
+      inicio_no_periodo_fim_fora_periodo_em_atraso: 0,
+      inicio_periodo_nao_finalizado_no_prazo: 0,
+      inicio_periodo_nao_finalizado_em_atraso: 0,
+      inicio_no_periodo_total_prazo: 0,
+      inicio_no_periodo_total_atraso: 0,
+
+      inicio_apos_periodo_fim_apos_periodo_no_prazo: 0,
+      inicio_apos_periodo_fim_apos_periodo_em_atraso: 0,
+      inicio_apos_periodo_nao_finalizado_no_prazo: 0,
+      inicio_apos_periodo_nao_finalizado_em_atraso: 0,
+
+      nao_iniciado_no_prazo: 0,
+      nao_iniciado_em_atraso: 0,
+
+      total_tarefas: 0,
+      total_no_prazo: 0,
+      total_em_atraso: 0,
+    };
+
+    mappedData.forEach(item => {
+      for (let key in totais) {
+        if (key !== 'colaborador_id' && key !== 'colaborador_nome') {
+          totais[key] += item[key];
+        }
+      }
+    });
+
+    mappedData.push(totais);
+
+    const sortedData = orderBy(
+      mappedData.filter(item => item.colaborador_id !== 'totais'),
+      [filtersState.sortedColumn],
+      [filtersState.sortOrder]
+    );
+
+    // Reinsere o item "TOTAL" no final da lista ordenada
+    sortedData.push(mappedData.find(item => item.colaborador_id === 'totais'));
+
+    return sortedData;
   });
 
   const toggleColumnVisibility = (columnName) => {
@@ -434,6 +439,12 @@ export default function ConsultaQuantidadeTarefa() {
                   placeholder="Filtrar por Colaborador"
                   loadOptions={(search) => listColaboradores('?search=' + search)}
                   getOptionLabel={(option) => option.nome}
+                  filterOption={({ data }) => {
+                    if (!projetoFilter) return true
+
+                    return projetoFilter.projeto_responsavel.some(pr => pr.colaborador_id === data.id)
+
+                  }}
                   onChange={(colaborador) => {
                     handleChangeFilters('colaborador_id', colaborador ? colaborador.id : null);
                   }}
@@ -445,23 +456,41 @@ export default function ConsultaQuantidadeTarefa() {
                   placeholder="Filtrar por Projeto"
                   loadOptions={(search) => listProjetos('?search=' + search)}
                   getOptionLabel={(option) => option.nome}
+                  filterOption={({ data }) => {
+                    // Se nenhum setor for selecionado, exibe todos os projetos
+                    if (!setorFilter) return true;
+
+                    // Verifica se o projeto está associado ao setor selecionado
+                    return data.projeto_setor.some(
+                      (setor) => setor.setor_id === setorFilter.id
+                    );
+                  }}
                   onChange={(projeto) => {
                     handleChangeFilters('projeto_id', projeto ? projeto.id : null);
+                    setProjetoFilter(projeto); // Atualiza o filtro de projeto
                   }}
                   isClearable
                 />
               </Col>
-              <Col md={2}>
-                <SelectAsync
-                  placeholder="Filtrar por Setor"
-                  loadOptions={(search) => listSetores('?search=' + search)}
-                  getOptionLabel={(option) => option.sigla + ' - ' + option.nome}
-                  onChange={(setor) => {
-                    handleChangeFilters('setor_id', setor ? setor.id : "");
-                  }}
-                  isClearable
-                />
-              </Col>
+              {(user.nivel_acesso === 2 || user.nivel_acesso === 5) && (
+                <Col md={2}>
+                  <SelectAsync
+                    placeholder="Filtrar por Setor"
+                    loadOptions={(search) => listSetores('?search=' + search)}
+                    getOptionLabel={(option) => `${option.sigla} - ${option.nome}`}
+                    filterOption={
+                      user.nivel_acesso === 2
+                        ? ({ data }) => data.id === user.colaborador.setor_id
+                        : null // Permite todos os setores para nivel_acesso === 5
+                    }
+                    onChange={(setor) => {
+                      handleChangeFilters('setor_id', setor ? setor.id : null);
+                      setSetorFilter(setor); // Atualiza o filtro de setor
+                    }}
+                    isClearable
+                  />
+                </Col>
+              )}
               <Col md={2}>
                 <DateTest
                   id="dataFim"

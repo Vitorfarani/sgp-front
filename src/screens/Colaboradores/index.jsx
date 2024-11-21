@@ -30,15 +30,15 @@ const basefilters = {
 };
 
 const columnsFields = [
-  { 
-    field: 'nome', 
-    label: 'Nome', 
-    enabledOrder: true, 
-    style: { width: 100 }, 
+  {
+    field: 'nome',
+    label: 'Nome',
+    enabledOrder: true,
+    style: { width: 100 },
     piper: (field, row) => {
-      
+
       if (row.afastamento && row.afastamento.length > 0 && row.afastado === 1) {
-        const ultimoAfastamento = row.afastamento[row.afastamento.length -1]
+        const ultimoAfastamento = row.afastamento[row.afastamento.length - 1]
         const tipoAfastamento = ultimoAfastamento.tipo_afastamento.nome;
         let icon;
         switch (tipoAfastamento) {
@@ -61,10 +61,10 @@ const columnsFields = [
       }
     }
   },
-  { 
-    field: 'afastado', 
-    label: 'Situação', 
-    enabledOrder: false, 
+  {
+    field: 'afastado',
+    label: 'Situação',
+    enabledOrder: false,
     piper: (field, row) => {
       if (row.afastamento && row.afastamento.length > 0 && row.afastado === 1) {
         const ultimoAfastamento = row.afastamento[row.afastamento.length - 1];
@@ -87,6 +87,9 @@ export default function Conhecimentos() {
   const { user } = useAuth();
   const { callGlobalDialog, handleGlobalLoading, callGlobalAlert, callGlobalNotify } = useTheme();
 
+  const [conhecimento, setConhecimento] = useState(null);
+  const [conhecimentoNivel, setConhecimentoNivel] = useState(null);
+
   const {
     rows,
     columns,
@@ -97,8 +100,10 @@ export default function Conhecimentos() {
     resetFilters,
     isEmpty,
   } = useTable(columnsFields, listColaboradores, basefilters, (results) => {
-    
-    return results.data
+
+    return results.data.filter(colaborador =>
+      !filtersState.conhecimento || (colaborador.colaborador_conhecimento && colaborador.colaborador_conhecimento.length > 0)
+    );
   });
 
 
@@ -134,7 +139,7 @@ export default function Conhecimentos() {
   useEffect(() => {
     load();
   }, []);
-  
+
   return (
     <Background>
       <HeaderTitle title="Colaboradores" optionsButtons={
@@ -158,26 +163,30 @@ export default function Conhecimentos() {
           filtersComponentes={
             <>
               <Col md={2} style={{
-                display: 'none',
-                opacity: filtersState.conhecimento == null ? 0.5 : 1 }}>
+                opacity: filtersState.conhecimento == null ? 0.5 : 1
+              }}>
                 <SelectAsync
                   placeholder="Filtrar por Nivel"
                   loadOptions={(search) => listConhecimentoNivels('?search=' + search)}
                   getOptionLabel={(option) => option.grau}
                   onChange={(nivel) => {
-                    handleChangeFilters('conhecimento_nivel', nivel ? nivel.id : "");
+                    // Resetando o filtro de nível
+                    handleChangeFilters('conhecimento_nivel', nivel ? nivel.id : null);
                   }}
-                  isDisabled={filtersState.conhecimento == null}
+                  isDisabled={filtersState.conhecimento == null} // Desabilitando o filtro de nível quando não há conhecimento
                   isClearable
                 />
               </Col>
+
               <Col md={3} >
                 <SelectAsync
                   placeholder="Filtrar por Conhecimento"
                   loadOptions={(search) => listConhecimentos('?search=' + search)}
                   getOptionLabel={(option) => option.nome}
                   onChange={(conhecimento) => {
-                    handleChangeFilters('conhecimento', conhecimento ? conhecimento.id : "");
+                    // Resetando o filtro de conhecimento e nível
+                    handleChangeFilters('conhecimento', conhecimento ? conhecimento.id : null);
+                    handleChangeFilters('conhecimento_nivel', ''); // Resetando o nível sempre que o conhecimento mudar
                   }}
                   isClearable
                 />
@@ -188,7 +197,11 @@ export default function Conhecimentos() {
                   loadOptions={(search) => listSetores('?search=' + search)}
                   // getOptionLabel={(option) => option.sigla}
                   getOptionLabel={(option) => option.sigla + ' - ' + option.nome}
+                  filterOption={({ data }) => {
 
+                    return data.id === user.colaborador.setor_id;
+
+                }}
                   onChange={(setor) => handleChangeFilters('setor', setor ? setor.id : "")}
                   isClearable
                 />

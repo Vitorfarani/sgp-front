@@ -64,12 +64,16 @@ const ModalTarefa = forwardRef(({
     return diffDatetimesHumanized(formData.data_inicio_real, formData.data_fim_real)
   }, [formData.data_inicio_real, formData.data_fim_real]);
 
-
-  const [showExecutions, setShowExecutions] = useState(false);
+  const [showExecucoes, setShowExecucoes] = useState(false); // Estado para controlar o modal e botão
 
   const handleToggleExecutions = () => {
-    setShowExecutions(prev => !prev);
+    setShowExecucoes((prevState) => !prevState); // Alterna o estado
   };
+  
+  const closeModal = () => {
+    setShowExecucoes(false); // Fecha o modal e atualiza o estado
+  };
+
 
   useEffect(() => {
     if (!isShow) {
@@ -812,7 +816,10 @@ const ModalTarefa = forwardRef(({
                 onRestore={onRestore}
                 // onStart={() => handleForm('data_inicio_real', new Date().toISOString().slice(0, 16))}
                 // onEnd={() => handleForm('data_fim_real', new Date().toISOString().slice(0, 16))}
-                addTarefaColaborador={addTarefaColaborador} />
+                addTarefaColaborador={addTarefaColaborador}
+                handleToggleExecutions={handleToggleExecutions} // Passa a função aqui
+                showExecucoes={showExecucoes} // Passe o estado como prop
+              />
 
               <Form.Group className='mb-4 mt-4'>
                 <Form.Label>Iniciado em</Form.Label>
@@ -824,16 +831,23 @@ const ModalTarefa = forwardRef(({
                 <FeedbackError error={errors.data_inicio_real} />
               </Form.Group>
 
-              {/* <Button onClick={handleToggleExecutions} className='mb-2'>
-                {showExecutions ? 'Ocultar Execuções' : 'Ver Execuções'}
-              </Button> */}
+              <Modal show={showExecucoes} onHide={closeModal} size="lg" centered>
+                <Modal.Header closeButton>
+                  <Modal.Title>Execuções da Tarefa</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                  <ShowExecucoes
+                    listColaboradorTarefaPorExecucao={listColaboradorTarefaPorExecucao}
+                    formData={formData}
+                  />
+                </Modal.Body>
+                <Modal.Footer>
+                  <Button variant="secondary" onClick={closeModal}>
+                    Fechar
+                  </Button>
+                </Modal.Footer>
+              </Modal>
 
-              {/* {showExecutions && (
-                <ShowExecucoes
-                  listColaboradorTarefaPorExecucao={listColaboradorTarefaPorExecucao}
-                  formData={formData.tarefa}
-                />
-              )} */}
               <Form.Group className='mb-4'>
                 <Form.Label>Finalizado em <strong className='diffPrazos'> {diffReal}</strong></Form.Label>
                 <DateInput

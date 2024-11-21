@@ -50,23 +50,23 @@ const exportToPDF = (data, dataInicio, dataFim) => {
 
     const title = `Horas Trabalhadas - Relatório (${moment(dataInicio).format('DD/MM/YYYY')} a ${moment(dataFim).format('DD/MM/YYYY')})`;
     doc.setFontSize(14);
-    doc.text(title, 14, 22); 
+    doc.text(title, 14, 22);
 
 
     const startY = 30;
     doc.autoTable({
         startY: startY,
         head: [[
-            'Colaborador', 
-            'Carga Horária', 
-            'Horas Trabalhadas', 
-            'Horas Afastado', 
-            'Horas Max. Permitidas', 
-            'Banco de Horas', 
-            'Tarefas no Prazo', 
-            'Tarefas Atrasadas', 
-            'Total Tarefas', 
-            'Dias Trabalhados', 
+            'Colaborador',
+            'Carga Horária',
+            'Horas Trabalhadas',
+            'Horas Afastado',
+            'Horas Max. Permitidas',
+            'Banco de Horas',
+            'Tarefas no Prazo',
+            'Tarefas Atrasadas',
+            'Total Tarefas',
+            'Dias Trabalhados',
             'Situação'
         ]],
         body: data.map(item => ([
@@ -163,7 +163,7 @@ const exportToXLSX = (data, dataInicio, dataFim) => {
     const formattedData = data.map(item => {
         const orderedData = {};
         orderedColumns.forEach(col => {
-            orderedData[col.header] = item[col.field] || ''; 
+            orderedData[col.header] = item[col.field] || '';
         });
         return orderedData;
     });
@@ -243,6 +243,11 @@ export default function ConsultaHorasTrabalhadasTeste() {
     const { user } = useAuth();
     const [dataInicio, setDataInicio] = useState(moment().format('YYYY-MM-01'));
     const [dataFim, setDataFim] = useState(moment().format('YYYY-MM-DD'));
+
+    const [projetoFilter, setProjetoFilter] = useState()
+    const [setorFilter, setSetorFilter] = useState()
+
+
 
     const {
         rows,
@@ -355,7 +360,7 @@ export default function ConsultaHorasTrabalhadasTeste() {
         <Background>
             <HeaderTitle
                 title="Consultar Horas Trabalhadas"
-                optionsButtons={user.nivel_acesso === 2 ? [ 
+                optionsButtons={user.nivel_acesso === 2 ? [
                     {
                         label: 'Exportar como PDF',
                         onClick: () => exportToPDF(rows, dataInicio, dataFim),
@@ -371,7 +376,7 @@ export default function ConsultaHorasTrabalhadasTeste() {
                         onClick: () => exportToXLSX(rows, dataInicio, dataFim),
                         icon: FaFileExcel
                     }
-                ] : []} 
+                ] : []}
             />
             <Section>
                 <Table
@@ -381,12 +386,18 @@ export default function ConsultaHorasTrabalhadasTeste() {
                     filtersState={filtersState}
                     filtersComponentes={
                         <>
-                            {user.nivel_acesso === 2 && ( // Verificação do nível de acesso
+                            {(user.nivel_acesso === 2 || user.nivel_acesso === 5) && ( // Verificação do nível de acesso
                                 <Col md={2}>
                                     <SelectAsync
                                         placeholder="Filtrar por Colaborador"
                                         loadOptions={(search) => listColaboradores('?search=' + search)}
                                         getOptionLabel={(option) => option.nome}
+                                        filterOption={({ data }) => {
+                                            if (!projetoFilter) return true
+
+                                            return projetoFilter.projeto_responsavel.some(pr => pr.colaborador_id === data.id)
+
+                                        }}
                                         onChange={(colaborador) => {
                                             handleChangeFilters('colaborador_id', colaborador ? colaborador.id : null);
                                         }}
@@ -394,25 +405,41 @@ export default function ConsultaHorasTrabalhadasTeste() {
                                     />
                                 </Col>
                             )}
-                            <Col md={2} >
+                            <Col md={2}>
                                 <SelectAsync
                                     placeholder="Filtrar por Projeto"
                                     loadOptions={(search) => listProjetos('?search=' + search)}
                                     getOptionLabel={(option) => option.nome}
+                                    filterOption={({ data }) => {
+                                        // Se nenhum setor for selecionado, exibe todos os projetos
+                                        if (!setorFilter) return true;
+
+                                        // Verifica se o projeto está associado ao setor selecionado
+                                        return data.projeto_setor.some(
+                                            (setor) => setor.setor_id === setorFilter.id
+                                        );
+                                    }}
                                     onChange={(projeto) => {
                                         handleChangeFilters('projeto_id', projeto ? projeto.id : null);
+                                        setProjetoFilter(projeto); // Atualiza o filtro de projeto
                                     }}
                                     isClearable
                                 />
                             </Col>
-                            {user.nivel_acesso === 2 && (
+                            {(user.nivel_acesso === 2 || user.nivel_acesso === 5) && (
                                 <Col md={2}>
                                     <SelectAsync
                                         placeholder="Filtrar por Setor"
                                         loadOptions={(search) => listSetores('?search=' + search)}
-                                        getOptionLabel={(option) => option.sigla + ' - ' + option.nome}
+                                        getOptionLabel={(option) => `${option.sigla} - ${option.nome}`}
+                                        filterOption={
+                                            user.nivel_acesso === 2
+                                                ? ({ data }) => data.id === user.colaborador.setor_id
+                                                : null // Permite todos os setores para nivel_acesso === 5
+                                        }
                                         onChange={(setor) => {
                                             handleChangeFilters('setor_id', setor ? setor.id : null);
+                                            setSetorFilter(setor); // Atualiza o filtro de setor
                                         }}
                                         isClearable
                                     />

@@ -183,6 +183,10 @@ export default function ConsultaColaboradoresPorTarefaTeste() {
     const [dataInicio, setDataInicio] = useState(moment().format('YYYY-MM-01'));
     const [dataFim, setDataFim] = useState(moment().format('YYYY-MM-DD'));
 
+    const [projetoFilter, setProjetoFilter] = useState()
+    const [setorFilter, setSetorFilter] = useState()
+
+
     const abreviarStatus = (status, tipo) => {
         const mapeamentoStatus = {
             projeto: {
@@ -372,12 +376,18 @@ export default function ConsultaColaboradoresPorTarefaTeste() {
                     //searchPlaceholder="Consultar Projetos"
                     filtersComponentes={
                         <>
-                            {user.nivel_acesso === 2 && ( 
+                            {(user.nivel_acesso === 2 || user.nivel_acesso === 5) && ( 
                                 <Col md={2}>
                                     <SelectAsync
                                         placeholder="Filtrar por Colaborador"
                                         loadOptions={(search) => listColaboradores('?search=' + search)}
                                         getOptionLabel={(option) => option.nome}
+                                        filterOption={({ data }) => {
+                                            if (!projetoFilter) return true
+
+                                            return projetoFilter.projeto_responsavel.some(pr => pr.colaborador_id === data.id)
+
+                                        }}
                                         onChange={(colaborador) => {
                                             handleChangeFilters('colaborador_id', colaborador ? colaborador.id : null);
                                         }}
@@ -385,25 +395,41 @@ export default function ConsultaColaboradoresPorTarefaTeste() {
                                     />
                                 </Col>
                             )}
-                            <Col md={2} >
+                            <Col md={2}>
                                 <SelectAsync
                                     placeholder="Filtrar por Projeto"
                                     loadOptions={(search) => listProjetos('?search=' + search)}
                                     getOptionLabel={(option) => option.nome}
+                                    filterOption={({ data }) => {
+                                        // Se nenhum setor for selecionado, exibe todos os projetos
+                                        if (!setorFilter) return true;
+
+                                        // Verifica se o projeto está associado ao setor selecionado
+                                        return data.projeto_setor.some(
+                                            (setor) => setor.setor_id === setorFilter.id
+                                        );
+                                    }}
                                     onChange={(projeto) => {
                                         handleChangeFilters('projeto_id', projeto ? projeto.id : null);
+                                        setProjetoFilter(projeto); // Atualiza o filtro de projeto
                                     }}
                                     isClearable
                                 />
                             </Col>
-                            {user.nivel_acesso === 2 && (
+                            {(user.nivel_acesso === 2 || user.nivel_acesso === 5) && (
                                 <Col md={2}>
                                     <SelectAsync
                                         placeholder="Filtrar por Setor"
                                         loadOptions={(search) => listSetores('?search=' + search)}
-                                        getOptionLabel={(option) => option.sigla + ' - ' + option.nome}
+                                        getOptionLabel={(option) => `${option.sigla} - ${option.nome}`}
+                                        filterOption={
+                                            user.nivel_acesso === 2
+                                                ? ({ data }) => data.id === user.colaborador.setor_id
+                                                : null // Permite todos os setores para nivel_acesso === 5
+                                        }
                                         onChange={(setor) => {
                                             handleChangeFilters('setor_id', setor ? setor.id : null);
+                                            setSetorFilter(setor); // Atualiza o filtro de setor
                                         }}
                                         isClearable
                                     />
