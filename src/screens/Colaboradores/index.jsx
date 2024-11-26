@@ -17,7 +17,7 @@ import { FaBrain, FaUserSlash, FaBriefcaseMedical, FaPlaneDeparture } from "reac
 
 const basefilters = {
   search: '',
-  perPage: 20,
+  perPage: 100,
   selectedRows: [],
   setor: null,
   page: 1,
