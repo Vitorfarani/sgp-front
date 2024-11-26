@@ -363,10 +363,13 @@ export default function ConsultaTarefasPorColaboradorTeste() {
                 filteredData = filteredData.filter(task => task.inicio_real && task.inicio_real !== 'N/D');  // Tarefas com inicio_real
             }
 
-            setSortedData(filteredData);
-            setFinalData(filteredData);  // Atualiza finalData com os dados filtrados
+            const sortedData = orderBy(filteredData, [filtersState.sortedColumn], [filtersState.sortOrder]);
 
-            return filteredData;
+
+            setSortedData(sortedData);
+            setFinalData(sortedData);  // Atualiza finalData com os dados filtrados
+
+            return sortedData;
         });
 
         useEffect(() => {
