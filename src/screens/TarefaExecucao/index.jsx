@@ -246,7 +246,7 @@ export default function TarefaExecucao() {
           loadOptions: listColaboradores,
           required: true,
           formatOptionLabel: option => `${option.nome}`,
-          isDisabled: user?.nivel_acesso !== 2, // Desativa o campo se o nível de acesso não for 2
+          isDisabled: !(user?.id === 2 || user?.nivel_acesso === 2), 
         },
         {
           name: 'projeto',
