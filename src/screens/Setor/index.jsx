@@ -44,7 +44,7 @@ export default function Setor() {
   const { user } = useAuth();
   const { callGlobalDialog, handleGlobalLoading, callGlobalAlert, callGlobalNotify } = useTheme();
   const [setoresSimple, setSetoresSimple] = useState();
-  const [responsaveisFields, setResponsaveisFields] = useState([{}]); // Estado para armazenar campos dinâmicos
+  // const [responsaveisFields, setResponsaveisFields] = useState([{}]); // Estado para armazenar campos dinâmicos
 
   const {
     rows,
@@ -70,9 +70,9 @@ export default function Setor() {
 
   function callModalCadastro(data = {}) {
   
-    const addResponsavelField = () => {
-      setResponsaveisFields((prevFields) => [...prevFields, {}]); // Adiciona mais um conjunto de campos
-    };
+    // const addResponsavelField = () => {
+    //   setResponsaveisFields((prevFields) => [...prevFields, {}]); // Adiciona mais um conjunto de campos
+    // };
   
     callGlobalDialog({
       title: 'Novo Setor',
@@ -95,33 +95,33 @@ export default function Setor() {
           type: 'selectAsync',
           loadOptions: listColaboradores
         },
-        {
-          name: 'dataInicio', 
-          label: 'Data Início',
-          type: 'date', 
-        },
-        {
-          name: 'dataFim', 
-          label: 'Data Fim',
-          type: 'date', 
-        },
-        // Campos dinâmicos para mais responsáveis
-        ...responsaveisFields.map((_, index) => ({
-          name: `responsavel_${index}`,
-          label: `Responsável ${index + 2}`, // Responsável 2, 3, 4, etc.
-          type: 'selectAsync',
-          loadOptions: listColaboradores
-        })),
-        ...responsaveisFields.map((_, index) => ({
-          name: `dataInicio_${index}`,
-          label: `Data Início ${index + 2}`,
-          type: 'date', // Campo de data
-        })),
-        ...responsaveisFields.map((_, index) => ({
-          name: `dataFim_${index}`,
-          label: `Data Fim ${index + 2}`,
-          type: 'date', // Campo de data
-        })),
+        // {
+        //   name: 'dataInicio', 
+        //   label: 'Data Início',
+        //   type: 'date', 
+        // },
+        // {
+        //   name: 'dataFim', 
+        //   label: 'Data Fim',
+        //   type: 'date', 
+        // },
+        // // Campos dinâmicos para mais responsáveis
+        // ...responsaveisFields.map((_, index) => ({
+        //   name: `responsavel_${index}`,
+        //   label: `Responsável ${index + 2}`, // Responsável 2, 3, 4, etc.
+        //   type: 'selectAsync',
+        //   loadOptions: listColaboradores
+        // })),
+        // ...responsaveisFields.map((_, index) => ({
+        //   name: `dataInicio_${index}`,
+        //   label: `Data Início ${index + 2}`,
+        //   type: 'date', // Campo de data
+        // })),
+        // ...responsaveisFields.map((_, index) => ({
+        //   name: `dataFim_${index}`,
+        //   label: `Data Fim ${index + 2}`,
+        //   type: 'date', // Campo de data
+        // })),
         {
           name: 'subordinacao',
           label: 'Subordinação',
@@ -132,18 +132,18 @@ export default function Setor() {
       labelSucessColor: 'green',
       labelSuccess: 'Salvar',
       labelCancel: 'Cancelar',
-      buttons: [
-        {
-          label: 'Mais responsáveis',
-          onClick: addResponsavelField, // Função para adicionar mais campos
-        }
-      ],
+      // buttons: [
+      //   {
+      //     label: 'Mais responsáveis',
+      //     onClick: addResponsavelField, // Função para adicionar mais campos
+      //   }
+      // ],
     })
       .then((result) => {
         return formatForm(result).rebaseIds(['responsavel', 'subordinacao']).getResult()
       })
       .then(async (result) => {
-        handleGlobalLoading.show();
+        handleGlobalLoading.show()
         let method = !result.id ? createSetor : updateSetor;
         method(result)
           .then((res) => {
@@ -192,7 +192,7 @@ export default function Setor() {
                 <SelectAsync
                   placeholder="Subordinados de um setor"
                   loadOptions={(search) => listSetores('?search=' + search)}
-                  getOptionLabel={(option) => option.sigla}
+                  getOptionLabel={(option) => option.sigla + ' - ' + option.nome}
                   onChange={(setor) => handleChangeFilters('subordinacao', setor.id)} />
               </Col>
             </>
