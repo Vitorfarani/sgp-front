@@ -350,9 +350,20 @@ export default function ConsultaHorasTrabalhadasTeste() {
 
     useEffect(() => {
         handleChangeFilters('search', basefilters.search);
-        handleChangeFilters('data_inicio', dataInicio)
-        handleChangeFilters('data_fim', dataFim)
 
+        const today = moment().format('YYYY-MM-DD');
+        const firstDayOfMonth = moment().format('YYYY-MM-01');
+
+        if (!dataInicio) setDataInicio(firstDayOfMonth);
+        if (!dataFim) setDataFim(today);
+
+        handleChangeFilters('data_inicio', dataInicio || firstDayOfMonth);
+        handleChangeFilters('data_fim', dataFim || today);
+
+        console.log('Data Início:', dataInicio);
+        console.log('Data Fim:', dataFim);
+
+        handleChangeFilters('search', basefilters.search);
         load();
     }, [basefilters.search]);
 
@@ -448,7 +459,7 @@ export default function ConsultaHorasTrabalhadasTeste() {
                             <Col md={2}>
                                 <DateTest
                                     id="dataFim"
-                                    value={dataFim}
+                                    value={dataFim || moment().format('YYYY-MM-DD')}
                                     label="Fim:"
                                     onChange={(date) => {
                                         setDataFim(date);
@@ -459,7 +470,7 @@ export default function ConsultaHorasTrabalhadasTeste() {
                             <Col md={2}>
                                 <DateTest
                                     id="dataInicio"
-                                    value={dataInicio}
+                                    value={dataInicio || moment().format('YYYY-MM-01')}
                                     label="Início:"
                                     onChange={(date) => {
                                         setDataInicio(date);
