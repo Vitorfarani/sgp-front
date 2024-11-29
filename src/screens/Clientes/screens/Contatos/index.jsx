@@ -147,6 +147,8 @@ export default function Contatos() {
               },
               icon: FiEdit,
             },
+            ...user.id !== 1 || (user.nivel_acesso >= 2 && user.id !== 1)
+            ? [
             {
               label: 'Excluir',
               onClick: (row) => {
@@ -160,6 +162,7 @@ export default function Contatos() {
               },
               icon: FiTrash,
             },
+          ] : []
           ]}>
         </Table>
       </Section>

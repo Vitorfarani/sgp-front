@@ -129,11 +129,13 @@ export default function Setor() {
   return (
     <Background>
       <HeaderTitle title="Setores" optionsButtons={[
-        {
+        ...user.id !== 1
+        ? [{
           label: 'Cadastrar',
           onClick: () => callModalCadastro(cadastroInitialValue),
           icon: FiPlus,
         },
+        ] : [],
         {
           label: 'Ver Organograma desenhado',
           onClick: () => setshowCanvasTree(!showCanvasTree),
@@ -160,6 +162,8 @@ export default function Setor() {
           }
           handleFilters={handleChangeFilters}
           actions={[
+            ...user.id !== 1
+              ? [
             {
               label: 'Editar',
               onClick: (row) => {
@@ -167,6 +171,7 @@ export default function Setor() {
               },
               icon: FiEdit,
             },
+            
             {
               label: 'Excluir',
               onClick: (row) => {
@@ -180,6 +185,8 @@ export default function Setor() {
               },
               icon: FiTrash,
             },
+          ]
+          : []
           ]}>
         </Table>
       </Section>

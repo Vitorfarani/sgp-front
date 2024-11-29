@@ -20,7 +20,7 @@ const basefilters = {
 };
 
 const columnsFields = [
-  { field: 'nome', label: 'Nome', enabledOrder: true},
+  { field: 'nome', label: 'Nome', enabledOrder: true },
   { field: 'setor', label: 'Setor Interno', enabledOrder: true },
 ];
 
@@ -63,7 +63,7 @@ export default function Clientes() {
           label: 'Setor interno',
           placeholder: '',
         },
-       
+
       ],
       labelSucessColor: 'green',
       labelSuccess: 'Salvar',
@@ -113,19 +113,22 @@ export default function Clientes() {
               },
               icon: FiEdit,
             },
-            {
-              label: 'Excluir',
-              onClick: (row) => {
-                handleGlobalLoading.show()
-                deleteCliente(row.id)
-                  .then((result) => {
-                    callGlobalNotify({ message: result.message, variant: 'danger' })
-                  })
-                  .catch(callGlobalAlert)
-                  .finally(handleGlobalLoading.hide)
-              },
-              icon: FiTrash,
-            },
+            ...user.id !== 1 || (user.nivel_acesso >= 2 && user.id !== 1)
+              ? [
+                {
+                  label: 'Excluir',
+                  onClick: (row) => {
+                    handleGlobalLoading.show()
+                    deleteCliente(row.id)
+                      .then((result) => {
+                        callGlobalNotify({ message: result.message, variant: 'danger' })
+                      })
+                      .catch(callGlobalAlert)
+                      .finally(handleGlobalLoading.hide)
+                  },
+                  icon: FiTrash,
+                },
+              ] : []
           ]}>
         </Table>
       </Section>

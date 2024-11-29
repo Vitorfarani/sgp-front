@@ -128,6 +128,8 @@ export default function Feriados() {
               },
               icon: FiEdit,
             },
+            ...user.id !== 1 || (user.nivel_acesso >= 2 && user.id !== 1)
+            ? [
             {
               label: 'Excluir',
               onClick: (row) => {
@@ -142,6 +144,7 @@ export default function Feriados() {
               },
               icon: FiTrash,
             },
+          ] : []
           ]}>
         </Table>
       </Section>

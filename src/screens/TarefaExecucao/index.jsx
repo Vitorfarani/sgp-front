@@ -246,7 +246,7 @@ export default function TarefaExecucao() {
           loadOptions: listColaboradores,
           required: true,
           formatOptionLabel: option => `${option.nome}`,
-          isDisabled: !(user?.id === 2 || user?.nivel_acesso === 2), 
+          isDisabled: (user?.id === 1 || (user?.nivel_acesso >= 2 && user?.id === 1) || user.nivel_acesso === 1)
         },
         {
           name: 'projeto',
@@ -549,7 +549,7 @@ export default function TarefaExecucao() {
           handleFilters={handleChangeFilters}
           // Aqui é onde fazemos a verificação do nível de acesso
           actions={
-            user.nivel_acesso !== 5 || user.id === 2
+            user.id !== 1 || (user.nivel_acesso >= 2 && user.id !== 1)
               ? [
                 {
                   label: 'Editar',
