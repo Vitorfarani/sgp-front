@@ -99,7 +99,7 @@ export default function Projetos() {
   return (
     <Background>
       <HeaderTitle title="Projetos" optionsButtons={
-        user.nivel_acesso === 2 ?
+        user.nivel_acesso === 2 || user.id === 2 ?
           [{
             label: 'cadastrar',
             onClick: () => navigate('/projetos/cadastrar'),
@@ -152,7 +152,7 @@ export default function Projetos() {
             },
             {
               label: 'Excluir',
-              visibled: user.nivel_acesso === 2,
+              visibled: user.nivel_acesso === 2 || user.id === 2,
               onClick: (row) => handleDelete(row),
               icon: FiTrash,
             },

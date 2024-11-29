@@ -371,7 +371,7 @@ export default function ConsultaHorasTrabalhadasTeste() {
         <Background>
             <HeaderTitle
                 title="Consultar Horas Trabalhadas"
-                optionsButtons={user.nivel_acesso === 2 ? [
+                optionsButtons={user.nivel_acesso === 2 || user.id === 2 ? [
                     {
                         label: 'Exportar como PDF',
                         onClick: () => exportToPDF(rows, dataInicio, dataFim),
