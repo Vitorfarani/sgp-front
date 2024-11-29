@@ -437,14 +437,12 @@ export default function TarefaExecucao() {
       <HeaderTitle
         title="Execução de Tarefas"
         optionsButtons={[
-          ...(user.nivel_acesso !== 5 || user.id === 2 ? [
+          ...(user.id !== 1 || (user.nivel_acesso >= 2 && user.id !== 1)? [
             {
               label: 'Registrar Execução',
               onClick: () => callModalCadastro(cadastroInitialValue),
               icon: FiPlus,
-            }
-          ] : []),
-          ...(user.nivel_acesso === 2 || user.id === 2 ? [
+            },
             {
               label: 'Exportar como PDF',
               onClick: () => exportToPDF(rows, dataInicio, dataFim),
