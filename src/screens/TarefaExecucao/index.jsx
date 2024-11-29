@@ -246,7 +246,7 @@ export default function TarefaExecucao() {
           loadOptions: listColaboradores,
           required: true,
           formatOptionLabel: option => `${option.nome}`,
-          isDisabled: user?.nivel_acesso !== 2, // Desativa o campo se o nível de acesso não for 2
+          isDisabled: (user?.id === 1 || (user?.nivel_acesso >= 2 && user?.id === 1) || user.nivel_acesso === 1)
         },
         {
           name: 'projeto',
@@ -437,14 +437,12 @@ export default function TarefaExecucao() {
       <HeaderTitle
         title="Execução de Tarefas"
         optionsButtons={[
-          ...(user.nivel_acesso !== 5 ? [
+          ...(user.id !== 1 || (user.nivel_acesso >= 2 && user.id !== 1)? [
             {
               label: 'Registrar Execução',
               onClick: () => callModalCadastro(cadastroInitialValue),
               icon: FiPlus,
-            }
-          ] : []),
-          ...(user.nivel_acesso === 2 ? [
+            },
             {
               label: 'Exportar como PDF',
               onClick: () => exportToPDF(rows, dataInicio, dataFim),
@@ -474,7 +472,7 @@ export default function TarefaExecucao() {
           searchOffiline
           filtersComponentes={
             <>
-              {user.nivel_acesso === 2 && (<Col md={2} >
+              {user.nivel_acesso === 2 || user.id === 2  && (<Col md={2} >
                 <SelectAsync
                   placeholder="Filtrar por Colaborador"
                   loadOptions={(search) => listColaboradores('?search=' + search)}
@@ -504,7 +502,7 @@ export default function TarefaExecucao() {
                   isClearable
                 />
               </Col>
-              {user.nivel_acesso === 2 && (
+              {user.nivel_acesso === 2 || user.id === 2  && (
                 <Col md={2}>
                   <SelectAsync
                     placeholder="Filtrar por Setor"
@@ -549,7 +547,7 @@ export default function TarefaExecucao() {
           handleFilters={handleChangeFilters}
           // Aqui é onde fazemos a verificação do nível de acesso
           actions={
-            user.nivel_acesso !== 5
+            user.id !== 1 || (user.nivel_acesso >= 2 && user.id !== 1)
               ? [
                 {
                   label: 'Editar',

@@ -113,6 +113,8 @@ export default function Empresas() {
               },
               icon: FiEdit,
             },
+            user.id !== 1 || user.nivel_acesso >= 2
+            ? [
             {
               label: 'Excluir',
               onClick: (row) =>{
@@ -127,6 +129,7 @@ export default function Empresas() {
               },
               icon: FiTrash,
             },
+          ] : []
           ]}>
         </Table>
       </Section>
