@@ -348,7 +348,7 @@ export default function ConsultaColaboradoresPorTarefaTeste() {
         <Background>
             <HeaderTitle
                 title="Consultar Tarefas dos Projetos por Colaborador"
-                optionsButtons={user.nivel_acesso === 2 || user.id === 2 ? [ 
+                optionsButtons={[ 
                     {
                         label: 'Exportar como PDF',
                         onClick: () => exportToPDF(rows, dataInicio, dataFim), 
@@ -364,7 +364,7 @@ export default function ConsultaColaboradoresPorTarefaTeste() {
                         onClick: () => exportToXLSX(rows, dataInicio, dataFim),
                         icon: FaFileExcel
                     }
-                ] : []} 
+                ]} 
             />
                 
             <Section>
