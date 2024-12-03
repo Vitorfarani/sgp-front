@@ -208,7 +208,7 @@ export default function ConsultarColaborador() {
     <Background>
       <HeaderTitle
         title="Consultar Colaboradores"
-        optionsButtons={user.nivel_acesso === 2 ? [
+        optionsButtons={user.nivel_acesso >= 2 ? [
           {
             label: 'Exportar como PDF',
             onClick: () => exportToPDF(rows, filteredKnowledge), 

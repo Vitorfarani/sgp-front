@@ -181,7 +181,7 @@ export default function ConsultaProjeto() {
     <Background>
       <HeaderTitle
         title="Consultar Projetos"
-        optionsButtons={user.nivel_acesso === 2 ? [ 
+        optionsButtons={user.nivel_acesso >= 2 ? [ 
           {
               label: 'Exportar como PDF',
               onClick: () => exportToPDF(rows),
