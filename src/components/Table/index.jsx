@@ -194,7 +194,7 @@ const Table = ({
           {!isLoading && !rows?.length && (
             <tr>
               <td colSpan={100} height={100} style={{ textAlign: 'center', verticalAlign: 'middle' }}>
-                <span>{notFoundMessage ?? 'Nenhum dado foi encontrado'}</span>
+                <span>{notFoundMessage ?? 'Nenhum dado foi encontrado com os filtros atuais'}</span>
               </td>
             </tr>
           )}
