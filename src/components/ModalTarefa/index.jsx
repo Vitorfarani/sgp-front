@@ -266,6 +266,48 @@ const ModalTarefa = forwardRef(({
     }
   }
 
+  function formatDate(date) {
+    const formattedDate = new Date(date);
+    if (isNaN(formattedDate)) {
+        console.error(`Data inválida: ${date}`);
+        return null;
+    }
+    return formattedDate.toLocaleDateString('pt-BR'); // Formato brasileiro (dd/mm/aaaa)
+}
+
+function verificarDataAnterior(formData) {
+    let hasConflicts = false;
+    let mensagensConflitos = [];
+
+    if (formData.data_inicio_real && formData.data_inicio_programado) {
+        const dataInicioReal = new Date(formData.data_inicio_real);
+        const dataInicioProgramado = new Date(formData.data_inicio_programado);
+
+        if (dataInicioReal < dataInicioProgramado) {
+            hasConflicts = true;
+
+            const dataRealFormatada = formatDate(formData.data_inicio_real);
+            const dataProgramadaFormatada = formatDate(formData.data_inicio_programado);
+
+            mensagensConflitos.push(
+                `<li> ${dataProgramadaFormatada} (data programada) - ${dataRealFormatada} (data real). Verifique se é isso mesmo que deseja.</li>`
+            );
+        }
+    }
+
+    let mensagem = null;
+    if (hasConflicts) {
+        mensagem = `
+          <div style="background-color: #C0C0C0; color: white; padding: 1rem; border-radius: 5px;">
+            A data início real é menor que a data início programada:
+            <strong> <ul>${mensagensConflitos.join('')}</ul> <strong/>
+          </div>
+        `;
+    }
+
+    return { hasConflicts, mensagem };
+}
+
 
 
   function apresentarTarefasConflituosas(conflitos, tipo_conflito) {
@@ -612,51 +654,73 @@ const ModalTarefa = forwardRef(({
     event.preventDefault(); // Impede o comportamento padrão do formulário
     event.stopPropagation(); // Para a propagação do evento
 
-    if (formData.data_fim_programado == '') {
-      formData.data_fim_programado = null;
-    }
-    if (formData.data_fim_real == '') {
-      formData.data_fim_real = null;
-    }
-    if (formData.data_inicio_real == '') {
-      formData.data_inicio_real = null;
-    }
-    if (formData.data_inicio_programado == '') {
-      formData.data_inicio_programado = null;
-    }
+    // Normaliza os campos vazios
+    formData.data_fim_programado = formData.data_fim_programado === '' ? null : formData.data_fim_programado;
+    formData.data_fim_real = formData.data_fim_real === '' ? null : formData.data_fim_real;
+    formData.data_inicio_real = formData.data_inicio_real === '' ? null : formData.data_inicio_real;
+    formData.data_inicio_programado = formData.data_inicio_programado === '' ? null : formData.data_inicio_programado;
 
-    // Primeiro, verifica se há datas conflituosas
     try {
-      const { hasConflicts, mensagem } = await apresentarDatasConflituosas();
-      if (hasConflicts) {
-        // Se houver conflitos, exibe a mensagem formatada
-        callGlobalAlert({
-          title: 'Erro: Data em feriado ou dia não útil',
-          message: mensagem, // Exibe a mensagem retornada
-          color: '#FFA500', // Pode ser ajustado conforme necessário
-        });
-        return;
+        // Verifica se há conflitos de datas em ambas as funções
+        const resultadoConflitos = await apresentarDatasConflituosas();
+        const resultadoDataAnterior = await verificarDataAnterior(formData);
+
+        // Combina os resultados
+        const hasConflicts = resultadoConflitos.hasConflicts || resultadoDataAnterior.hasConflicts;
+        const mensagem = `
+          ${resultadoConflitos.mensagem || ''}
+          ${resultadoDataAnterior.mensagem || ''}
+        `.trim();
+
+        if (hasConflicts) {
+          let title = '';
+          let color = '';
+
+          // Se houver conflito de feriado ou dia não útil, bloqueia a submissão
+          if (resultadoConflitos.hasConflicts) {
+              title = 'Erro: Data em feriado ou dia não útil';
+              color = '#FFA500'; // Cor para erro de feriado ou dia não útil
+              // Exibe o alerta e retorna, impedindo a submissão
+              callGlobalAlert({
+                  title: title,
+                  message: mensagem, // Combinação das mensagens
+                  color: color,
+              });
+              return; // Interrompe o processo de submissão
+          }
+
+          // Se houver conflito de data real anterior, apenas exibe o aviso e permite a submissão
+          if (resultadoDataAnterior.hasConflicts) {
+              title = 'Atenção: Data real começando antes da data programada';
+              color = '#C0C0C0'; // Cor para aviso de data real anterior
+              // Exibe o alerta com um aviso
+              callGlobalAlert({
+                  title: title,
+                  message: mensagem, // Combinação das mensagens
+                  color: color,
+              });
+          }
       }
-
-      validateSchema(tarefaSchema, formData)
-        .then(() => {
-          setErrors(true)
-          save()
-        })
-        .catch((errors) => {
-
-          setErrors(errors)
-        })
+        // Valida o schema da tarefa
+        validateSchema(tarefaSchema, formData)
+            .then(() => {
+                setErrors(true);
+                save(); // Chama a função para salvar os dados
+            })
+            .catch((errors) => {
+                setErrors(errors);
+            });
 
     } catch (error) {
-      // Exibe a mensagem de erro detalhada
-      callGlobalAlert({
-        title: 'Erro ao submeter',
-        message: error.message, // Captura a mensagem de erro lançada
-        variant: 'error'
-      });
+        // Trata erros inesperados
+        callGlobalAlert({
+            title: 'Erro ao submeter',
+            message: error.message, // Mensagem de erro capturada
+            variant: 'error',
+        });
     }
-  }
+}
+
 
   if (!projeto) return null
   // if (!Object.keys(formData).length) return null
