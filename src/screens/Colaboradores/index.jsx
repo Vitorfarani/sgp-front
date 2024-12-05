@@ -66,12 +66,16 @@ const columnsFields = [
     label: 'Situação',
     enabledOrder: false,
     piper: (field, row) => {
+      if (row.active === 0) {
+        return 'Inativo'; // Se o row.active for 0, a situação é "Inativo"
+      }
+      
       if (row.afastamento && row.afastamento.length > 0 && row.afastado === 1) {
         const ultimoAfastamento = row.afastamento[row.afastamento.length - 1];
         const tipoAfastamento = ultimoAfastamento.tipo_afastamento.nome;
-        return tipoAfastamento;
+        return tipoAfastamento; // Retorna o tipo de afastamento se houver
       } else {
-        return field ? 'Afastado' : 'Ativo';
+        return field ? 'Afastado' : 'Ativo'; // Retorna "Afastado" ou "Ativo" conforme o campo
       }
     }
   },
@@ -89,6 +93,8 @@ export default function Conhecimentos() {
 
   const [conhecimento, setConhecimento] = useState(null);
   const [conhecimentoNivel, setConhecimentoNivel] = useState(null);
+
+  console.log(user)
 
   const {
     rows,

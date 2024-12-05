@@ -88,14 +88,28 @@ const Table = ({
             <Col md={1}>
               <Form.Select
                 value={filters.afastado.toString()}
+    
                 onChange={({ target: { value } }) => {
-                  handleFilters('active', true);
-                  handleFilters('afastado', value === "true");
-                }}>
+                  if (value === "false") {
+                    // Quando "Ativos" é selecionado, apenas filtra por `afastado === false` (sem afastamento)
+                    handleFilters('active', true);
+                    handleFilters('afastado', false);
+                  } else if (value === "true") {
+                    // Quando "Afastados" é selecionado, filtra por `afastado === true`
+                    handleFilters('active', true);
+                    handleFilters('afastado', true);
+                  } else {
+                    // Quando "Inativos" é selecionado, filtra por `active === false`
+                    handleFilters('active', false);
+                  }
+                }}
+              >
                 <option value={false}>Ativos</option>
                 <option value={true}>Afastados</option>
+                <option value={true}>Inativos</option> {/* Opção para Inativos */}
               </Form.Select>
             </Col>
+
           )}
           {filtersComponentes}
         </Row>
