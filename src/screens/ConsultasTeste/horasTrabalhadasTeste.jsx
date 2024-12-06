@@ -360,9 +360,6 @@ export default function ConsultaHorasTrabalhadasTeste() {
         handleChangeFilters('data_inicio', dataInicio || firstDayOfMonth);
         handleChangeFilters('data_fim', dataFim || today);
 
-        console.log('Data Início:', dataInicio);
-        console.log('Data Fim:', dataFim);
-
         handleChangeFilters('search', basefilters.search);
         load();
     }, [basefilters.search]);
