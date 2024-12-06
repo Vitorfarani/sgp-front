@@ -160,7 +160,6 @@ export default function TarefaExecucao() {
   const { callGlobalDialog, handleGlobalLoading, callGlobalAlert, callGlobalNotify } = useTheme();
   const userAccessLevel = user?.nivel_acesso;
   const [formData, setFormData] = useState({ });
-
   const [projetoFilter, setProjetoFilter] = useState()
 
   
@@ -389,25 +388,15 @@ export default function TarefaExecucao() {
 
         const method = result.execucao_id ? updateTarefaExecucao : createTarefaExecucao;
 
-        // Exibe o execucao_id para depuração
-
-        try {
-          const res = await method(result);
-          callGlobalNotify({ message: res.message, variant: 'success' });
-          load();
-        } catch (error) {
-          const errorMessage = `Erro: ${error.message}`;
-          const additionalMessage = "Por favor, verifique os dados e tente novamente.";
-
-          callGlobalAlert({
-            message: `${errorMessage} ${additionalMessage}`,
-            variant: 'danger'
-          });
-        } finally {
-          handleGlobalLoading.hide();
-        }
+          method(result)
+          .then((res) => {
+            callGlobalNotify({ message: res.message, variant: 'success' })
+            load()
+          })
+          .catch(callGlobalAlert)
+          .finally(handleGlobalLoading.hide)
       })
-      .catch(console.log);
+      .catch(console.log)
   }
 
   useEffect(() => {
