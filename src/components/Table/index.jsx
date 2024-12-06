@@ -63,6 +63,7 @@ const Table = ({
       : null;
   }
 
+
   const renderCellValue = (value) => {
     if (React.isValidElement(value)) {
       return value; // Retorna o componente React diretamente
@@ -87,29 +88,28 @@ const Table = ({
           {typeof filters.active !== "undefined" && (
             <Col md={1}>
               <Form.Select
-                value={filters.afastado.toString()}
-    
+                value={filters.active === false ? "inactive" : filters.afastado.toString()} // Define "inactive" para inativos
                 onChange={({ target: { value } }) => {
                   if (value === "false") {
-                    // Quando "Ativos" é selecionado, apenas filtra por `afastado === false` (sem afastamento)
+                    // Quando "Ativos" é selecionado, filtra por `afastado === false`
                     handleFilters('active', true);
                     handleFilters('afastado', false);
                   } else if (value === "true") {
                     // Quando "Afastados" é selecionado, filtra por `afastado === true`
                     handleFilters('active', true);
                     handleFilters('afastado', true);
-                  } else {
-                    // Quando "Inativos" é selecionado, filtra por `active === false`
-                    handleFilters('active', false);
+                  } else if (value === "inactive") {
+                    // Quando "Inativos" é selecionado, filtra por `active === false` e `afastado === true`
+                    handleFilters('active', false);  // Apenas inativos
+                    handleFilters('afastado', true); // E somente afastados
                   }
                 }}
               >
-                <option value={false}>Ativos</option>
-                <option value={true}>Afastados</option>
-                <option value={true}>Inativos</option> {/* Opção para Inativos */}
+                <option value="false">Ativos</option>
+                <option value="true">Afastados</option>
+                <option value="inactive">Inativos</option> {/* Representação clara para Inativos */}
               </Form.Select>
             </Col>
-
           )}
           {filtersComponentes}
         </Row>
