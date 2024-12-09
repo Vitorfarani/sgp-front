@@ -36,45 +36,82 @@ const columnsFields = [
     enabledOrder: true,
     style: { width: 100 },
     piper: (field, row) => {
-
-      if (row.afastamento && row.afastamento.length > 0 && row.afastado === 1) {
-        const ultimoAfastamento = row.afastamento[row.afastamento.length - 1]
+      // Verifica se o colaborador está ativo (row.active != 0) antes de exibir o ícone
+      if (row.active === 0) {
+        return field; // Se o colaborador estiver inativo, apenas retorna o nome sem o ícone
+      }
+  
+      // Verificar se há afastamentos e se o afastamento está ativo baseado na data atual
+      if (row.afastamento && row.afastamento.length > 0) {
+        // Obter o afastamento mais recente
+        const ultimoAfastamento = row.afastamento[row.afastamento.length - 1];
         const tipoAfastamento = ultimoAfastamento.tipo_afastamento.nome;
-        let icon;
-        switch (tipoAfastamento) {
-          case 'Licença Médica':
-            icon = <FaBriefcaseMedical />;
-            break;
-          case 'Férias Formais':
-            icon = <FaPlaneDeparture />;
-            break;
-          case 'Férias Informais':
-            icon = <FaUserSlash />;
-            break;
-          default:
-            icon = <FaUserSlash />;
-            break;
+  
+        // Verificar se a data atual está dentro do intervalo de início e fim do afastamento
+        const dataAtual = new Date();
+        const dataInicio = new Date(ultimoAfastamento.inicio);
+        const dataFim = new Date(ultimoAfastamento.fim);
+  
+        // Verifica se a data atual está entre o inicio e o fim do afastamento
+        if (dataAtual >= dataInicio && dataAtual <= dataFim) {
+          let icon;
+  
+          // Define o ícone com base no tipo de afastamento
+          switch (tipoAfastamento) {
+            case 'Licença Médica':
+              icon = <FaBriefcaseMedical />;
+              break;
+            case 'Férias Formais':
+              icon = <FaPlaneDeparture />;
+              break;
+            case 'Férias Informais':
+              icon = <FaUserSlash />;
+              break;
+            default:
+              icon = <FaUserSlash />;
+              break;
+          }
+  
+          return <>{field} {icon}</>; // Exibe o nome e o ícone
+        } else {
+          return field; // Se não estiver no intervalo, apenas retorna o nome
         }
-        return <>{field} {icon}</>;
       } else {
-        return field;
+        return field; // Se não houver afastamento, apenas retorna o nome
       }
     }
-  },
+  },  
   {
     field: 'afastado',
     label: 'Situação',
     enabledOrder: false,
     piper: (field, row) => {
-      if (row.afastamento && row.afastamento.length > 0 && row.afastado === 1) {
+      // Verifica se o colaborador está inativo (row.active == 0)
+      if (row.active === 0) {
+        return 'Inativo'; // Se o colaborador estiver inativo, retorna "Inativo"
+      }
+  
+      // Verificar se há afastamento e se está ativo com base na data atual
+      if (row.afastamento && row.afastamento.length > 0) {
+        // Obter o afastamento mais recente
         const ultimoAfastamento = row.afastamento[row.afastamento.length - 1];
         const tipoAfastamento = ultimoAfastamento.tipo_afastamento.nome;
-        return tipoAfastamento;
-      } else {
-        return field ? 'Afastado' : 'Ativo';
+  
+        // Verificar se a data atual está dentro do intervalo de início e fim do afastamento
+        const dataAtual = new Date();
+        const dataInicio = new Date(ultimoAfastamento.inicio);
+        const dataFim = new Date(ultimoAfastamento.fim);
+  
+        // Verifica se a data atual está entre o inicio e o fim do afastamento
+        if (dataAtual >= dataInicio && dataAtual <= dataFim) {
+          return tipoAfastamento; // Retorna o tipo de afastamento se estiver no intervalo
+        }
       }
+  
+      // Se não houver afastamento ativo ou o afastamento já passou, retorna "Afastado" ou "Ativo"
+      return field ? 'Afastado' : 'Ativo'; // Se houver afastamento ativo, exibe "Afastado", caso contrário "Ativo"
     }
-  },
+  },  
   { field: 'email', label: 'Email', enabledOrder: false },
   { field: 'telefone', label: 'Telefone', enabledOrder: false, piper: (field) => field && celularMask(field) },
   { field: 'nascimento', label: 'Idade', enabledOrder: false, piper: (field) => field && getIdade(field) + ' anos' },
@@ -90,6 +127,8 @@ export default function Conhecimentos() {
   const [conhecimento, setConhecimento] = useState(null);
   const [conhecimentoNivel, setConhecimentoNivel] = useState(null);
 
+  console.log(user)
+
   const {
     rows,
     columns,
@@ -101,10 +140,17 @@ export default function Conhecimentos() {
     isEmpty,
   } = useTable(columnsFields, listColaboradores, basefilters, (results) => {
 
-    return results.data.filter(colaborador =>
-      !filtersState.conhecimento || (colaborador.colaborador_conhecimento && colaborador.colaborador_conhecimento.length > 0)
-    );
+  // Filtragem customizada para o filtro "Inativos"
+  return results.data.filter(colaborador => {
+    if (rows.active === 0) {
+      // Quando o filtro é "Inativo", devemos incluir apenas colaboradores inativos e afastados
+      return colaborador.active === 0 && colaborador.afastado === 1;
+    }
+    
+    // Caso contrário, aplica a filtragem normal
+    return !filtersState.conhecimento || (colaborador.colaborador_conhecimento && colaborador.colaborador_conhecimento.length > 0);
   });
+});
 
 
 

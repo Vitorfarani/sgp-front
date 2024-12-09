@@ -345,7 +345,7 @@ export default function ConsultaColaboradorPorProjeto() {
         <Background>
             <HeaderTitle
                 title="Consultar Colaborador Por Projeto"
-                optionsButtons={user.nivel_acesso === 2 ? [ 
+                optionsButtons={[ 
                     {
                         label: 'Exportar como PDF',
                         onClick: () => exportToPDF(rows, dataInicio, dataFim),
@@ -361,7 +361,7 @@ export default function ConsultaColaboradorPorProjeto() {
                         onClick: () => exportToXLSX(rows, dataInicio, dataFim),
                         icon: FaFileExcel
                     }
-                ] : []} 
+                ]} 
                      />
             <Section>
                 <Table

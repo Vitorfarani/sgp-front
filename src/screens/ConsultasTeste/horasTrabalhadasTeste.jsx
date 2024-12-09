@@ -360,9 +360,6 @@ export default function ConsultaHorasTrabalhadasTeste() {
         handleChangeFilters('data_inicio', dataInicio || firstDayOfMonth);
         handleChangeFilters('data_fim', dataFim || today);
 
-        console.log('Data Início:', dataInicio);
-        console.log('Data Fim:', dataFim);
-
         handleChangeFilters('search', basefilters.search);
         load();
     }, [basefilters.search]);
@@ -371,7 +368,7 @@ export default function ConsultaHorasTrabalhadasTeste() {
         <Background>
             <HeaderTitle
                 title="Consultar Horas Trabalhadas"
-                optionsButtons={user.nivel_acesso === 2 || user.id === 2 ? [
+                optionsButtons={ [
                     {
                         label: 'Exportar como PDF',
                         onClick: () => exportToPDF(rows, dataInicio, dataFim),
@@ -387,7 +384,7 @@ export default function ConsultaHorasTrabalhadasTeste() {
                         onClick: () => exportToXLSX(rows, dataInicio, dataFim),
                         icon: FaFileExcel
                     }
-                ] : []}
+                ]}
             />
             <Section>
                 <Table

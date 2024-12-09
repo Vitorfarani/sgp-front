@@ -19,8 +19,11 @@ const SideButtons = ({ tarefa, addTarefaColaborador, onStart, onEnd, onCreateChe
 
   //Ainda não selecionados
   const colaboradoresOptions = useMemo(() => projeto?.projeto_responsavel?.filter((pr, k) => {
-    return !tarefa.tarefa_colaborador?.find(tc => pr.responsavel.id === tc.colaborador_id) ?? [];
-  }), [tarefa.tarefa_colaborador?.length]);
+    // Filtrando colaboradores com active = 1 e afastado = 0
+    const isColaboradorAtivoENãoAfastado = pr.responsavel.active === 1 && pr.responsavel.afastado === 0;
+    
+    return isColaboradorAtivoENãoAfastado && !tarefa.tarefa_colaborador?.find(tc => pr.responsavel.id === tc.colaborador_id);
+  }), [tarefa.tarefa_colaborador?.length, projeto?.projeto_responsavel]);
 
   const Executores = () => (
     <ButtonWithPopover

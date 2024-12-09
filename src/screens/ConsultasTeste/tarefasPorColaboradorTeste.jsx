@@ -223,6 +223,7 @@ export default function ConsultaTarefasPorColaboradorTeste() {
         listColaboradorProjetosTarefatTeste, basefilters,
         (results) => {
             if (!results || Object.keys(results).length === 0) {
+                setFinalData([]);
                 return [];
             }
 
@@ -403,7 +404,7 @@ export default function ConsultaTarefasPorColaboradorTeste() {
         <Background>
             <HeaderTitle
                 title="Consultar Tarefas Por Colaborador"
-                optionsButtons={user.nivel_acesso === 2 ? [
+                optionsButtons= { [
                     {
                         label: 'Exportar como PDF',
                         onClick: () => exportToPDF(rows, dataInicio, dataFim),
@@ -443,7 +444,7 @@ export default function ConsultaTarefasPorColaboradorTeste() {
                         },
                         className: filterTipoTarefa === 'iniciadas' ? 'active' : ''
                     }
-                ] : []}
+               ]}
             />
 
             <Section>
