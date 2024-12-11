@@ -233,10 +233,10 @@ const columnsFields = [
 
 // Função para converter horas em formato decimal para HH:MM
 const converterHoras = (horas) => {
-    const totalMinutos = Math.round(horas * 60); // Convertendo horas para minutos
-    const h = Math.floor(totalMinutos / 60); // Extraindo horas
-    const m = totalMinutos % 60; // Extraindo minutos
-    return `${h}:${m < 10 ? '0' : ''}${m}`; // Formatando para HH:MM
+    const totalMinutos = Math.round(horas * 60); 
+    const h = Math.floor(totalMinutos / 60); 
+    const m = totalMinutos % 60; 
+    return `${h}:${m < 10 ? '0' : ''}${m}`; 
 };
 
 export default function ConsultaHorasTrabalhadasTeste() {
@@ -244,10 +244,11 @@ export default function ConsultaHorasTrabalhadasTeste() {
     const [dataInicio, setDataInicio] = useState(moment().format('YYYY-MM-01'));
     const [dataFim, setDataFim] = useState(moment().format('YYYY-MM-DD'));
 
-    const [projetoFilter, setProjetoFilter] = useState()
-    const [setorFilter, setSetorFilter] = useState()
-
-
+    const [projetoFilter, setProjetoFilter] = useState();
+    const [setorFilter, setSetorFilter] = useState();
+    const [filterTipoColaborador, setFilterTipoColaborador] = useState('todos');
+    const [finalData, setFinalData] = useState([]);
+    const [sortedData, setSortedData] = useState([]); 
 
     const {
         rows,
@@ -282,22 +283,39 @@ export default function ConsultaHorasTrabalhadasTeste() {
 
             mappedData.push({
                 colaborador_nome: colaborador_nome || "",
-                horas_trabalhadas: horas_trabalhadas ? converterHoras(horas_trabalhadas) : "0:00", // Convertendo para HH:MM
+                horas_trabalhadas: horas_trabalhadas ? converterHoras(horas_trabalhadas) : "0:00", 
                 carga_horaria: carga_horaria || 0,
                 total_tarefas: total_tarefas || 0,
                 dias_trabalhados: dias_trabalhados || 0,
                 horas_maximas_permitidas: horas_maximas_permitidas ? converterHoras(horas_maximas_permitidas) : "0:00",
                 situacao: situacao || "",
-                horas_afastado: horas_afastado ? converterHoras(horas_afastado) : "0:00", // Convertendo para HH:MM
-                banco_horas: banco_horas ? converterHoras(banco_horas) : "0:00", // Convertendo para HH:MM
+                horas_afastado: horas_afastado ? converterHoras(horas_afastado) : "0:00", 
+                banco_horas: banco_horas ? converterHoras(banco_horas) : "0:00", 
                 total_tarefas_no_prazo: total_tarefas_no_prazo || 0,
                 total_tarefas_atrasado: total_tarefas_atrasado || 0,
             });
         }
 
+        let filteredData = [...mappedData]; 
+
+        if (filterTipoColaborador === 'semHorasTrabalhadas') {
+            filteredData = filteredData.filter(task => {
+                console.log("Verificando task:", task);
+                return (task.horas_trabalhadas === "0:00" || task.horas_trabalhadas === 'N/D' || !task.horas_trabalhadas) && (task.horas_afastado === "0:00" || task.horas_afastado === 'N/D' || !task.horas_afastado) ;
+            });
+        } else if (filterTipoColaborador === 'comHorasTrabalhadas') {
+            filteredData = filteredData.filter(task => {
+                console.log("Verificando task:", task);
+                return (task.horas_trabalhadas !== "0:00" && task.horas_trabalhadas !== 'N/D' && task.horas_trabalhadas) || (task.horas_afastado !== "0:00" && task.horas_afastado !== 'N/D' && task.horas_afastado)  ;
+            });
+        }
+
+
+
+        // Calcular os totais
         const totais = {
             colaborador_nome: 'TOTAL',
-            horas_trabalhadas: "0:00", // Inicializa como 0:00
+            horas_trabalhadas: "0:00", 
             carga_horaria: 0,
             total_tarefas_no_prazo: 0,
             total_tarefas_atrasado: 0,
@@ -305,11 +323,11 @@ export default function ConsultaHorasTrabalhadasTeste() {
             dias_trabalhados: 0,
             horas_maximas_permitidas: "0:00",
             situacao: '',
-            horas_afastado: "0:00", // Inicializa como 0:00
-            banco_horas: "0:00", // Inicializa como 0:00
+            horas_afastado: "0:00", 
+            banco_horas: "0:00", 
         };
 
-        mappedData.forEach(item => {
+        filteredData.forEach(item => {
             totais.horas_trabalhadas = converterHoras(
                 (parseFloat(totais.horas_trabalhadas.split(':')[0]) + parseFloat(item.horas_trabalhadas.split(':')[0])) +
                 (parseFloat(totais.horas_trabalhadas.split(':')[1]) + parseFloat(item.horas_trabalhadas.split(':')[1])) / 60
@@ -333,18 +351,24 @@ export default function ConsultaHorasTrabalhadasTeste() {
             totais.total_tarefas_atrasado += parseInt(item.total_tarefas_atrasado);
         });
 
-        mappedData.push(totais);
+        // Adicionar os totais ao final
+        filteredData.push(totais);
 
+        // Ordenar os dados conforme a configuração de ordenação do filtro
         const sortedData = orderBy(
-            mappedData.filter(item => item.colaborador_nome !== 'TOTAL'),
+            filteredData,
             [filtersState.sortedColumn],
             [filtersState.sortOrder]
         );
 
-        sortedData.push(mappedData.find(item => item.colaborador_nome === 'TOTAL'));
+        //sortedData.push(totais);
+
+        // setSortedData(sortedData);
+        // setFinalData(sortedData);  
 
         return sortedData;
     });
+
 
 
 
@@ -362,13 +386,13 @@ export default function ConsultaHorasTrabalhadasTeste() {
 
         handleChangeFilters('search', basefilters.search);
         load();
-    }, [basefilters.search]);
+    }, [basefilters.search, filterTipoColaborador, filtersState.sortedColumn, filtersState.sortOrder]);
 
     return (
         <Background>
             <HeaderTitle
                 title="Consultar Horas Trabalhadas"
-                optionsButtons={ [
+                optionsButtons={[
                     {
                         label: 'Exportar como PDF',
                         onClick: () => exportToPDF(rows, dataInicio, dataFim),
@@ -383,6 +407,30 @@ export default function ConsultaHorasTrabalhadasTeste() {
                         label: 'Exportar como XLSX',
                         onClick: () => exportToXLSX(rows, dataInicio, dataFim),
                         icon: FaFileExcel
+                    },
+                    {
+                        label: 'Todos os colaboradores',
+                        onClick: () => {
+                            console.log("Alterando filtro para:", 'todos'); 
+                            setFilterTipoColaborador('todos');
+                        },
+                        className: filterTipoColaborador === 'todos' ? 'active' : ''
+                    },
+                    {
+                        label: 'Colaboradores sem Horas',
+                        onClick: () => {
+                            console.log("Alterando filtro para:", 'semHorasTrabalhadas'); 
+                            setFilterTipoColaborador('semHorasTrabalhadas')
+                        },
+                        className: filterTipoColaborador === 'semHorasTrabalhadas' ? 'active' : ''
+                    },
+                    {
+                        label: 'Colaboradores com Horas',
+                        onClick: () => {
+                            console.log("Alterando filtro para:", 'comHorasTrabalhadas'); 
+                            setFilterTipoColaborador('comHorasTrabalhadas'); 
+                        },
+                        className: filterTipoColaborador === 'comHorasTrabalhadas' ? 'active' : ''
                     }
                 ]}
             />
@@ -394,7 +442,7 @@ export default function ConsultaHorasTrabalhadasTeste() {
                     filtersState={filtersState}
                     filtersComponentes={
                         <>
-                            {(user.nivel_acesso === 2 || user.nivel_acesso === 5) && ( // Verificação do nível de acesso
+                            {(user.nivel_acesso === 2 || user.nivel_acesso === 5) && ( 
                                 <Col md={2}>
                                     <SelectAsync
                                         placeholder="Filtrar por Colaborador"
