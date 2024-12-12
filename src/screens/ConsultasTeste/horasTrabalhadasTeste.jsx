@@ -310,8 +310,6 @@ export default function ConsultaHorasTrabalhadasTeste() {
             });
         }
 
-
-
         // Calcular os totais
         const totais = {
             colaborador_nome: 'TOTAL',
@@ -356,15 +354,12 @@ export default function ConsultaHorasTrabalhadasTeste() {
 
         // Ordenar os dados conforme a configuração de ordenação do filtro
         const sortedData = orderBy(
-            filteredData,
+            filteredData.filter(item => item.colaborador_nome !== 'TOTAL'),
             [filtersState.sortedColumn],
             [filtersState.sortOrder]
         );
 
-        //sortedData.push(totais);
-
-        // setSortedData(sortedData);
-        // setFinalData(sortedData);  
+        sortedData.push(filteredData.find(item => item.colaborador_nome === 'TOTAL'));
 
         return sortedData;
     });
