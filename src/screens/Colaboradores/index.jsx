@@ -127,8 +127,6 @@ export default function Conhecimentos() {
   const [conhecimento, setConhecimento] = useState(null);
   const [conhecimentoNivel, setConhecimentoNivel] = useState(null);
 
-  console.log(user)
-
   const {
     rows,
     columns,
