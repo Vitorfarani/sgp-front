@@ -300,12 +300,10 @@ export default function ConsultaHorasTrabalhadasTeste() {
 
         if (filterTipoColaborador === 'semHorasTrabalhadas') {
             filteredData = filteredData.filter(task => {
-                console.log("Verificando task:", task);
                 return (task.horas_trabalhadas === "0:00" || task.horas_trabalhadas === 'N/D' || !task.horas_trabalhadas) && (task.horas_afastado === "0:00" || task.horas_afastado === 'N/D' || !task.horas_afastado) ;
             });
         } else if (filterTipoColaborador === 'comHorasTrabalhadas') {
             filteredData = filteredData.filter(task => {
-                console.log("Verificando task:", task);
                 return (task.horas_trabalhadas !== "0:00" && task.horas_trabalhadas !== 'N/D' && task.horas_trabalhadas) || (task.horas_afastado !== "0:00" && task.horas_afastado !== 'N/D' && task.horas_afastado)  ;
             });
         }
@@ -406,7 +404,6 @@ export default function ConsultaHorasTrabalhadasTeste() {
                     {
                         label: 'Todos os colaboradores',
                         onClick: () => {
-                            console.log("Alterando filtro para:", 'todos'); 
                             setFilterTipoColaborador('todos');
                         },
                         className: filterTipoColaborador === 'todos' ? 'active' : ''
@@ -414,7 +411,6 @@ export default function ConsultaHorasTrabalhadasTeste() {
                     {
                         label: 'Colaboradores sem Horas',
                         onClick: () => {
-                            console.log("Alterando filtro para:", 'semHorasTrabalhadas'); 
                             setFilterTipoColaborador('semHorasTrabalhadas')
                         },
                         className: filterTipoColaborador === 'semHorasTrabalhadas' ? 'active' : ''
@@ -422,7 +418,6 @@ export default function ConsultaHorasTrabalhadasTeste() {
                     {
                         label: 'Colaboradores com Horas',
                         onClick: () => {
-                            console.log("Alterando filtro para:", 'comHorasTrabalhadas'); 
                             setFilterTipoColaborador('comHorasTrabalhadas'); 
                         },
                         className: filterTipoColaborador === 'comHorasTrabalhadas' ? 'active' : ''
