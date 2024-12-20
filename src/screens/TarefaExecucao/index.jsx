@@ -245,8 +245,6 @@ export default function TarefaExecucao() {
       data_inicio_execucao: formatDateToDatetimeLocal(data.data_inicio_execucao),
       data_fim_execucao: formatDateToDatetimeLocal(data.data_fim_execucao),
     };
-    console.log("data: ", data)
-    console.log("initialData: ", initialData)
 
 
     // Tentando capturar o ID corretamente
@@ -280,33 +278,39 @@ export default function TarefaExecucao() {
           filterOption: ({ data }, formData) => {
             // Obtém o colaborador selecionado, que pode vir do formData ou do estado global
             const colaboradorSelecionado = formData.colaborador?.id || colaboradorId;
+            
             return data.projeto_responsavel.some(pr => pr.colaborador_id === colaboradorSelecionado);
           },
           loadOptions: async (inputValue, formData) => {
-            const colaboradorSelecionado = colaboradorId;
-
+            // Obtém o colaborador selecionado, que pode vir do formulário ou do estado global
+            const colaboradorSelecionado = formData?.colaborador?.id || colaboradorId;
             try {
-              // Se um colaborador estiver selecionado, busque apenas os projetos onde ele é responsável
-              if (colaboradorSelecionado) {
+              // Obtém os projetos relacionados ao colaborador e filtrados pelo inputValue
+              const projetosColaborador = await listProjetos(inputValue);
+          
+              // Obtém todas as tarefas do colaborador
+              const todasTarefas = await listTarefas(inputValue);
+          
+              // Filtra as tarefas que possuem finalizada = 0
+              const tarefasFiltradas = todasTarefas.filter(tarefa => tarefa.finalizada === 0);
 
+              // Faz o join: retorna projetos que têm tarefas associadas
+              const projetosComTarefas = projetosColaborador.filter(projeto =>
+                tarefasFiltradas.some(tarefa => tarefa.projeto_id === projeto.id)
+              );
 
-                // Buscar todos os projetos que o colaborador é responsável
-                const projetosColaborador = await listProjetosColaborador(colaboradorSelecionado);
-                //console.log(projetosColaborador)
+              //não consegui fazer o return projetosComTarefas filtrar corretamente ao digitar, em todos os casos
+              //return projetosComTarefas
 
-                return projetosColaborador;
-              } else {
-                // Se nenhum colaborador estiver selecionado, não filtra os projetos
-                return [];
-              }
+              return projetosColaborador
             } catch (error) {
-              console.error('Error fetching projetos:', error);
+              console.error('Error fetching projetos ou tarefas:', error);
               return [];
             }
           },
           required: true,
           formatOptionLabel: option => `${option.nome}`,
-        },
+        },        
         {
           name: 'tarefa',
           label: 'Tarefa',
