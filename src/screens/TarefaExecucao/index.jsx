@@ -77,23 +77,23 @@ const exportToCSV = (data, dataInicio, dataFim) => {
   const csvRows = [];
 
   const headers = [
-      'Colaborador',
-      'Projeto',
-      'Tarefa',
-      'Inicio Execução',
-      'Fim Execução'
+    'Colaborador',
+    'Projeto',
+    'Tarefa',
+    'Inicio Execução',
+    'Fim Execução'
   ];
   csvRows.push(headers.join(','));
 
   data.forEach(item => {
-      const row = [
-          item.colaborador_nome || '',
-          item.projeto_nome || '',
-          item.tarefa_nome || '',
-          item.data_inicio_execucao || '',
-          item.data_fim_execucao || ''
-      ];
-      csvRows.push(row.join(','));
+    const row = [
+      item.colaborador_nome || '',
+      item.projeto_nome || '',
+      item.tarefa_nome || '',
+      item.data_inicio_execucao || '',
+      item.data_fim_execucao || ''
+    ];
+    csvRows.push(row.join(','));
   });
 
   const csvContent = csvRows.join('\n');
@@ -108,19 +108,19 @@ const exportToCSV = (data, dataInicio, dataFim) => {
 
 const exportToXLSX = (data, dataInicio, dataFim) => {
   const orderedColumns = [
-      { field: 'colaborador_nome', header: 'Colaborador' },
-      { field: 'projeto_nome', header: 'Projeto' },
-      { field: 'tarefa_nome', header: 'Tarefa' },
-      { field: 'data_inicio_execucao', header: 'Inicio Execução' },
-      { field: 'data_fim_execucao', header: 'Fim Execução' }
+    { field: 'colaborador_nome', header: 'Colaborador' },
+    { field: 'projeto_nome', header: 'Projeto' },
+    { field: 'tarefa_nome', header: 'Tarefa' },
+    { field: 'data_inicio_execucao', header: 'Inicio Execução' },
+    { field: 'data_fim_execucao', header: 'Fim Execução' }
   ];
 
   const formattedData = data.map(item => {
-      const orderedData = {};
-      orderedColumns.forEach(col => {
-          orderedData[col.header] = item[col.field] || ''; 
-      });
-      return orderedData;
+    const orderedData = {};
+    orderedColumns.forEach(col => {
+      orderedData[col.header] = item[col.field] || '';
+    });
+    return orderedData;
   });
 
   const worksheet = XLSX.utils.json_to_sheet(formattedData);
@@ -147,7 +147,7 @@ const cadastroInitialValue = {
   tarefa_id: '',
   colaborador_id: '',
   data_inicio_execucao: '',
-  data_fim_execucao: '' ,
+  data_fim_execucao: '',
 };
 
 export default function TarefaExecucao() {
@@ -159,10 +159,10 @@ export default function TarefaExecucao() {
   const { user } = useAuth();
   const { callGlobalDialog, handleGlobalLoading, callGlobalAlert, callGlobalNotify } = useTheme();
   const userAccessLevel = user?.nivel_acesso;
-  const [formData, setFormData] = useState({ });
+  const [formData, setFormData] = useState({});
   const [projetoFilter, setProjetoFilter] = useState()
 
-  
+
   const {
     rows,
     columns,
@@ -202,6 +202,7 @@ export default function TarefaExecucao() {
             colaborador_nome: colaborador_nome || "",
             tarefa_id: tarefa.tarefa_id || 0,
             projeto_nome: tarefa.projeto_nome || "",
+            projeto_id: tarefa.projeto_id || "",
             tarefa_nome: tarefa.tarefa_nome || "",
             execucao_id: tarefa.execucao_id || 0,
             data_inicio_execucao: inicio_execucao_pt,
@@ -216,25 +217,47 @@ export default function TarefaExecucao() {
 
     });
 
-    
+  function formatDateToDatetimeLocal(dateString) {
+    if (!dateString) return '';
 
+    // Dividindo a data e hora no formato "DD/MM/YYYY HH:mm:ss"
+    const [datePart, timePart] = dateString.split(' ');
+    const [day, month, year] = datePart.split('/');
+
+    // Retornando no formato "YYYY-MM-DDTHH:mm"
+    return `${year}-${month}-${day}T${timePart.slice(0, 5)}`;
+  }
 
   function callModalCadastro(data = {}, tarefa, formData = {}) {
     const { id: colaboradorId, nome: colaboradorNome } = user?.colaborador || {};
 
 
     const initialData = {
-      colaborador: colaboradorId ? { id: colaboradorId, nome: colaboradorNome } : null,
-      finalizar_tarefa: false,
       ...data,
+      colaborador: data?.colaborador_id
+        ? { id: Number(data.colaborador_id), nome: data.colaborador_nome }
+        : colaboradorId
+          ? { id: Number(colaboradorId), nome: colaboradorNome }
+          : null,
+      finalizar_tarefa: false,
+      tarefa: data?.tarefa_id ? { id: data.tarefa_id, nome: data.tarefa_nome } : null,
+      projeto: data?.projeto_id ? { id: data.projeto_id, nome: data.projeto_nome } : null,
+      data_inicio_execucao: formatDateToDatetimeLocal(data.data_inicio_execucao),
+      data_fim_execucao: formatDateToDatetimeLocal(data.data_fim_execucao),
     };
 
 
     // Tentando capturar o ID corretamente
     const tarefaEditadaId = data?.tarefa_id || data?.id || null;
 
+    // Definir título com base no contexto (edição ou criação)
+    const isEditing = Boolean(data?.tarefa_id);
+    const title = isEditing
+      ? "Editar Execução de Tarefa"
+      : "Registrar Execução de Tarefa";
+
     callGlobalDialog({
-      title: 'Registrar Execução de Tarefa',
+      title,
       yupSchema: tarefaExecucaoSchema,
       data: initialData,
       forms: [
@@ -255,33 +278,39 @@ export default function TarefaExecucao() {
           filterOption: ({ data }, formData) => {
             // Obtém o colaborador selecionado, que pode vir do formData ou do estado global
             const colaboradorSelecionado = formData.colaborador?.id || colaboradorId;
+            
             return data.projeto_responsavel.some(pr => pr.colaborador_id === colaboradorSelecionado);
           },
           loadOptions: async (inputValue, formData) => {
-            const colaboradorSelecionado = colaboradorId;
-        
+            // Obtém o colaborador selecionado, que pode vir do formulário ou do estado global
+            const colaboradorSelecionado = formData?.colaborador?.id || colaboradorId;
             try {
-              // Se um colaborador estiver selecionado, busque apenas os projetos onde ele é responsável
-              if (colaboradorSelecionado) {
+              // Obtém os projetos relacionados ao colaborador e filtrados pelo inputValue
+              const projetosColaborador = await listProjetos(inputValue);
+          
+              // Obtém todas as tarefas do colaborador
+              const todasTarefas = await listTarefas(inputValue);
+          
+              // Filtra as tarefas que possuem finalizada = 0
+              const tarefasFiltradas = todasTarefas.filter(tarefa => tarefa.finalizada === 0);
 
-                
-                // Buscar todos os projetos que o colaborador é responsável
-                const projetosColaborador = await listProjetosColaborador(colaboradorSelecionado);
-                console.log(projetosColaborador)
-        
-                return projetosColaborador;
-              } else {
-                // Se nenhum colaborador estiver selecionado, não filtra os projetos
-                return [];
-              }
+              // Faz o join: retorna projetos que têm tarefas associadas
+              const projetosComTarefas = projetosColaborador.filter(projeto =>
+                tarefasFiltradas.some(tarefa => tarefa.projeto_id === projeto.id)
+              );
+
+              //não consegui fazer o return projetosComTarefas filtrar corretamente ao digitar, em todos os casos
+              //return projetosComTarefas
+
+              return projetosColaborador
             } catch (error) {
-              console.error('Error fetching projetos:', error);
+              console.error('Error fetching projetos ou tarefas:', error);
               return [];
             }
           },
           required: true,
           formatOptionLabel: option => `${option.nome}`,
-        },           
+        },        
         {
           name: 'tarefa',
           label: 'Tarefa',
@@ -295,12 +324,12 @@ export default function TarefaExecucao() {
             if (!projetoSelecionado) {
               // Se não houver projeto selecionado, retorna uma lista vazia
               return null;
-            } else{
-            // Filtra as tarefas para incluir somente aquelas relacionadas ao colaborador e ao projeto
-            return data.tarefa_colaborador.some(tc => tc.colaborador_id === colaboradorSelecionado) &&
-                   (projetoSelecionado ? data.projeto_id === projetoSelecionado : true);
+            } else {
+              // Filtra as tarefas para incluir somente aquelas relacionadas ao colaborador e ao projeto
+              return data.tarefa_colaborador.some(tc => tc.colaborador_id === colaboradorSelecionado) &&
+                (projetoSelecionado ? data.projeto_id === projetoSelecionado : true);
             }
-          },    
+          },
           loadOptions: async (inputValue, formValues) => {
             const colaboradorSelecionado = formData.colaborador?.id || colaboradorId;
             const nivelAcesso = user?.nivel_acesso;
@@ -374,7 +403,7 @@ export default function TarefaExecucao() {
         if (!formattedResult.data_fim_execucao) {
           formattedResult.data_fim_execucao = null;  // Garantindo que seja null, se não preenchido
         }
-        
+
         return formattedResult;
       })
       .then(async (result) => {
@@ -388,7 +417,7 @@ export default function TarefaExecucao() {
 
         const method = result.execucao_id ? updateTarefaExecucao : createTarefaExecucao;
 
-          method(result)
+        method(result)
           .then((res) => {
             callGlobalNotify({ message: res.message, variant: 'success' })
             load()
@@ -426,7 +455,7 @@ export default function TarefaExecucao() {
       <HeaderTitle
         title="Execução de Tarefas"
         optionsButtons={[
-          ...(user.id !== 1 || (user.nivel_acesso >= 2 && user.id !== 1)? [
+          ...(user.id !== 1 || (user.nivel_acesso >= 2 && user.id !== 1) ? [
             {
               label: 'Registrar Execução',
               onClick: () => callModalCadastro(cadastroInitialValue),
@@ -441,12 +470,12 @@ export default function TarefaExecucao() {
               label: 'Exportar como CSV',
               onClick: () => exportToCSV(rows, dataInicio, dataFim),
               icon: FaFileCsv
-          },
-          {
+            },
+            {
               label: 'Exportar como XLSX',
               onClick: () => exportToXLSX(rows, dataInicio, dataFim),
               icon: FaFileExcel
-          }
+            }
           ] : []),
         ]}
       />
@@ -461,7 +490,7 @@ export default function TarefaExecucao() {
           searchOffiline
           filtersComponentes={
             <>
-              {user.nivel_acesso === 2 || user.id === 2  && (<Col md={2} >
+              {user.nivel_acesso >= 2 && (<Col md={2} >
                 <SelectAsync
                   placeholder="Filtrar por Colaborador"
                   loadOptions={(search) => listColaboradores('?search=' + search)}
@@ -471,7 +500,7 @@ export default function TarefaExecucao() {
 
                     return projetoFilter.projeto_responsavel.some(pr => pr.colaborador_id === data.id)
 
-                }}
+                  }}
                   onChange={(colaborador) => {
                     handleChangeFilters('colaborador_id', colaborador ? colaborador.id : null);
                   }}
@@ -491,7 +520,7 @@ export default function TarefaExecucao() {
                   isClearable
                 />
               </Col>
-              {user.nivel_acesso === 2 || user.id === 2  && (
+              {user.nivel_acesso >= 2 && (
                 <Col md={2}>
                   <SelectAsync
                     placeholder="Filtrar por Setor"
@@ -501,7 +530,7 @@ export default function TarefaExecucao() {
 
                       return data.id === user.colaborador.setor_id;
 
-                  }}
+                    }}
                     onChange={(setor) => {
                       handleChangeFilters('setor_id', setor ? setor.id : null);
                     }}
@@ -547,6 +576,10 @@ export default function TarefaExecucao() {
                       colaborador_nome: row.colaborador_nome,
                       tarefa_nome: row.tarefa_nome,
                       execucao_id: row.execucao_id,
+                      projeto_id: row.projeto_id,
+                      projeto_nome: row.projeto_nome,
+                      data_inicio_execucao: row.data_inicio_execucao || '',
+                      data_fim_execucao: row.data_fim_execucao || '',
                     }, formData);
                   },
                   icon: FiEdit,
