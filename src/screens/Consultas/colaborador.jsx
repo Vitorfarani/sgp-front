@@ -21,7 +21,7 @@ const basefilters = {
   selectedRows: [],
   setor: null,
   page: 1,
-  sortedColumn: 'id',
+  sortedColumn: 'colaborador',
   sortOrder: 'asc',
 };
 

@@ -26,8 +26,8 @@ const basefilters = {
   perPage: 20,
   selectedRows: [],
   page: 1,
-  sortedColumn: 'data',
-  sortOrder: 'asc',
+  sortedColumn: 'data_inicio_execucao',
+  sortOrder: 'desc',
 };
 
 const exportToPDF = (data, dataInicio, dataFim) => {

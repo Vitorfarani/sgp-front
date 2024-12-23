@@ -20,8 +20,8 @@ const basefilters = {
   perPage: 20,
   selectedRows: [],
   page: 1,
-  sortedColumn: 'id',
-  sortOrder: 'asc',
+  sortedColumn: 'inicio',
+  sortOrder: 'desc',
 };
 
 const columnsFields = [
