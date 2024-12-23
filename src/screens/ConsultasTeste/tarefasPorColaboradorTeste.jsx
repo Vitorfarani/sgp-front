@@ -22,7 +22,7 @@ const basefilters = {
     perPage: 20,
     selectedRows: [],
     page: 1,
-    sortedColumn: 'id',
+    sortedColumn: 'colaborador_nome',
     colaborador: null,
     sortOrder: 'asc',
     setor_id: null,

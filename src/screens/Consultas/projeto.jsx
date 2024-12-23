@@ -17,7 +17,7 @@ const basefilters = {
   perPage: 20,
   selectedRows: [],
   page: 1,
-  sortedColumn: 'id',
+  sortedColumn: 'projeto',
   cliente: null,
   sortOrder: 'asc',
 };
