@@ -217,16 +217,20 @@ export default function TarefaExecucao() {
 
     });
 
-  function formatDateToDatetimeLocal(dateString) {
-    if (!dateString) return '';
-
-    // Dividindo a data e hora no formato "DD/MM/YYYY HH:mm:ss"
-    const [datePart, timePart] = dateString.split(' ');
-    const [day, month, year] = datePart.split('/');
-
-    // Retornando no formato "YYYY-MM-DDTHH:mm"
-    return `${year}-${month}-${day}T${timePart.slice(0, 5)}`;
-  }
+    function formatDateToDatetimeLocal(dateString) {
+      if (!dateString) return '';
+    
+      // Dividindo a data e hora no formato "DD/MM/YYYY HH:mm:ss"
+      const [datePart, timePart] = dateString.split(' ');
+    
+      // Verifica se tanto datePart quanto timePart existem antes de continuar
+      if (!datePart || !timePart) return '';
+    
+      const [day, month, year] = datePart.split('/');
+    
+      // Retornando no formato "YYYY-MM-DDTHH:mm"
+      return `${year}-${month}-${day}T${timePart.slice(0, 5)}`;
+    }
 
   function callModalCadastro(data = {}, tarefa, formData = {}) {
     const { id: colaboradorId, nome: colaboradorNome } = user?.colaborador || {};
