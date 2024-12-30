@@ -5,7 +5,7 @@ import axios from "axios";
 
 export const httpSSO = axios.create({
   baseURL: 'oauth',
-  timeout: 7000,
+  timeout: 15000,
   headers: {
       'content-type': 'application/x-www-form-urlencoded',
       'accept' : '*/*',
@@ -23,7 +23,7 @@ export const httpSSO = axios.create({
 
 export const httpSgp = axios.create({
   baseURL: ENV.API_URL + ENV.API_VERSION,
-  timeout: 7000,
+  timeout: 15000,
   headers: {
       'accept' : '*/*',
       'Content-Type': 'application/json',
