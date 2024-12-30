@@ -303,10 +303,9 @@ export default function TarefaExecucao() {
                 tarefasFiltradas.some(tarefa => tarefa.projeto_id === projeto.id)
               );
 
-              //não consegui fazer o return projetosComTarefas filtrar corretamente ao digitar, em todos os casos
-              //return projetosComTarefas
-
-              return projetosColaborador
+              //return projetosColaborador // esse filtra corretamente ao digitar em todos os casos
+              
+              return projetosComTarefas //não consegui fazer o return projetosComTarefas filtrar corretamente ao digitar, em todos os casos, quando a tarefa não está em aberto não consegue pesquisar ela
             } catch (error) {
               console.error('Error fetching projetos ou tarefas:', error);
               return [];
