@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Form, Row, Col } from 'react-bootstrap';
 import { DateInput } from '..'; // Ajuste o caminho conforme necessário
-import { listColaboradorTarefaPorExecucao2 } from '@/services/tarefa/tarefaExecucao';
+import { colaboradorTarefaPorExecucaoSemFiltroDeData} from '@/services/tarefa/tarefaExecucao';
 import { diffDatetimesHumanized } from '@/utils/helpers/date'; // Supondo que você tenha essa função
 
 const ShowExecucoes = ({ formData }) => {
@@ -15,7 +15,7 @@ const ShowExecucoes = ({ formData }) => {
 
   const verificarExecucoes = async (tarefaId) => {
     try {
-      const execucoesResposta = await listColaboradorTarefaPorExecucao2({ tarefa_id: tarefaId });
+      const execucoesResposta = await colaboradorTarefaPorExecucaoSemFiltroDeData({ tarefa_id: tarefaId });
 
       const execucoesFiltradas = [];
       for (let colaboradorId in execucoesResposta) {
