@@ -31,9 +31,9 @@ export const listColaboradorTarefaPorExecucao = async (params = "") => {
   return _get(url);
 }
 
-export const listColaboradorTarefaPorExecucao2 = async ({ tarefa_id }) => {
+export const colaboradorTarefaPorExecucaoSemFiltroDeData = async ({ tarefa_id }) => {
   const params = new URLSearchParams({ tarefa_id }); // Adiciona tarefa_id como parâmetro
-  const url = `tarefa-execucao/colaboradorTarefaPorExecucao?${params.toString()}`;
+  const url = `tarefa-execucao/colaboradorTarefaPorExecucaoSemFiltroDeData?${params.toString()}`;
   return _get(url); // Chamada para o método _get
 };
 
