@@ -169,6 +169,16 @@ export default [
     childrens: []
   },
 
+  
+  {
+    nome: 'Calendário',
+    nivel_acesso: 1,
+    icon: FiCalendar,
+    path: 'calendario',
+    rolesPermited: [],
+    childrens: []
+  },
+
   {
     nome: 'Conhecimentos',
     nivel_acesso: 2,
